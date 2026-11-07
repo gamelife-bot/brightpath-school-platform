@@ -1,7 +1,7 @@
 import './style.css';
 import { createClient, BetterAuthVanillaAdapter } from '@neondatabase/neon-js';
 
-const ROOT='/brightpath-school-portal-demo/';
+const ROOT='/brightpath-school-platform/';
 const AUTH_URL='https://ep-falling-frog-bao493od.neonauth.c-8.eu-central-1.aws.neon.tech/neondb/auth';
 const DATA_URL='https://ep-falling-frog-bao493od.apirest.c-8.eu-central-1.aws.neon.tech/neondb/rest/v1';
 const db=createClient({auth:{url:AUTH_URL,adapter:BetterAuthVanillaAdapter()},dataApi:{url:DATA_URL}});
