@@ -73,7 +73,7 @@ export const checked=(id)=>document.getElementById(id)?.checked===true;
 
 const pages={
  owner:[['overview','Overview','⌂'],['schools','Schools','▦'],['people','Accounts & access','♙'],['analytics','Activity monitor','▥'],['revenue','Revenue & plans','◈'],['support','Support inbox','✉']],
- school_admin:[['overview','Overview','⌂'],['classes','Classes','▦'],['students','Students','♧'],['people','Staff & access','♙'],['families','Parents & guardians','♡'],['attendance','Attendance','▤'],['activities','Learning reports','▥'],['announcements','Announcements','✉'],['billing','Subscription & earnings','◈'],['settings','School settings','⚙'],['support','Support','?']],
+ school_admin:[['overview','Overview','⌂'],['classes','Classes','▦'],['students','Students','♧'],['people','Staff directory','♙'],['teachers','Teacher approvals','✓'],['parents','Parent approvals','♡'],['families','Guardian links','↗'],['attendance','Attendance','▤'],['activities','Learning reports','▥'],['announcements','Announcements','✉'],['billing','Subscription & earnings','◈'],['settings','School settings','⚙'],['support','Support','?']],
  teacher:[['overview','Overview','⌂'],['classes','My classes','▦'],['students','Students','♧'],['publish','Post activity','✎'],['gradebook','Gradebook','▥'],['attendance','Attendance','▤'],['announcements','Announcements','✉']],
  parent:[['overview','Overview','⌂'],['children','My children','♡'],['journal','Learning journal','▥'],['attendance','Attendance','▤'],['announcements','Announcements','✉'],['membership','My membership','◈']]
 };

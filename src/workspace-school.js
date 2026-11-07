@@ -1,3 +1,4 @@
+import {renderSchoolApprovals} from './workspace-approvals.js';
 import {escapeHtml as e,numberLabel as n,dateLabel,dollar,initial,stat,box,empty,pill,status,field,input,select,textarea,button,heading,table,tr,option,bar,read,write,update,rpc,result,form,click,notice,v,checked} from './workspace-core.js';
 
 const today=()=>new Date().toLocaleDateString('en-CA');
@@ -26,13 +27,17 @@ export async function renderSchoolPage(ctx,tab){
  if(tab==='overview'){
   const {school,classes,students,members,activities}=await schoolData(db,sid);
   const attended=await read(db,'bp_attendance',q=>q.eq('school_id',sid).eq('attendance_date',today()));
+  const pendingRequests=await read(db,'bp_access_requests',q=>q.eq('school_id',sid).eq('status','pending'));
+  const pendingTeachers=pendingRequests.filter(r=>r.requested_role==='teacher').length;
+  const pendingParents=pendingRequests.filter(r=>r.requested_role==='parent').length;
   const teachers=members.filter(m=>m.active&&m.role==='teacher').length;
   const html=heading('SCHOOL OPERATIONS',school?.name||'Your school','Your school at a glance — classes, families, staff and learning.')+
    '<div class="mw-metrics">'+stat('Enrolled students',n(students.length),'🎒','teal')+stat('Classes',n(classes.length),'📚','blue')+
    stat('Active teachers',n(teachers),'👩‍🏫','amber')+stat('Learning updates',n(activities.length),'✎','violet')+'</div>'+
    '<div class="mw-welcome mw-welcome-school"><div><span class="mw-welcome-kicker">YOUR SCHOOL WORKSPACE</span><h2>Make every school day count</h2><p>Keep student records, family connections and daily classroom progress together in one organized place.</p>'+button('Enroll a student ↗','mw-quick-enroll','light')+'</div><div class="mw-welcome-art">📚<span>✦</span></div></div>'+
+   '<div class="mw-two mw-approval-overview">'+box('Teacher approvals', '<div class="mw-approval-overview-count">'+pendingTeachers+'</div><p class="mw-fine">Pending teacher access requests</p>'+button('Review teacher requests','mw-review-teachers','outline'))+box('Parent approvals','<div class="mw-approval-overview-count">'+pendingParents+'</div><p class="mw-fine">Pending parent access requests</p>'+button('Review parent requests','mw-review-parents','outline'))+'</div>'+
    '<div class="mw-section-title"><h2>Manage your school</h2><span>Quick actions</span></div><div class="mw-actions-grid">'+[
-    ['Create a class','classes','📒'],['Register students','students','🎒'],['Manage teaching staff','people','👩‍🏫'],['Send announcement','announcements','📣']
+    ['Create a class','classes','📒'],['Register students','students','🎒'],['Approve teachers','teachers','👩‍🏫'],['Approve parents','parents','💛']
    ].map(([t,p,i])=>'<button class="mw-action" type="button" data-goto="'+p+'"><span>'+i+'</span><b>'+t+'</b><small>Open workspace</small><i>↗</i></button>').join('')+'</div>'+
    '<div class="mw-two">'+box('School setup',
     badgeProgress([[classes.length>0,'Create your first class','Organize classrooms'],
@@ -44,7 +49,7 @@ export async function renderSchoolPage(ctx,tab){
      '<div class="mw-form-actions">'+button('View attendance','mw-view-attendance','outline')+'</div>')+'</div>'+
    box('Recent classroom activity',activities.length?table(['Activity','Subject','Score','Date'],activities.slice(0,8).map(a=>tr([e(a.title),e(a.subject),pill(a.score+'%','green'),dateLabel(a.created_at)]))):empty('✏️','Classroom timeline is ready','Teacher updates will appear here.'));
   return{html,bind(){
-   click('mw-quick-enroll',()=>go('students'));click('mw-view-attendance',()=>go('attendance'));
+   click('mw-quick-enroll',()=>go('students'));click('mw-view-attendance',()=>go('attendance'));click('mw-review-teachers',()=>go('teachers'));click('mw-review-parents',()=>go('parents'));
    document.querySelectorAll('[data-goto]').forEach(b=>b.onclick=()=>go(b.dataset.goto));
   }};
  }
@@ -108,6 +113,8 @@ export async function renderSchoolPage(ctx,tab){
    };
   }};
  }
+ if(tab==='teachers')return await renderSchoolApprovals(ctx,'teacher');
+ if(tab==='parents')return await renderSchoolApprovals(ctx,'parent');
  if(tab==='people'){
   const {classes,members}=await schoolData(db,sid);
   const [profiles,teacherClasses]=await Promise.all([read(db,'bp_profiles'),read(db,'bp_teacher_classes',q=>q.eq('school_id',sid))]);
@@ -151,8 +158,8 @@ export async function renderSchoolPage(ctx,tab){
     field('Student',select('mw-parent-student',kidOptions(students),'required'))+
     '<label class="mw-check-label"><input id="mw-guardian-verified" type="checkbox" required><span>I have confirmed this guardian’s identity and their relationship to the student.</span></label>'+
     actions(button('Link account','mw-parent-link-submit','primary','type="submit" '+(!students.length?'disabled':'')))+'</form>')+
-   box('Account setup',badgeProgress([[members.some(m=>m.role==='parent'&&m.active),'Approve parent account','In Staff & access'],[students.length>0,'Enroll student','In Students'],[links.length>0,'Connect family','Link the guardian here']])+
-     '<div class="mw-form-actions">'+button('Approve parent account ↗','mw-go-members','outline')+'</div>')+'</div>'+
+   box('Account setup',badgeProgress([[members.some(m=>m.role==='parent'&&m.active),'Approve parent account','In Parent approvals'],[students.length>0,'Enroll student','In Students'],[links.length>0,'Connect family','Link the guardian here']])+
+     '<div class="mw-form-actions">'+button('Open Parent approvals ↗','mw-go-members','outline')+'</div>')+'</div>'+
    box('Linked families',links.length?table(['Student','Class','Guardian','Verified','Manage'],links.map(l=>{
     const s=students.find(k=>k.id===l.student_id),p=names.get(l.parent_user_id);
     return tr([e(s?.full_name||'Student'),e(findClass(classes,s?.class_id)),
@@ -164,7 +171,7 @@ export async function renderSchoolPage(ctx,tab){
     if(!checked('mw-guardian-verified'))throw Error('Please verify the guardian first');
     await rpc(db,'bp_link_parent',{p_school:sid,p_email:v('mw-parent-email'),p_student:v('mw-parent-student')});await reload();
    });
-   click('mw-go-members',()=>go('people'));
+   click('mw-go-members',()=>go('parents'));
    document.querySelectorAll('[data-unlink-student]').forEach(b=>b.onclick=async()=>{
     if(!confirm('Remove this guardian’s access to the student?'))return;
     try{await rpc(db,'bp_unlink_parent',{p_school:sid,p_student:b.dataset.unlinkStudent,p_parent_id:b.dataset.unlinkParent});notice('Connection removed');await reload()}catch(err){notice(err.message,'error')}

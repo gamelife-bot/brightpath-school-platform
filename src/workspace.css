@@ -165,3 +165,12 @@
 .mw-top-actions{min-width:0;flex-shrink:1}
 .mw-location{min-width:0}
 @media(max-width:460px){.mw-topbar{gap:9px}.mw-top-actions{gap:7px}.mw-school-name{max-width:67px;font-size:11px}.mw-logout{padding:8px 12px;font-size:11px}}
+/* Pending school-access requests and approval queues */
+.mw-approval-buttons{display:flex;gap:7px;flex-wrap:wrap}
+.mw-approval-buttons .mw-btn{font-size:11px;padding:8px 11px}
+.mw-request-list{display:grid;gap:9px;margin:12px 0}
+.mw-request-item{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:11px 13px;background:#f6faf8;border:1px solid #dce9e2;border-radius:10px;font-size:13px}
+.mw-request-item>span{text-transform:capitalize;font-weight:800;color:#188a70}
+.mw-approval-overview .mw-card{padding:17px 22px}
+.mw-approval-overview-count{font-size:32px;line-height:1.1;font-weight:850;color:#148771;letter-spacing:-.7px}
+.mw-approval-overview .mw-fine{margin:6px 0 11px}
