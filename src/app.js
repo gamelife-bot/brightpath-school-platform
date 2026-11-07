@@ -66,7 +66,11 @@ async function enterPortal(){
  }catch(err){shell('<div class="card"><h2>Unable to open this account</h2>'+msg(errText(err),'err')+'<p class="muted">Verify your email and sign in again if needed.</p><button class="btn" id="relogin">Back to sign in</button></div>');$('relogin').onclick=()=>renderAuth('signin')}
 }
 function renderDenied(){
- shell('<div class="card" style="max-width:670px"><h1>Access pending</h1><p class="muted">Your account is ready. Access to this workspace must be approved.</p>'+msg('Contact your school administrator or BrightPath support for access.','warn')+'<div><button class="btn ghost" id="refresh">Check again</button></div></div>');
+ const isOwner=context?.is_owner===true;
+ const heading=isOwner?'Your owner account is active':portal==='owner'?'Owner access required':'School access pending';
+ const detail=isOwner?'Use your platform-owner dashboard to register a school and appoint its school administrator. Teacher, parent and school accounts have separate permissions.':portal==='owner'?'This account is not authorized for platform administration. Sign in using your registered owner account.':portal==='school_admin'?'Your school administrator account must be appointed by the BrightPath platform owner.':portal==='teacher'?'Your school administrator will approve your teacher account and assign your classes.':'Your school administrator will verify and connect your child to your parent account.';
+ const ownerButton=isOwner?'<a class="btn" href="'+url('owner/')+'">Open my owner dashboard ↗</a>':'';
+ shell('<div class="card" style="max-width:680px"><h1>'+h(heading)+'</h1><p class="muted">'+h(detail)+'</p><div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:20px">'+ownerButton+'<button class="btn ghost" id="refresh">Check access again</button></div></div>');
  $('refresh').onclick=()=>enterPortal();
 }
 function pageHead(title,subtitle,action=''){return '<div class="page-head"><div><h1>'+h(title)+'</h1><div class="muted">'+h(subtitle)+'</div></div>'+action+'</div>'}
@@ -81,6 +85,7 @@ async function renderOwner(){
  const members=check(await db.from('bp_memberships').select('school_id,role,active'));
  const profiles=check(await db.from('bp_profiles').select('user_id,email'));
  shell(pageHead('Platform operations','Manage schools, partnerships and operations.')+
+ (schools.length===0?'<div class="notice"><strong>Start here:</strong> Add your first school below. After that, appoint a school administrator to create classes and enroll students.</div>':'')+
  '<div class="cards"><div class="card"><div class="stat">'+schools.length+'</div><div class="stat-label">Registered schools</div></div><div class="card"><div class="stat">'+members.filter(m=>m.active).length+'</div><div class="stat-label">Assigned school accounts</div></div><div class="card"><div class="stat">'+profiles.length+'</div><div class="stat-label">Registered members</div></div></div>'+
  '<div class="grid"><section class="card"><h2>Register a school</h2><p class="muted">Add a new school to BrightPath.</p><form id="add-school"><label class="field">School name<input id="school-name" minlength="2" maxlength="140" required placeholder="Official school name"></label><button class="btn" type="submit">Create school</button><div id="school-msg"></div></form></section>'+
  '<section class="card"><h2>Appoint a school administrator</h2><p class="muted">Select a school and invite its administrator using their registered email.</p><form id="appoint-admin"><label class="field">School<select id="admin-school" required>'+schools.map(s=>itemOpt(s.id,s.name)).join('')+'</select></label><label class="field">Administrator’s registered email<input id="admin-email" type="email" required placeholder="admin@school.org"></label><button class="btn" type="submit" '+(schools.length?'':'disabled')+'>Grant school administration</button><div id="grant-msg"></div></form></section></div>'+
