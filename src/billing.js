@@ -1,13 +1,14 @@
 const moneyMinor=minor=>'KSh '+(Number(minor||0)/100).toLocaleString('en-KE',{maximumFractionDigits:2});
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'}[c]));
 const ensure=r=>{if(r?.error)throw new Error(r.error.message||String(r.error));return r?.data||[]};
-const place=(html)=>{let x=document.createElement('section');x.className='billing-panel';x.innerHTML=html;document.getElementById('workspace')?.append(x);return x};
+const place=(html)=>{let x=document.createElement('section');x.className='billing-panel';x.innerHTML=html;(document.getElementById('panel-content')||document.getElementById('workspace'))?.append(x);return x};
 const summary=(label,value)=>'<div class="card"><div class="stat">'+esc(value)+'</div><div class="stat-label">'+esc(label)+'</div></div>';
 const list=(items,draw,none)=>items.length?'<ul class="list">'+items.map(draw).join('')+'</ul>':'<div class="empty">'+esc(none)+'</div>';
 const note=()=>'<p class="billing-footnote">Plan requests are free to submit. Payment collection and payouts will be enabled after billing setup.</p>';
 const fail=(err)=>'<div class="notice err">'+esc(err?.message||String(err))+'</div>';
 const date=s=>s?new Date(s).toLocaleDateString('en-KE',{day:'numeric',month:'short',year:'numeric'}):'—';
 
+const requestReviewControls=(r,kind)=>r.status==='closed'?'':'<div class="billing-review-actions">'+(r.status==='pending'?'<button class="btn ghost" data-review-kind="'+kind+'" data-review-id="'+esc(r.id)+'" data-review-next="contacted">Mark contacted</button>':'')+'<button class="btn ghost" data-review-kind="'+kind+'" data-review-id="'+esc(r.id)+'" data-review-next="closed">Close request</button></div>';
 export async function renderOwnerBilling(db){
 const [sReq,pReq,ssubs,psubs,commissions,payments,schools,profiles]=await Promise.all([
  db.from('bp_school_plan_requests').select('id,school_id,plan_code,requested_by,status,requested_at').order('requested_at',{ascending:false}).limit(60),
@@ -21,12 +22,22 @@ const [sReq,pReq,ssubs,psubs,commissions,payments,schools,profiles]=await Promis
 ]);
 const reqs=ensure(sReq),preqs=ensure(pReq),schoolSubs=ensure(ssubs),parentSubs=ensure(psubs),comm=ensure(commissions),paid=ensure(payments),sMap=new Map(ensure(schools).map(x=>[x.id,x.name])),uMap=new Map(ensure(profiles).map(x=>[x.user_id,x.email]));
 const totalRevenue=paid.filter(p=>p.status==='verified_paid').reduce((s,p)=>s+p.amount_gross_minor,0),totalComm=comm.filter(c=>c.status==='pending'||c.status==='approved').reduce((s,c)=>s+c.commission_minor,0);
-place('<div class="page-head"><div><h1>Revenue & school partnerships</h1><p class="muted">Manage plans, school earnings and revenue.</p></div></div>'+
+const ownerBlock=place('<div class="page-head"><div><h1>Revenue & school partnerships</h1><p class="muted">Manage plans, school earnings and revenue.</p></div></div>'+
 '<div class="cards">'+summary('Active school subscriptions',schoolSubs.filter(x=>x.status==='active').length)+summary('Active Parent Plus memberships',parentSubs.filter(x=>x.status==='active').length)+summary('Verified collected gross',moneyMinor(totalRevenue))+'</div>'+
 '<div class="cards two">'+summary('Unpaid commission ledger',moneyMinor(totalComm))+summary('Open plan requests',reqs.filter(x=>x.status==='pending').length+preqs.filter(x=>x.status==='pending').length)+'</div>'+
-'<div class="grid"><div class="card"><h2>🏫 School plan requests</h2>'+list(reqs,r=>'<li><div class="list-name">'+esc(sMap.get(r.school_id)||'School')+' · '+esc(r.plan_code.replace('school_',''))+'</div><div class="list-meta">'+esc(uMap.get(r.requested_by)||'Registered school admin')+' · '+date(r.requested_at)+' · '+esc(r.status)+'</div></li>','School plan requests will appear here.')+'</div>'+
-'<div class="card"><h2>👨‍👩‍👧 Parent Plus requests</h2>'+list(preqs,r=>'<li><div class="list-name">'+esc(sMap.get(r.school_id)||'School')+' · Parent Plus</div><div class="list-meta">'+esc(uMap.get(r.parent_user_id)||'Registered parent')+' · '+date(r.requested_at)+' · '+esc(r.status)+'</div></li>','Parent Plus requests will appear here.')+'</div></div>'+
+'<div class="grid"><div class="card"><h2>🏫 School plan requests</h2>'+list(reqs,r=>'<li><div class="list-name">'+esc(sMap.get(r.school_id)||'School')+' · '+esc(r.plan_code.replace('school_',''))+'</div><div class="list-meta">'+esc(uMap.get(r.requested_by)||'Registered school admin')+' · '+date(r.requested_at)+' · '+esc(r.status)+'</div>'+requestReviewControls(r,'school')+'</li>','School plan requests will appear here.')+'</div>'+
+'<div class="card"><h2>👨‍👩‍👧 Parent Plus requests</h2>'+list(preqs,r=>'<li><div class="list-name">'+esc(sMap.get(r.school_id)||'School')+' · Parent Plus</div><div class="list-meta">'+esc(uMap.get(r.parent_user_id)||'Registered parent')+' · '+date(r.requested_at)+' · '+esc(r.status)+'</div>'+requestReviewControls(r,'parent')+'</li>','Parent Plus requests will appear here.')+'</div></div>'+
 '<div class="card" style="margin-top:17px"><h2>🏦 Revenue-sharing ledger</h2>'+list(comm,c=>'<li><div class="list-row"><div><div class="list-name">'+esc(sMap.get(c.school_id)||'School')+'</div><div class="list-meta">'+date(c.created_at)+' · '+esc(c.status)+'</div></div><strong>'+moneyMinor(c.commission_minor)+'</strong></div></li>','New commissions will appear here.')+note()+'</div>');
+ownerBlock.querySelectorAll('[data-review-id]').forEach(b=>b.addEventListener('click',async()=>{
+ b.disabled=true;
+ try{
+  const table=b.dataset.reviewKind==='school'?'bp_school_plan_requests':'bp_parent_plan_requests';
+  const payload={status:b.dataset.reviewNext};
+  if(table==='bp_school_plan_requests')payload.reviewed_at=new Date().toISOString();
+  ensure(await db.from(table).update(payload).eq('id',b.dataset.reviewId));
+  ownerBlock.remove();await renderOwnerBilling(db);
+ }catch(err){ownerBlock.insertAdjacentHTML('afterbegin',fail(err));b.disabled=false}
+}));
 }
 
 export async function renderSchoolBilling(db,schoolId,user){

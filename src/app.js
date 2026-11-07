@@ -1,7 +1,7 @@
 import './style.css';
 import { renderMarketing } from './marketing.js';
 import { enableBrandShortcut } from './logo-shortcut.js';
-import { renderOwnerBilling, renderSchoolBilling, renderParentBilling } from './billing.js';
+import { launchWorkspace } from './workspace-core.js';
 import { createClient, BetterAuthVanillaAdapter } from '@neondatabase/neon-js';
 
 const ROOT='/brightpath-school-platform/';
@@ -23,7 +23,6 @@ const msg=(txt,type='notice')=>'<div class="notice '+(type==='err'?'err':type===
 const brand=()=>'<a class="logo brand-home" href="'+url('home/')+'" aria-label="BrightPath — back to homepage">✦ brightpath<b>.</b></a>';
 function errText(err){return err?.message||err?.details||String(err)||'Something went wrong'}
 function check(result){if(result?.error)throw new Error(errText(result.error));return result?.data}
-const portalLinks={parent:url('parent/'),teacher:url('teacher/'),'school-admin':url('school-admin/')};
 function renderLanding(){renderMarketing(app,ROOT,'home')}
 function renderPricing(){renderMarketing(app,ROOT,'pricing')}
 function shell(body,title=portalLabel[portal]){
@@ -61,10 +60,7 @@ async function enterPortal(){
  if(portal==='owner'&&!context?.is_owner){renderDenied();return}
  if(portal!=='owner'&&!memberships.length){renderDenied();return}
  currentSchool=memberships[0]?.school_id||'';
- if(portal==='owner')await renderOwner();
- else if(portal==='school_admin')await renderSchoolAdmin();
- else if(portal==='teacher')await renderTeacher();
- else await renderParent();
+ await launchWorkspace({ db, user: currentUser, role: portal, context, root: ROOT, logout, photoData });
  }catch(err){shell('<div class="card"><h2>Unable to open this account</h2>'+msg(errText(err),'err')+'<p class="muted">Verify your email and sign in again if needed.</p><button class="btn" id="relogin">Back to sign in</button></div>');$('relogin').onclick=()=>renderAuth('signin')}
 }
 function renderDenied(){
@@ -74,51 +70,6 @@ function renderDenied(){
  const ownerButton=isOwner?'<a class="btn" href="'+url('owner/')+'">Open my owner dashboard ↗</a>':'';
  shell('<div class="card" style="max-width:680px"><h1>'+h(heading)+'</h1><p class="muted">'+h(detail)+'</p><div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:20px">'+ownerButton+'<button class="btn ghost" id="refresh">Check access again</button></div></div>');
  $('refresh').onclick=()=>enterPortal();
-}
-function pageHead(title,subtitle,action=''){return '<div class="page-head"><div><h1>'+h(title)+'</h1><div class="muted">'+h(subtitle)+'</div></div>'+action+'</div>'}
-function schoolOptions(memberships){return memberships.map(m=>itemOpt(m.school_id,m.school_name)).join('')}
-function bindSwitchSchool(handler){const s=$('school-selector');if(s){s.value=currentSchool;s.onchange=async()=>{currentSchool=s.value;await handler()}}}
-function schoolSwitcher(){const m=(context?.memberships||[]).filter(m=>m.role===portal&&m.active);return m.length>1?'<label class="field" style="max-width:320px;margin:0">School<select id="school-selector">'+schoolOptions(m)+'</select></label>':''}
-function billingError(err){const x=document.createElement('div');x.innerHTML=msg('Billing section unavailable: '+errText(err),'warn');$('workspace')?.append(x)}
-function formatActivity(a){return '<li><div class="list-row"><div><div class="list-name">'+h(a.title)+'</div><div class="list-meta">'+h(a.subject)+' · '+asDate(a.created_at)+'</div></div><span class="chip">'+a.score+' / 100</span></div><p>'+h(a.notes)+'</p>'+(a.photo_data_url?'<img class="photo" loading="lazy" src="'+h(a.photo_data_url)+'" alt="Classroom activity photo">':'')+'</li>'}
-
-async function renderOwner(){
- const schools=check(await db.from('bp_schools').select('id,name,status,created_at').order('created_at',{ascending:false}));
- const members=check(await db.from('bp_memberships').select('school_id,role,active'));
- const profiles=check(await db.from('bp_profiles').select('user_id,email'));
- shell(pageHead('Platform operations','Manage schools, partnerships and operations.')+
- (schools.length===0?'<div class="notice"><strong>Start here:</strong> Add your first school below. After that, appoint a school administrator to create classes and enroll students.</div>':'')+
- '<div class="cards"><div class="card"><div class="stat">'+schools.length+'</div><div class="stat-label">Registered schools</div></div><div class="card"><div class="stat">'+members.filter(m=>m.active).length+'</div><div class="stat-label">Assigned school accounts</div></div><div class="card"><div class="stat">'+profiles.length+'</div><div class="stat-label">Registered members</div></div></div>'+
- '<div class="grid"><section class="card"><h2>Register a school</h2><p class="muted">Add a new school to BrightPath.</p><form id="add-school"><label class="field">School name<input id="school-name" minlength="2" maxlength="140" required placeholder="Official school name"></label><button class="btn" type="submit">Create school</button><div id="school-msg"></div></form></section>'+
- '<section class="card"><h2>Appoint a school administrator</h2><p class="muted">Select a school and invite its administrator using their registered email.</p><form id="appoint-admin"><label class="field">School<select id="admin-school" required>'+schools.map(s=>itemOpt(s.id,s.name)).join('')+'</select></label><label class="field">Administrator’s registered email<input id="admin-email" type="email" required placeholder="admin@school.org"></label><button class="btn" type="submit" '+(schools.length?'':'disabled')+'>Grant school administration</button><div id="grant-msg"></div></form></section></div>'+
- '<section class="card" style="margin-top:20px"><h2>Schools</h2>'+(schools.length?'<div class="scroll"><table class="portal-table"><thead><tr><th>School</th><th>Status</th><th>Added</th><th>Action</th></tr></thead><tbody>'+schools.map(s=>'<tr><td><strong>'+h(s.name)+'</strong></td><td>'+h(s.status)+'</td><td>'+asDate(s.created_at)+'</td><td><button class="btn small '+(s.status==='active'?'danger':'ghost')+'" data-toggle-school="'+h(s.id)+'" data-next="'+(s.status==='active'?'suspended':'active')+'">'+(s.status==='active'?'Suspend':'Activate')+'</button></td></tr>').join('')+'</tbody></table></div>':empty('Create your first school above.'))+'</section>');
- $('add-school').onsubmit=async e=>{e.preventDefault();try{check(await db.from('bp_schools').insert({name:$('school-name').value.trim()}));await renderOwner()}catch(err){$('school-msg').innerHTML=msg(errText(err),'err')}};
- $('appoint-admin').onsubmit=async e=>{e.preventDefault();try{check(await db.rpc('bp_grant_role',{p_school:$('admin-school').value,p_email:$('admin-email').value.trim(),p_role:'school_admin'}));$('grant-msg').innerHTML=msg('School administrator assigned.');}catch(err){$('grant-msg').innerHTML=msg(errText(err),'err')}};
- document.querySelectorAll('[data-toggle-school]').forEach(b=>b.onclick=async()=>{const next=b.dataset.next;if(!confirm('Change school status to '+next+'?'))return;try{check(await db.from('bp_schools').update({status:next}).eq('id',b.dataset.toggleSchool));await renderOwner()}catch(err){alert(errText(err))}});
- await renderOwnerBilling(db).catch(billingError);
-}
-async function renderSchoolAdmin(){
- const sid=currentSchool;if(!sid){renderDenied();return}
- const [classes,students,activities]=await Promise.all([
- db.from('bp_classes').select('id,name,school_id').eq('school_id',sid).order('name'),
- db.from('bp_students').select('id,full_name,class_id,photo_consent').eq('school_id',sid).order('full_name'),
- db.from('bp_activities').select('id,student_id,subject,title,score,created_at').eq('school_id',sid).order('created_at',{ascending:false}).limit(25)
- ]);
- const cls=check(classes),kids=check(students),updates=check(activities);
- shell(pageHead('School administration','Manage classrooms, teachers, students and families.',schoolSwitcher())+
- '<div class="cards"><div class="card"><div class="stat">'+cls.length+'</div><div class="stat-label">Classes</div></div><div class="card"><div class="stat">'+kids.length+'</div><div class="stat-label">Enrolled students</div></div><div class="card"><div class="stat">'+updates.length+'</div><div class="stat-label">Recent learning updates</div></div></div>'+
- '<div class="grid"><section class="card"><h2>Create a class</h2><form id="add-class"><label class="field">Class name<input id="class-name" maxlength="100" minlength="2" required placeholder="e.g. Primary 4 Blue"></label><button class="btn" type="submit">Add class</button><div id="class-msg"></div></form><hr class="divider"><h3>Your classes</h3>'+(cls.length?'<ul class="list">'+cls.map(c=>'<li>'+h(c.name)+'</li>').join('')+'</ul>':empty('Create your first class.'))+'</section>'+
- '<section class="card"><h2>Enroll a student</h2><form id="add-student"><label class="field">Student’s full name<input id="student-name" minlength="2" maxlength="160" required placeholder="Student name"></label><label class="field">Class<select id="student-class" required><option value="">Select a class</option>'+cls.map(c=>itemOpt(c.id,c.name)).join('')+'</select></label><label class="field" style="display:flex;align-items:flex-start;gap:10px"><input type="checkbox" id="processing-consent" required style="width:auto;margin-top:3px">I confirm the child’s parent or guardian has provided the required authorization for BrightPath to process this child’s school records, and that our school holds the supporting consent.</label><p class="smallnote">Photo sharing can be enabled after guardian approval.</p><button class="btn" type="submit" '+(cls.length?'':'disabled')+'>Add student</button><div id="student-msg"></div></form></section></div>'+
- '<div class="grid" style="margin-top:18px"><section class="card"><h2>Assign staff and parents</h2><form id="grant-role"><label class="field">Registered user’s email<input id="member-email" type="email" required placeholder="person@email.com"></label><label class="field">Access role<select id="member-role"><option value="teacher">Teacher</option><option value="parent">Parent</option></select></label><button class="btn" type="submit">Approve role</button><div id="member-msg"></div></form><hr class="divider"><h3>Assign teacher to class</h3><form id="assign-teacher"><label class="field">Teacher’s registered email<input type="email" required id="teacher-email"></label><label class="field">Class<select id="teacher-class" required>'+cls.map(c=>itemOpt(c.id,c.name)).join('')+'</select></label><button class="btn" type="submit" '+(cls.length?'':'disabled')+'>Assign class</button><div id="teacher-msg"></div></form></section>'+
- '<section class="card"><h2>Link a verified parent to a student</h2><p class="smallnote">Link guardians after confirming their identity and relationship to the student.</p><form id="link-parent"><label class="field">Parent’s registered email<input id="parent-email" type="email" required></label><label class="field">Student<select id="parent-student" required>'+kids.map(k=>itemOpt(k.id,k.full_name)).join('')+'</select></label><label class="field" style="display:flex;gap:9px;align-items:flex-start"><input type="checkbox" id="guardian-confirm" required style="width:auto;margin:2px 0">I have verified the parent or guardian’s identity and authority to access this child’s records.</label><button class="btn" type="submit" '+(kids.length?'':'disabled')+'>Link parent and child</button><div id="parent-msg"></div></form></section></div>'+
- '<section class="card" style="margin-top:18px"><h2>Students and photo-consent records</h2><p class="smallnote">Record guardian permission before enabling student photo sharing.</p>'+(kids.length?'<div class="scroll"><table class="portal-table"><thead><tr><th>Student</th><th>Class</th><th>Photo consent</th><th>Update</th></tr></thead><tbody>'+kids.map(k=>'<tr><td>'+h(k.full_name)+'</td><td>'+h(cls.find(c=>c.id===k.class_id)?.name||'')+'</td><td>'+(k.photo_consent?'<span class="chip">Recorded</span>':'Not recorded')+'</td><td><button class="btn small '+(k.photo_consent?'danger':'ghost')+'" data-consent="'+h(k.id)+'" data-set="'+(!k.photo_consent)+'">'+(k.photo_consent?'Revoke':'Record consent')+'</button></td></tr>').join('')+'</tbody></table></div>':empty('Add your first student above.'))+'</section>');
- bindSwitchSchool(renderSchoolAdmin);
- $('add-class').onsubmit=async e=>{e.preventDefault();try{check(await db.from('bp_classes').insert({school_id:sid,name:$('class-name').value.trim()}));await renderSchoolAdmin()}catch(err){$('class-msg').innerHTML=msg(errText(err),'err')}};
- $('add-student').onsubmit=async e=>{e.preventDefault();try{check(await db.from('bp_students').insert({school_id:sid,class_id:$('student-class').value,full_name:$('student-name').value.trim(),guardian_processing_consent_confirmed:$('processing-consent').checked}));await renderSchoolAdmin()}catch(err){$('student-msg').innerHTML=msg(errText(err),'err')}};
- $('grant-role').onsubmit=async e=>{e.preventDefault();try{check(await db.rpc('bp_grant_role',{p_school:sid,p_email:$('member-email').value.trim(),p_role:$('member-role').value}));$('member-msg').innerHTML=msg('Access assigned to verified account.')}catch(err){$('member-msg').innerHTML=msg(errText(err),'err')}};
- $('assign-teacher').onsubmit=async e=>{e.preventDefault();try{check(await db.rpc('bp_assign_teacher',{p_school:sid,p_class:$('teacher-class').value,p_email:$('teacher-email').value.trim()}));$('teacher-msg').innerHTML=msg('Teacher assigned to class.')}catch(err){$('teacher-msg').innerHTML=msg(errText(err),'err')}};
- $('link-parent').onsubmit=async e=>{e.preventDefault();if(!$('guardian-confirm').checked)return;try{check(await db.rpc('bp_link_parent',{p_school:sid,p_student:$('parent-student').value,p_email:$('parent-email').value.trim()}));$('parent-msg').innerHTML=msg('Parent account linked to student.')}catch(err){$('parent-msg').innerHTML=msg(errText(err),'err')}};
- document.querySelectorAll('[data-consent]').forEach(b=>b.onclick=async()=>{const isGrant=b.dataset.set==='true';if(!confirm(isGrant?'Have you obtained verified, written guardian consent allowing student photos to be shared with authorized parents?':'Revoke photographic consent for this student?'))return;try{check(await db.from('bp_students').update({photo_consent:isGrant}).eq('id',b.dataset.consent).eq('school_id',sid));await renderSchoolAdmin()}catch(err){alert(errText(err))}});
 }
 
 async function photoData(file){
@@ -136,55 +87,5 @@ async function photoData(file){
   return data;
  }finally{URL.revokeObjectURL(source)}
 }
-async function renderTeacher(){
- const sid=currentSchool;
- const [assignmentsResult,classesResult,studentsResult,activitiesResult]=await Promise.all([
-  db.from('bp_teacher_classes').select('class_id,teacher_user_id').eq('school_id',sid),
-  db.from('bp_classes').select('id,name').eq('school_id',sid),
-  db.from('bp_students').select('id,full_name,class_id,photo_consent').eq('school_id',sid).order('full_name'),
-  db.from('bp_activities').select('id,student_id,subject,title,notes,score,photo_data_url,created_at').eq('school_id',sid).order('created_at',{ascending:false}).limit(40)
- ]);
- const assignments=check(assignmentsResult),allClasses=check(classesResult),students=check(studentsResult),activities=check(activitiesResult);
- const ids=new Set(assignments.map(a=>a.class_id));const cls=allClasses.filter(c=>ids.has(c.id));
- shell(pageHead('Teacher workspace','Record learning achievements for your assigned classes only.',schoolSwitcher())+
- '<div class="cards two"><div class="card"><div class="stat">'+cls.length+'</div><div class="stat-label">Your classes</div></div><div class="card"><div class="stat">'+students.length+'</div><div class="stat-label">Students assigned to you</div></div></div>'+
- '<div class="grid"><section class="card"><h2>Post a classroom activity</h2><p class="muted" style="font-size:13px">Updates become visible to verified parents linked to this student.</p><form id="activity-form"><label class="field">Student<select id="activity-student" required><option value="">Select student</option>'+students.map(s=>itemOpt(s.id,s.full_name+' · '+(allClasses.find(c=>c.id===s.class_id)?.name||''))).join('')+'</select></label><label class="field">Subject<select id="activity-subject"><option>Reading</option><option>Mathematics</option><option>Science</option><option>Art & Creativity</option><option>Physical Education</option><option>Social Skills</option><option>Other</option></select></label><label class="field">Activity title<input id="activity-title" minlength="2" maxlength="120" required placeholder="What did the student do?"></label><label class="field">Teacher observation<textarea id="activity-notes" maxlength="2000" minlength="2" required placeholder="Describe their progress, participation, and strengths."></textarea></label><label class="field">Performance score (0–100)<input id="activity-score" type="number" min="0" max="100" value="85" required></label><label class="field">Activity photo (optional)<input id="activity-photo" type="file" accept="image/*"></label><div id="photo-consent-note" class="smallnote">Photos require guardian approval.</div><button class="btn" type="submit" '+(students.length?'':'disabled')+'>Publish learning activity</button><div id="activity-message"></div></form></section>'+
- '<section class="card"><h2>Your classes</h2>'+(cls.length?'<ul class="list">'+cls.map(c=>'<li><div class="list-name">'+h(c.name)+'</div><div class="list-meta">'+students.filter(s=>s.class_id===c.id).length+' assigned students</div></li>').join('')+'</ul>':empty('Your assigned classes will appear here.'))+
- '<hr class="divider"><h2>Student roster</h2>'+(students.length?'<ul class="list">'+students.map(s=>'<li><div class="list-name">'+h(s.full_name)+'</div><div class="list-meta">'+h(allClasses.find(c=>c.id===s.class_id)?.name||'')+' · Photo consent '+(s.photo_consent?'recorded':'not recorded')+'</div></li>').join('')+'</ul>':empty('Your students will appear here.'))+'</section></div>'+
- '<section class="card" style="margin-top:20px"><h2>Recent recorded activities</h2>'+(activities.length?'<ul class="list">'+activities.map(a=>'<li>'+formatActivity(a).replace(/^<li>|<\/li>$/g,'')+'</li>').join('')+'</ul>':empty('Your classroom updates will appear here.'))+'</section>');
- bindSwitchSchool(renderTeacher);
- const photoHint=$('photo-consent-note');
- $('activity-student').onchange=()=>{const kid=students.find(s=>s.id===$('activity-student').value);photoHint.textContent=kid?(kid.photo_consent?'Written photo consent has been recorded by the school.':'No photo consent recorded. You can post notes and scores, but not a student photo.'):'Only post child photos with recorded guardian consent.'};
- $('activity-form').onsubmit=async e=>{
-  e.preventDefault();const button=e.currentTarget.querySelector('button[type=submit]');button.disabled=true;
-  try{
-   const studentId=$('activity-student').value;const kid=students.find(s=>s.id===studentId);
-   if(!kid)throw new Error('Please select a student assigned to your class.');
-   const file=$('activity-photo').files[0];
-   if(file&&!kid.photo_consent)throw new Error('This student has no recorded parental consent for photos.');
-   const data=file?await photoData(file):null;
-   check(await db.from('bp_activities').insert({school_id:sid,student_id:studentId,teacher_user_id:currentUser.id,subject:$('activity-subject').value,title:$('activity-title').value.trim(),notes:$('activity-notes').value.trim(),score:Number($('activity-score').value),photo_data_url:data}));
-   await renderTeacher();
-  }catch(err){$('activity-message').innerHTML=msg(errText(err),'err');button.disabled=false}
- };
-}
-async function renderParent(){
- const sid=currentSchool;
- const [linksResult,studentsResult,activitiesResult]=await Promise.all([
-  db.from('bp_parent_links').select('student_id').eq('school_id',sid),
-  db.from('bp_students').select('id,full_name,class_id').eq('school_id',sid),
-  db.from('bp_activities').select('id,student_id,subject,title,notes,score,photo_data_url,created_at').eq('school_id',sid).order('created_at',{ascending:false}).limit(80)
- ]);
- const linked=check(linksResult),students=check(studentsResult),activities=check(activitiesResult);
- const linkedIds=new Set(linked.map(l=>l.student_id)),myKids=students.filter(s=>linkedIds.has(s.id));
- const visible=activities.filter(a=>linkedIds.has(a.student_id));
- const mean=visible.length?Math.round(visible.reduce((sum,a)=>sum+a.score,0)/visible.length):null;
- shell(pageHead('Your child’s learning','Follow your child’s learning and achievements.',schoolSwitcher())+
- '<div class="cards"><div class="card"><div class="stat">'+myKids.length+'</div><div class="stat-label">Linked children</div></div><div class="card"><div class="stat">'+visible.length+'</div><div class="stat-label">Activities shared with you</div></div><div class="card"><div class="stat">'+(mean===null?'—':mean+'%')+'</div><div class="stat-label">Average activity score</div></div></div>'+
- '<div class="grid"><section class="card"><h2>Your children</h2>'+(myKids.length?'<ul class="list">'+myKids.map(s=>'<li><div class="list-name">'+h(s.full_name)+'</div><div class="list-meta">School-verified parent connection</div></li>').join('')+'</ul>':empty('Your school has not linked a child to this account yet. Contact your school administrator to verify the relationship.'))+'</section>'+
- '<section class="card"><h2>How parent access works</h2><p class="muted" style="font-size:14px">Your school verifies guardianship and links children to your registered email. Only linked children’s authorized activities, photos and scores appear here. Teachers cannot give parent access themselves.</p><p class="security">Student photos stay behind authenticated, row-level database permissions. Your account cannot view records belonging to other families.</p></section></div>'+
- '<section class="card" style="margin-top:18px"><h2>Latest teacher updates</h2>'+(visible.length?'<ul class="list">'+visible.map(a=>'<li><div class="list-meta" style="margin-bottom:9px">'+h(myKids.find(s=>s.id===a.student_id)?.full_name||'')+'</div>'+formatActivity(a).replace(/^<li>|<\/li>$/g,'')+'</li>').join('')+'</ul>':empty('New classroom updates will appear here.'))+'</section>');
- bindSwitchSchool(renderParent);
- await renderParentBilling(db,sid,currentUser).catch(billingError);
-}
+
 if(portal==='landing'){renderLanding()}else if(portal==='pricing'){renderPricing()}else{enterPortal()}
