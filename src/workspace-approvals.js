@@ -7,8 +7,9 @@ import {escapeHtml as e,numberLabel as n,dateLabel,initial,stat,box,empty,pill,f
 export async function renderSchoolApprovals(ctx,kind){
  const {db,schoolId:sid,reload,go}=ctx;
  const isTeacher=kind==='teacher',role=isTeacher?'teacher':'parent';
+ let approvalQueueError=null;
  const [requests,members,profiles,classes,students,links,assignments]=await Promise.all([
-  read(db,'bp_access_requests',q=>q.eq('school_id',sid).eq('requested_role',role).order('requested_at',{ascending:false}).limit(150)),
+  read(db,'bp_access_requests',q=>q.eq('school_id',sid).eq('requested_role',role).order('requested_at',{ascending:false}).limit(150)).catch(err=>{approvalQueueError=err;return []}),
   read(db,'bp_memberships',q=>q.eq('school_id',sid).eq('role',role)),
   read(db,'bp_profiles'),
   read(db,'bp_classes',q=>q.eq('school_id',sid).order('name')),
@@ -24,7 +25,8 @@ export async function renderSchoolApprovals(ctx,kind){
  const specific=isTeacher?
   'Review teaching accounts and assign approved staff to classes.':
   'Review parent accounts and connect verified guardians to their children.';
- const requestTable=pending.length?table(['Applicant','Request date','Decision'],
+ const requestTable=approvalQueueError?empty('◷','Approval requests temporarily unavailable','Please refresh this page to retry.'):
+ pending.length?table(['Applicant','Request date','Decision'],
   pending.map(r=>tr([
    '<span class="mw-identity"><span class="mw-round-icon">'+initial(r.requester_name)+'</span><span><b>'+e(r.requester_name)+'</b><small>'+e(r.requester_email)+'</small></span></span>',
    dateLabel(r.requested_at),
@@ -45,7 +47,8 @@ export async function renderSchoolApprovals(ctx,kind){
  });
  const reviewed=requests.filter(r=>r.status!=='pending').slice(0,20);
  const html=heading('SCHOOL ACCOUNTS',title,specific)+
- '<div class="mw-metrics">'+stat('Pending approval',n(pending.length),'◷','amber')+
+ (approvalQueueError?'<div class="mw-inline mw-inline-error">Unable to read the approval queue. You can still approve registered accounts below by email.</div>':'')+
+ '<div class="mw-metrics">'+stat('Pending approval',approvalQueueError?'—':n(pending.length),'◷','amber')+
  stat('Approved '+(isTeacher?'teachers':'parents'),n(active.length),isTeacher?'👩‍🏫':'💛','teal')+
  stat(isTeacher?'Assigned classrooms':'Verified family links',n(isTeacher?assignments.length:links.length),isTeacher?'📚':'♡','blue')+'</div>'+
  box('Waiting for approval '+(pending.length?'<span class="mw-count">'+pending.length+'</span>':''),
