@@ -1,9 +1,11 @@
 import './style.css';
 import { renderMarketing } from './marketing.js';
+import { enableBrandShortcut } from './logo-shortcut.js';
 import { renderOwnerBilling, renderSchoolBilling, renderParentBilling } from './billing.js';
 import { createClient, BetterAuthVanillaAdapter } from '@neondatabase/neon-js';
 
 const ROOT='/brightpath-school-platform/';
+enableBrandShortcut({homeUrl:ROOT+'home/',ownerUrl:ROOT+'owner/'});
 const AUTH_URL='https://ep-falling-frog-bao493od.neonauth.c-8.eu-central-1.aws.neon.tech/neondb/auth';
 const DATA_URL='https://ep-falling-frog-bao493od.apirest.c-8.eu-central-1.aws.neon.tech/neondb/rest/v1';
 const db=createClient({auth:{url:AUTH_URL,adapter:BetterAuthVanillaAdapter()},dataApi:{url:DATA_URL}});
