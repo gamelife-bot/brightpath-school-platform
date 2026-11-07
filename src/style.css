@@ -91,3 +91,8 @@ h1,h2,h3,.logo,.mark-logo,.big-price{font-family:"Trebuchet MS",ui-rounded,-appl
 /* Navigation clarity on light header */
 .classroom-nav .top-links a.btn{color:#fff!important}
 .classroom-nav .top-links a.btn:hover{color:#fff!important;background:#087e6e}
+
+/* Logo navigation across all authenticated portals */
+.portal-header .brand-home{display:inline-flex;align-items:center;color:#fff;text-decoration:none;white-space:nowrap}
+.portal-header .brand-home:hover{opacity:.87}
+.portal-header .brand-home:focus-visible{outline:3px solid #ffcf7c;outline-offset:5px;border-radius:5px}

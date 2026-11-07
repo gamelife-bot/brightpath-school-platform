@@ -18,7 +18,7 @@ const itemOpt=(id,name)=>'<option value="'+h(id)+'">'+h(name)+'</option>';
 const asDate=x=>new Date(x).toLocaleDateString(undefined,{day:'numeric',month:'short',year:'numeric'});
 const empty=(t='Updates will appear here.')=>'<div class="empty">'+h(t)+'</div>';
 const msg=(txt,type='notice')=>'<div class="notice '+(type==='err'?'err':type==='warn'?'warn':'')+'">'+h(txt)+'</div>';
-const brand=()=>'<span class="logo">✦ brightpath<b>.</b></span>';
+const brand=()=>'<a class="logo brand-home" href="'+url('home/')+'" aria-label="BrightPath — back to homepage">✦ brightpath<b>.</b></a>';
 function errText(err){return err?.message||err?.details||String(err)||'Something went wrong'}
 function check(result){if(result?.error)throw new Error(errText(result.error));return result?.data}
 const portalLinks={parent:url('parent/'),teacher:url('teacher/'),'school-admin':url('school-admin/')};
