@@ -1,4 +1,6 @@
 import './style.css';
+import { renderMarketing } from './marketing.js';
+import { renderOwnerBilling, renderSchoolBilling, renderParentBilling } from './billing.js';
 import { createClient, BetterAuthVanillaAdapter } from '@neondatabase/neon-js';
 
 const ROOT='/brightpath-school-platform/';
@@ -20,12 +22,8 @@ const brand=()=>'<span class="logo">✦ brightpath<b>.</b></span>';
 function errText(err){return err?.message||err?.details||String(err)||'Something went wrong'}
 function check(result){if(result?.error)throw new Error(errText(result.error));return result?.data}
 const portalLinks={parent:url('parent/'),teacher:url('teacher/'),'school-admin':url('school-admin/')};
-function renderLanding(){
- app.innerHTML='<header class="top">'+brand()+'<nav class="top-links"><a href="'+url('parent/')+'">Parents</a><a href="'+url('teacher/')+'">Teachers</a><a href="'+url('school-admin/')+'">Schools</a></nav></header>'+
- '<section class="hero"><div class="eyebrow">School & home, connected</div><h1>Every school day deserves to be shared.</h1><p>Teachers record real classroom activities and performance. Parents follow their child’s progress. Schools manage classes and staff in their own secure workspace.</p><div class="hero-actions"><a class="btn" href="'+url('parent/')+'">Parent sign in</a><a class="btn ghost" href="'+url('school-admin/')+'">School administration</a></div></section>'+
- '<section class="section"><h2>One platform. Separate secure workspaces.</h2><p class="sub">A dedicated login and permission boundary for each responsibility.</p><div class="feature-grid"><div class="feature"><div class="feature-icon">👨‍👩‍👧</div><h3>Parents</h3><p>See updates, scores and approved pictures for only the children linked to your verified account.</p><p><a class="btn ghost small" href="'+url('parent/')+'">Parent portal</a></p></div><div class="feature"><div class="feature-icon">📝</div><h3>Teachers</h3><p>Share observations, enter scores and publish activities for students in classes assigned by the school.</p><p><a class="btn ghost small" href="'+url('teacher/')+'">Teacher portal</a></p></div><div class="feature"><div class="feature-icon">🏫</div><h3>Schools</h3><p>Manage school classes, verified teacher accounts, student records, guardian links and recorded photo consent.</p><p><a class="btn ghost small" href="'+url('school-admin/')+'">School portal</a></p></div></div></section>'+
- '<footer class="foot">© BrightPath · Separate school roles · No public student directory</footer>';
-}
+function renderLanding(){renderMarketing(app,ROOT,'home')}
+function renderPricing(){renderMarketing(app,ROOT,'pricing')}
 function shell(body,title=portalLabel[portal]){
  app.innerHTML='<div class="portal"><header class="portal-header"><div>'+brand()+'<div class="portal-name">'+h(title)+'</div></div><div id="user-actions"></div></header><main class="portal-main" id="workspace">'+body+'</main><footer class="foot">© BrightPath · Access is controlled by verified accounts and school assignments</footer></div>';
  if(currentUser){
@@ -75,6 +73,7 @@ function pageHead(title,subtitle,action=''){return '<div class="page-head"><div>
 function schoolOptions(memberships){return memberships.map(m=>itemOpt(m.school_id,m.school_name)).join('')}
 function bindSwitchSchool(handler){const s=$('school-selector');if(s){s.value=currentSchool;s.onchange=async()=>{currentSchool=s.value;await handler()}}}
 function schoolSwitcher(){const m=(context?.memberships||[]).filter(m=>m.role===portal&&m.active);return m.length>1?'<label class="field" style="max-width:320px;margin:0">School<select id="school-selector">'+schoolOptions(m)+'</select></label>':''}
+function billingError(err){const x=document.createElement('div');x.innerHTML=msg('Billing section unavailable: '+errText(err),'warn');$('workspace')?.append(x)}
 function formatActivity(a){return '<li><div class="list-row"><div><div class="list-name">'+h(a.title)+'</div><div class="list-meta">'+h(a.subject)+' · '+asDate(a.created_at)+'</div></div><span class="chip">'+a.score+' / 100</span></div><p>'+h(a.notes)+'</p>'+(a.photo_data_url?'<img class="photo" loading="lazy" src="'+h(a.photo_data_url)+'" alt="Classroom activity photo">':'')+'</li>'}
 
 async function renderOwner(){
@@ -89,6 +88,7 @@ async function renderOwner(){
  $('add-school').onsubmit=async e=>{e.preventDefault();try{check(await db.from('bp_schools').insert({name:$('school-name').value.trim()}));await renderOwner()}catch(err){$('school-msg').innerHTML=msg(errText(err),'err')}};
  $('appoint-admin').onsubmit=async e=>{e.preventDefault();try{check(await db.rpc('bp_grant_role',{p_school:$('admin-school').value,p_email:$('admin-email').value.trim(),p_role:'school_admin'}));$('grant-msg').innerHTML=msg('School administrator assigned.');}catch(err){$('grant-msg').innerHTML=msg(errText(err),'err')}};
  document.querySelectorAll('[data-toggle-school]').forEach(b=>b.onclick=async()=>{const next=b.dataset.next;if(!confirm('Change school status to '+next+'?'))return;try{check(await db.from('bp_schools').update({status:next}).eq('id',b.dataset.toggleSchool));await renderOwner()}catch(err){alert(errText(err))}});
+ await renderOwnerBilling(db).catch(billingError);
 }
 async function renderSchoolAdmin(){
  const sid=currentSchool;if(!sid){renderDenied();return}
@@ -178,5 +178,6 @@ async function renderParent(){
  '<section class="card"><h2>How parent access works</h2><p class="muted" style="font-size:14px">Your school verifies guardianship and links children to your registered email. Only linked children’s authorized activities, photos and scores appear here. Teachers cannot give parent access themselves.</p><p class="security">Student photos stay behind authenticated, row-level database permissions. Your account cannot view records belonging to other families.</p></section></div>'+
  '<section class="card" style="margin-top:18px"><h2>Latest teacher updates</h2>'+(visible.length?'<ul class="list">'+visible.map(a=>'<li><div class="list-meta" style="margin-bottom:9px">'+h(myKids.find(s=>s.id===a.student_id)?.full_name||'')+'</div>'+formatActivity(a).replace(/^<li>|<\/li>$/g,'')+'</li>').join('')+'</ul>':empty('No classroom updates have been shared for your linked children yet.'))+'</section>');
  bindSwitchSchool(renderParent);
+ await renderParentBilling(db,sid,currentUser).catch(billingError);
 }
-if(portal==='landing'){renderLanding()}else{enterPortal()}
+if(portal==='landing'){renderLanding()}else if(portal==='pricing'){renderPricing()}else{enterPortal()}
