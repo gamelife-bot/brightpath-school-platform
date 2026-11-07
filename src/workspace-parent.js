@@ -1,3 +1,6 @@
+import {renderCareDiary,renderMilestones,renderChildMessages} from './daycare.js';
+import {renderPickupDesk} from './daycare-pickup.js';
+import {renderChildMoments} from './daycare-media.js';
 import {escapeHtml as e,numberLabel as n,dateLabel,initial,stat,box,empty,pill,status,field,input,select,button,heading,table,tr,option,bar,read,result,click} from './workspace-core.js';
 
 async function familyData(db,sid){
@@ -31,14 +34,23 @@ export async function renderParentPage(ctx,tab){
  if(!sid)throw Error('Parent account is not linked to a school.');
  const {children,activities,classes}=await familyData(db,sid);
  const avg=activities.length?Math.round(activities.reduce((sum,a)=>sum+a.score,0)/activities.length):null;
+ if(tab==='care')return renderCareDiary(ctx);
+ if(tab==='milestones')return renderMilestones(ctx);
+ if(tab==='messages')return renderChildMessages(ctx);
+ if(tab==='pickup')return renderPickupDesk(ctx);
+ if(tab==='moments')return renderChildMoments(ctx);
  if(tab==='overview'){
+  const [careRecords,growthRecords,pickupRecords]=await Promise.all([read(db,'bp_care_logs',q=>q.eq('school_id',sid).order('occurred_at',{ascending:false}).limit(80)),read(db,'bp_milestones',q=>q.eq('school_id',sid).order('observed_at',{ascending:false}).limit(80)),read(db,'bp_pickup_events',q=>q.eq('school_id',sid).order('occurred_at',{ascending:false}).limit(30))]);
+  const ids=new Set(children.map(c=>c.id));const care=careRecords.filter(x=>ids.has(x.student_id)),growth=growthRecords.filter(x=>ids.has(x.student_id)),pickup=pickupRecords.filter(x=>ids.has(x.student_id));
+  const todayCare=care.filter(x=>new Date(x.occurred_at).toDateString()===new Date().toDateString());
   const latest=activities.slice(0,4);
   const html=heading('FAMILY DASHBOARD','Welcome to BrightPath','Follow your child’s learning journey, school updates and achievements.')+
    '<div class="mw-metrics">'+stat('My children',children.length,'💛','teal')+
-   stat('Learning updates',activities.length,'✎','blue')+
-   stat('Average score',avg===null?'—':avg+'%','✦','violet')+'</div>'+
+   stat('Care updates today',todayCare.length,'☀','blue')+
+   stat('Development moments',growth.length,'🌱','violet')+'</div>'+
    '<div class="mw-welcome mw-welcome-parent"><div><span class="mw-welcome-kicker">HELLO, FAMILY!</span><h2>Little moments. Big milestones.</h2><p>Celebrate every achievement and stay close to your child’s school day.</p>'+
-   button('View learning journal →','mw-family-journal','light')+'</div><div class="mw-welcome-art">🌈<span>♡</span></div></div>'+
+   button('See today’s care diary →','mw-family-journal','light')+'</div><div class="mw-welcome-art">🌈<span>♡</span></div></div>'+
+   '<div class="mw-section-title"><h2>Your child’s day</h2></div><div class="mw-actions-grid">'+[['Daily diary','care','☀'],['Photos & videos','moments','📸'],['Milestones','milestones','🌱'],['Send a message','messages','💌']].map(([label,tab,icon])=>'<button class="mw-action" type="button" data-family-quick="'+tab+'"><span>'+icon+'</span><b>'+label+'</b><small>Open updates ↗</small></button>').join('')+'</div>'+
    '<div class="mw-two">'+box('My children',
     children.length?'<div class="mw-children-mini">'+children.map(s=>
       '<div><span class="mw-round-icon">'+initial(s.full_name)+'</span><div><b>'+e(s.full_name)+'</b><small>'+e(classes.find(c=>c.id===s.class_id)?.name||'Class')+'</small></div></div>').join('')+'</div>':
@@ -46,7 +58,7 @@ export async function renderParentPage(ctx,tab){
    box('Recent milestones',latest.length?'<div class="mw-recent">'+latest.map(a=>
     '<div><b>'+e(a.title)+'</b><small>'+e(children.find(c=>c.id===a.student_id)?.full_name||'Student')+' · '+dateLabel(a.created_at)+'</small><span>'+a.score+'%</span></div>'
    ).join('')+'</div>':empty('🌻','Their journey is just beginning','Teacher updates will appear as the school shares them.'))+'</div>';
-  return{html,bind(){click('mw-family-journal',()=>go('journal'))}};
+  return{html,bind(){click('mw-family-journal',()=>go('care'));document.querySelectorAll('[data-family-quick]').forEach(b=>b.onclick=()=>go(b.dataset.familyQuick))}};
  }
  if(tab==='children'){
   const html=heading('MY FAMILY','My children','View each linked child’s profile and subject progress.')+

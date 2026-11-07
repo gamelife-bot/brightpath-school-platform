@@ -1,3 +1,6 @@
+import {renderCareDiary,renderMilestones,renderChildMessages} from './daycare.js';
+import {renderPickupDesk} from './daycare-pickup.js';
+import {renderChildMoments} from './daycare-media.js';
 import {renderSchoolApprovals} from './workspace-approvals.js';
 import {escapeHtml as e,numberLabel as n,dateLabel,dollar,initial,stat,box,empty,pill,status,field,input,select,textarea,button,heading,table,tr,option,bar,read,write,update,rpc,result,form,click,notice,v,checked} from './workspace-core.js';
 
@@ -24,9 +27,16 @@ async function schoolData(db,sid){
 export async function renderSchoolPage(ctx,tab){
  const {db,user,reload,go,schoolId:sid}=ctx;
  if(!sid)throw new Error('No school has been assigned to this account.');
+ if(tab==='care')return renderCareDiary(ctx);
+ if(tab==='milestones')return renderMilestones(ctx);
+ if(tab==='messages')return renderChildMessages(ctx);
+ if(tab==='pickup')return renderPickupDesk(ctx);
+ if(tab==='moments')return renderChildMoments(ctx);
  if(tab==='overview'){
   const {school,classes,students,members,activities}=await schoolData(db,sid);
   const attended=await read(db,'bp_attendance',q=>q.eq('school_id',sid).eq('attendance_date',today()));
+  const careToday=await read(db,'bp_care_logs',q=>q.eq('school_id',sid).order('occurred_at',{ascending:false}).limit(100));
+  const careCount=careToday.filter(x=>new Date(x.occurred_at).toDateString()===new Date().toDateString()).length;
   let approvalQueueError=null;
   const pendingRequests=await read(db,'bp_access_requests',q=>q.eq('school_id',sid).eq('status','pending')).catch(err=>{approvalQueueError=err;return []});
   const pendingTeachers=approvalQueueError?'—':pendingRequests.filter(r=>r.requested_role==='teacher').length;
@@ -34,12 +44,12 @@ export async function renderSchoolPage(ctx,tab){
   const teachers=members.filter(m=>m.active&&m.role==='teacher').length;
   const html=heading('SCHOOL OPERATIONS',school?.name||'Your school','Your school at a glance — classes, families, staff and learning.')+
    '<div class="mw-metrics">'+stat('Enrolled students',n(students.length),'🎒','teal')+stat('Classes',n(classes.length),'📚','blue')+
-   stat('Active teachers',n(teachers),'👩‍🏫','amber')+stat('Learning updates',n(activities.length),'✎','violet')+'</div>'+
-   '<div class="mw-welcome mw-welcome-school"><div><span class="mw-welcome-kicker">YOUR SCHOOL WORKSPACE</span><h2>Make every school day count</h2><p>Keep student records, family connections and daily classroom progress together in one organized place.</p>'+button('Enroll a student ↗','mw-quick-enroll','light')+'</div><div class="mw-welcome-art">📚<span>✦</span></div></div>'+
+   stat('Active teachers',n(teachers),'👩‍🏫','amber')+stat('Care notes today',careCount,'☀','violet')+'</div>'+
+   '<div class="mw-welcome mw-welcome-school"><div><span class="mw-welcome-kicker">YOUR SCHOOL WORKSPACE</span><h2>Make every school day count</h2><p>Coordinate early-years classrooms, daily care, parent updates and safe pickup in one place.</p>'+button('Enroll a student ↗','mw-quick-enroll','light')+'</div><div class="mw-welcome-art">📚<span>✦</span></div></div>'+
    (approvalQueueError?'<div class="mw-inline mw-inline-error">Approval requests could not be loaded. The rest of your school workspace is still available. Try refreshing.</div>':'')+
    '<div class="mw-two mw-approval-overview">'+box('Teacher approvals', '<div class="mw-approval-overview-count">'+pendingTeachers+'</div><p class="mw-fine">Pending teacher access requests</p>'+button('Review teacher requests','mw-review-teachers','outline'))+box('Parent approvals','<div class="mw-approval-overview-count">'+pendingParents+'</div><p class="mw-fine">Pending parent access requests</p>'+button('Review parent requests','mw-review-parents','outline'))+'</div>'+
    '<div class="mw-section-title"><h2>Manage your school</h2><span>Quick actions</span></div><div class="mw-actions-grid">'+[
-    ['Create a class','classes','📒'],['Register students','students','🎒'],['Approve teachers','teachers','👩‍🏫'],['Approve parents','parents','💛']
+    ['Daily care updates','care','☀'],['Photos & videos','moments','📸'],['Safe pickup desk','pickup','👋'],['Parent messages','messages','💌'],['Approve teachers','teachers','👩‍🏫'],['Approve parents','parents','💛']
    ].map(([t,p,i])=>'<button class="mw-action" type="button" data-goto="'+p+'"><span>'+i+'</span><b>'+t+'</b><small>Open workspace</small><i>↗</i></button>').join('')+'</div>'+
    '<div class="mw-two">'+box('School setup',
     badgeProgress([[classes.length>0,'Create your first class','Organize classrooms'],
@@ -79,7 +89,7 @@ export async function renderSchoolPage(ctx,tab){
  }
  if(tab==='students'){
   const {classes,students,activities}=await schoolData(db,sid);
-  const html=heading('STUDENT RECORDS','Students and enrollment','Enroll students, organize classes and manage parent-approved photo sharing.')+
+  const html=heading('STUDENT RECORDS','Students and enrollment','Manage daycare children, their rooms, and parent-approved photo and video permissions.')+
    '<div class="mw-two mw-two-side">'+box('Enroll a new student',
      '<form id="mw-enroll-form" class="mw-form">'+field('Student full name',input('mw-kid-name','Full name','text','required minlength="2" maxlength="160"'))+
      field('Class',select('mw-kid-class',classOptions(classes),'required'))+
@@ -87,13 +97,14 @@ export async function renderSchoolPage(ctx,tab){
      actions(button('Enroll student','mw-enroll-submit','primary','type="submit" '+(!classes.length?'disabled':'')))+'</form>')+
     box('Student records',
      '<div class="mw-split-stats"><div><strong>'+n(students.length)+'</strong><small>Enrolled students</small></div><div><strong>'+n(students.filter(s=>s.photo_consent).length)+'</strong><small>Photo permissions</small></div></div>'+
-     rowHelp('Photo permissions are recorded separately for each student.'))+'</div>'+
+     rowHelp('Photo and video permissions are recorded separately for each child.'))+'</div>'+
    box('Student directory',students.length?'<div class="mw-filter-row">'+input('mw-kid-search','Search students or classes')+'</div><div id="mw-kid-table">'+
-    table(['Student','Class','Photo permission','Activities','Action'],students.map(s=>tr([
+    table(['Child','Room','Photo','Video','Activities','Permissions'],students.map(s=>tr([
      '<span class="mw-identity"><span class="mw-round-icon">'+initial(s.full_name)+'</span><b>'+e(s.full_name)+'</b></span>',
      '<select class="mw-inline-select" data-move-student="'+e(s.id)+'" aria-label="Move student class">'+classes.map(c=>'<option value="'+e(c.id)+'" '+(c.id===s.class_id?'selected':'')+'>'+e(c.name)+'</option>').join('')+'</select>',
-     status(s.photo_consent?'approved':'not recorded'),n(activities.filter(a=>a.student_id===s.id).length),
-     button(s.photo_consent?'Revoke photo':'Record photo','mw-consent-'+s.id,s.photo_consent?'danger':'outline','data-photo-student="'+e(s.id)+'" data-photo-next="'+(!s.photo_consent)+'"')
+     status(s.photo_consent?'approved':'not recorded'),status(s.video_consent?'approved':'not recorded'),n(activities.filter(a=>a.student_id===s.id).length),
+     '<div class="bp-consent-actions">'+button(s.photo_consent?'Revoke photos':'Allow photos','mw-consent-'+s.id,s.photo_consent?'danger':'outline','data-photo-student="'+e(s.id)+'" data-photo-next="'+(!s.photo_consent)+'"')+
+      button(s.video_consent?'Revoke videos':'Allow videos','mw-video-'+s.id,s.video_consent?'danger':'outline','data-video-student="'+e(s.id)+'" data-video-next="'+(!s.video_consent)+'"')+'</div>'
     ])))+'</div>':empty('🎒','Your student directory is empty','Enroll your first student to see records here.'));
   return{html,bind(){
    form('mw-enroll-form',async()=>{
@@ -104,6 +115,11 @@ export async function renderSchoolPage(ctx,tab){
    document.querySelectorAll('[data-move-student]').forEach(s=>s.onchange=async()=>{
     if(!confirm('Move this student to the selected class?')){await reload();return}
     try{await update(db,'bp_students',{class_id:s.value},{id:s.dataset.moveStudent,school_id:sid});notice('Class updated');await reload()}catch(err){notice(err.message,'error')}
+   });
+   document.querySelectorAll('[data-video-student]').forEach(b=>b.onclick=async()=>{
+    const enabled=b.dataset.videoNext==='true';
+    if(!confirm(enabled?'Confirm written guardian consent to share short videos of this child?':'Withdraw video-sharing permission for this child?'))return;
+    try{await update(db,'bp_students',{video_consent:enabled},{id:b.dataset.videoStudent,school_id:sid});notice('Video permissions updated');await reload()}catch(err){notice(err.message,'error')}
    });
    document.querySelectorAll('[data-photo-student]').forEach(b=>b.onclick=async()=>{
     const enabled=b.dataset.photoNext==='true';

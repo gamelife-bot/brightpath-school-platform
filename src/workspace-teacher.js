@@ -1,3 +1,6 @@
+import {renderCareDiary,renderMilestones,renderChildMessages} from './daycare.js';
+import {renderPickupDesk} from './daycare-pickup.js';
+import {renderChildMoments} from './daycare-media.js';
 import {escapeHtml as e,numberLabel as n,dateLabel,initial,stat,box,empty,pill,status,field,input,select,textarea,button,heading,table,tr,option,bar,read,write,result,form,click,notice,v} from './workspace-core.js';
 
 const today=()=>new Date().toLocaleDateString('en-CA');
@@ -24,23 +27,30 @@ export async function renderTeacherPage(ctx,tab){
  const {db,schoolId:sid,user,go,reload,photoData}=ctx;
  if(!sid)throw Error('Teacher account has not been assigned to a school.');
  const {classes,students,activities}=await teacherData(db,sid);
+ if(tab==='care')return renderCareDiary(ctx);
+ if(tab==='milestones')return renderMilestones(ctx);
+ if(tab==='messages')return renderChildMessages(ctx);
+ if(tab==='pickup')return renderPickupDesk(ctx);
+ if(tab==='moments')return renderChildMoments(ctx);
  if(tab==='overview'){
   const attendance=await read(db,'bp_attendance',q=>q.eq('school_id',sid).eq('attendance_date',today()));
+  const [careLogs,milestones]=await Promise.all([read(db,'bp_care_logs',q=>q.eq('school_id',sid).order('occurred_at',{ascending:false}).limit(80)),read(db,'bp_milestones',q=>q.eq('school_id',sid).order('observed_at',{ascending:false}).limit(80))]);
+  const childIds=new Set(students.map(s=>s.id));const careToday=careLogs.filter(x=>childIds.has(x.student_id)&&new Date(x.occurred_at).toDateString()===new Date().toDateString());const recentMilestones=milestones.filter(x=>childIds.has(x.student_id));
   const recorded=attendance.filter(a=>students.some(s=>s.id===a.student_id));
   const html=heading('MY CLASSROOM','Welcome, '+(user.name?.split(' ')[0]||'Teacher'),'Plan learning moments, share progress and keep attendance up to date.')+
    '<div class="mw-metrics">'+stat('My classes',classes.length,'📚','teal')+stat('My students',students.length,'🎒','blue')+
-   stat('Activities posted',activities.length,'✎','violet')+stat('Attendance recorded',recorded.length,'✓','amber','Today')+'</div>'+
-   '<div class="mw-welcome mw-welcome-teacher"><div><span class="mw-welcome-kicker">TEACHER WORKSPACE</span><h2>Share a classroom milestone</h2><p>Document students’ activities, give meaningful feedback and celebrate progress with their families.</p>'+
-   button('Post a new activity →','mw-new-post','light')+'</div><div class="mw-welcome-art">✏️<span>★</span></div></div>'+
+   stat('Daily care updates',careToday.length,'☀','violet')+stat('Milestones',recentMilestones.length,'🌱','amber')+'</div>'+
+   '<div class="mw-welcome mw-welcome-teacher"><div><span class="mw-welcome-kicker">TEACHER WORKSPACE</span><h2>Every little moment counts</h2><p>Share nap times, meals, playtime, photo updates and growing milestones with families.</p>'+
+   button('Log a care moment →','mw-new-post','light')+'</div><div class="mw-welcome-art">✏️<span>★</span></div></div>'+
    '<div class="mw-section-title"><h2>Your daily tools</h2></div>'+
    '<div class="mw-actions-grid">'+[
-    ['Post learning activity','publish','✍'],['Take attendance','attendance','✓'],['View students','students','🎒'],['See gradebook','gradebook','📈']
+    ['Log daily care','care','☀'],['Share photos & videos','moments','📸'],['Record a milestone','milestones','🌱'],['Parent messages','messages','💌']
    ].map(([label,p,ico])=>'<button class="mw-action" data-goto="'+p+'"><span>'+ico+'</span><b>'+label+'</b><small>Open workspace</small><i>↗</i></button>').join('')+'</div>'+
    '<div class="mw-two">'+box('My classes',classes.length?'<div class="mw-class-mini">'+classes.map(c=>'<div><b>'+e(c.name)+'</b><span>'+students.filter(s=>s.class_id===c.id).length+' students</span></div>').join('')+'</div>':
     empty('📗','Awaiting class assignment','Your school administrator will assign your classrooms.'))+
    box('Recent activities',activities.length?'<div class="mw-recent">'+activities.slice(0,5).map(a=>'<div><b>'+e(a.title)+'</b><small>'+e(students.find(s=>s.id===a.student_id)?.full_name||'Student')+' · '+dateLabel(a.created_at)+'</small><span>'+a.score+'%</span></div>').join('')+'</div>':
     empty('✎','Your activity journal is ready','Publish your first lesson update.'))+'</div>';
-  return {html,bind(){click('mw-new-post',()=>go('publish'));document.querySelectorAll('[data-goto]').forEach(b=>b.onclick=()=>go(b.dataset.goto))}};
+  return {html,bind(){click('mw-new-post',()=>go('care'));document.querySelectorAll('[data-goto]').forEach(b=>b.onclick=()=>go(b.dataset.goto))}};
  }
  if(tab==='classes'){
   const html=heading('MY CLASSROOMS','Assigned classes','View your classroom assignments and student groups.')+
@@ -74,8 +84,7 @@ export async function renderTeacherPage(ctx,tab){
      field('Activity title',input('mw-post-title','What did they learn?','text','required minlength="2" maxlength="120"'))+
      field('Teacher observation',textarea('mw-post-notes','Describe participation, progress and achievement…','required minlength="2" maxlength="2000"'))+
      field('Score (0–100)',input('mw-post-score','85','number','min="0" max="100" required value="85"'))+
-     field('Activity photo', '<input type="file" id="mw-post-photo" accept="image/*">')+
-     '<div id="mw-consent-hint" class="mw-form-tip">Student photos need guardian approval recorded by the school.</div>'+
+     '<div class="mw-form-tip">Share photos and short videos in the dedicated Photos & videos workspace.</div>'+
      '<div class="mw-form-actions">'+button('Publish activity','mw-publish-submit','primary','type="submit" '+(!students.length?'disabled':''))+'</div></form>')+
     box('Publishing guide', '<div class="mw-guidance">'+
      '<div><span>1</span><p><b>Choose the student</b><small>Only your assigned class roster is available</small></p></div>'+
@@ -84,24 +93,13 @@ export async function renderTeacherPage(ctx,tab){
    box('Recent posts',activities.length?'<div class="mw-journal-list">'+activities.slice(0,6).map(a=>teachingActivity(a,students)).join('')+'</div>':
     empty('✎','Your class journal is ready','Post the first learning activity above.'));
   return{html,bind(){
-   const chooser=document.getElementById('mw-post-student');
-   const updateHint=()=>{
-    const kid=students.find(s=>s.id===chooser.value);
-    document.getElementById('mw-consent-hint').textContent=kid?
-      (kid.photo_consent?'Guardian photo permission is recorded.':'This student has no recorded photo permission. Notes and scores can still be posted.'):
-      'Student photos need guardian approval recorded by the school.';
-   };
-   chooser.onchange=updateHint;
    form('mw-publish-form',async()=>{
     const student=students.find(s=>s.id===v('mw-post-student'));
     if(!student)throw Error('Choose a student from your class');
-    const file=document.getElementById('mw-post-photo').files?.[0];
-    if(file&&!student.photo_consent)throw Error('Photo permission has not been recorded for this student');
-    const photo=file?await photoData(file):null;
-    await write(db,'bp_activities',{
+     await write(db,'bp_activities',{
      school_id:sid,student_id:student.id,teacher_user_id:user.id,
      subject:v('mw-post-subject'),title:v('mw-post-title'),notes:v('mw-post-notes'),
-     score:Number(v('mw-post-score')),photo_data_url:photo
+     score:Number(v('mw-post-score'))
     });
     await reload();
    });
