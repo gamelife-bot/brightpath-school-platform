@@ -1,6 +1,8 @@
+import {preschoolHeroArt} from './preschool-landing-art.js';
 import {careRelayArt} from './care-relay-art.js';
 import {welcomeArt,momentArt} from './playful-art.js';
 import './landing-reimagined.css';
+import './preschool-landing.css';
 
 const features=[
  {icon:'🌤️',tone:'mint',label:'A calmer teacher day',title:'A classroom assistant that stays out of the way.',body:'See the next useful action, select children marked present, and turn existing records into factual, reviewable daily drafts.'},
@@ -24,23 +26,30 @@ export function renderLanding(app,root){
   '<nav class="ql-nav-links" id="ql-nav-links" aria-label="Main navigation"><a href="#relay">Care Relay</a><a href="#how">How it works</a><a href="#quiet">Quiet Classroom</a><a href="#experience">See the experience</a><a href="#questions">FAQs</a><a href="'+go('pricing')+'">Pricing</a></nav>'+
   '<div class="ql-nav-actions"><a class="ql-signin" href="'+go('parent')+'">Family sign in</a><a class="ql-btn ql-btn-dark" href="'+go('school-admin')+'">For schools <span>↗</span></a></div>'+
   '<button type="button" class="ql-menu" id="ql-menu" aria-label="Open navigation" aria-controls="ql-nav-links" aria-expanded="false"><span>☰</span></button></header>';
- const sample='Illustrative classroom demo — not real child data';
- const hero='<section class="ql-hero"><div class="ql-floating ql-float-sun" aria-hidden="true">☀</div><div class="ql-floating ql-float-cloud" aria-hidden="true">☁</div>'+
-  '<div class="ql-hero-content"><span class="ql-eyebrow">✦ MADE FOR DAYCARES & PRESCHOOLS</span>'+
-  '<h1>More time for<br><em>little moments.</em><br>Less paperwork.</h1>'+
-  '<p>Say hello to BrightPath: a gentle connection between preschool, teachers and families. One real classroom update can become a private family moment and a ready-to-view daily record.</p>'+
-  '<div class="ql-hero-actions"><a class="ql-btn ql-btn-dark ql-btn-lg" href="'+go('school-admin')+'">Explore BrightPath for schools <span>↗</span></a><a class="ql-btn ql-btn-outline" href="#experience">See how it feels <span>↘</span></a></div>'+
-  '<div class="ql-hero-proof"><span><b>✓</b> Teachers stay in control</span><span><b>✓</b> Parents see their own child</span><span><b>✓</b> Mobile friendly</span></div></div>'+
-  '<div class="ql-hero-demo"><div class="ql-demo-stamp">SAMPLE EXPERIENCE <span>✦</span></div>'+
-  '<div class="ql-demo-window"><div class="ql-demo-top"><span class="ql-demo-app">✦ <b>quiet classroom.</b></span><span class="ql-online">● Ready when you are</span></div>'+
-  '<div class="ql-demo-welcome"><span>MONDAY, SUNFLOWER ROOM</span><h2>A little less admin.<br>A lot more wonder. 🌻</h2><p>'+sample+'</p></div>'+
-  '<div class="ql-demo-progress"><div><span>Attendance</span><b>✓ Recorded</b></div><div><span>Classroom update</span><b>✓ Shared with care</b></div><div><span>Daily view</span><b>✓ Built from records</b></div></div>'+
-  '<div class="ql-demo-one"><span>🌱</span><div><strong>Outdoor play</strong><small>One entry. Each participating child’s private diary.</small></div><span class="ql-demo-check">✓</span></div>'+
-  '<div class="ql-demo-one"><span>✍️</span><div><strong>Parent forms</strong><small>Handled by the school office, not teachers.</small></div><span class="ql-demo-check">✓</span></div>'+
-  '<div class="ql-demo-footer"><span>🛡️ Nothing is sent without your action</span><span>◡</span></div></div>'+
-  '<div class="ql-hero-art">'+welcomeArt('parent')+'</div></div></section>';
+ const hero='<section class="ql-hero ql-kinder-hero"><div class="ql-hero-sprinkles" aria-hidden="true"><span>✳</span><span>✦</span><span>♥</span><span>✿</span></div>'+
+  '<div class="ql-hero-content"><span class="ql-eyebrow">🌼 A HAPPY LITTLE WORLD FOR EARLY LEARNERS</span>'+
+  '<h1>Little hands.<br><em>Big discoveries.</em><br><span>Happy families.</span></h1>'+
+  '<p>Every day at preschool is full of tiny adventures. BrightPath helps parents feel close to those moments while teachers spend more time caring, playing and helping children grow.</p>'+
+  '<div class="ql-hero-actions"><a class="ql-btn ql-btn-dark ql-btn-lg" href="'+go('school-admin')+'">🏫 I run a preschool <span>↗</span></a><a class="ql-btn ql-btn-outline" href="'+go('parent')+'">💛 I’m a parent <span>↗</span></a></div>'+
+  '<div class="ql-hero-proof"><span><b>✓</b> Designed for toddlers & preschoolers</span><span><b>✓</b> Private family moments</span><span><b>✓</b> Less teacher paperwork</span></div>'+
+  '<div class="ql-hero-handnote" aria-hidden="true"><span>✏️</span><span>Made for<br>little smiles!</span></div></div>'+
+  '<div class="ql-kids-hero-visual"><div class="ql-kids-hero-scene">'+preschoolHeroArt()+'</div>'+
+  '<div class="ql-kids-sun-sticker" aria-hidden="true">☀️</div><div class="ql-kids-rainbow-sticker" aria-hidden="true">🌈</div>'+
+  '<div class="ql-kids-scene-badge"><span>🧸</span><div><b>Learning through play</b><small>Every little moment matters</small></div></div>'+
+  '<div class="ql-kids-speech-sticker">Look what<br>I made! <span>✦</span></div></div></section>';
  const strip='<div class="ql-brightbar" aria-label="BrightPath principles"><span>☀️ PLAY FIRST</span><i>✳</i><span>🧸 PRESCHOOL HEART</span><i>✳</i><span>🔐 PRIVATE BY DESIGN</span><i>✳</i><span>🍎 TEACHER FRIENDLY</span></div>';
- const how='<section class="ql-section ql-how" id="how"><div class="ql-section-head"><span class="ql-kicker">THE BRIGHTPATH DIFFERENCE</span><h2>One real moment.<br><em>Three useful outcomes.</em></h2><p>Teachers should not type the same thing in three places. BrightPath reuses genuine records—without pretending an unrecorded activity happened.</p></div>'+
+ const momentsList=[
+  {type:'play',tag:'01 · PLAY',title:'Paint, play & discover',note:'Their imagination has no limits.',color:'peach'},
+  {type:'meal',tag:'02 · CARE',title:'Little bites, big smiles',note:'The everyday moments matter.',color:'yellow'},
+  {type:'nap',tag:'03 · REST',title:'Dream, rest & recharge',note:'Gentle care, right on time.',color:'lilac'},
+  {type:'pickup',tag:'04 · HOME',title:'One more happy goodbye',note:'A safe return to their people.',color:'mint'}
+ ];
+ const momentsSection='<section class="ql-tiny-world" id="tiny-world"><div class="ql-tiny-world-wrap"><div class="ql-tiny-world-top">'+
+  '<div><span class="ql-kicker">🎈 A DAY IN THEIR LITTLE WORLD</span><h2>Messy hands. Happy hearts.<br><em>Memories worth sharing.</em></h2></div>'+
+  '<p>Finger painting, snack time, naps, new friends... every child’s day is a story. BrightPath helps schools share the real moments that matter, privately with families.</p></div>'+
+  '<div class="ql-tiny-moment-grid">'+momentsList.map(x=>'<article class="ql-tiny-moment ql-tiny-'+x.color+'"><div class="ql-tiny-moment-art">'+momentArt(x.type)+'</div><div class="ql-tiny-moment-copy"><small>'+x.tag+'</small><h3>'+x.title+'</h3><p>'+x.note+'</p></div><span class="ql-tiny-moment-doodle" aria-hidden="true">✿</span></article>').join('')+'</div>'+
+  '<div class="ql-tiny-world-legend"><span>💛 Every child is unique</span><span>🛡️ Private and consent-aware</span><span>🍎 Teachers choose what to share</span></div></div></section>';
+ const how='<section class="ql-section ql-how" id="how"><div class="ql-section-head"><span class="ql-kicker">THE BRIGHTPATH DIFFERENCE</span><h2>One happy moment.<br><em>Shared with so much love.</em></h2><p>A teacher should be with children, not buried in forms. One genuine classroom update can help families feel connected without extra typing.</p></div>'+
  '<div class="ql-outcomes"><article><span class="ql-outcome-no">01</span><div class="ql-outcome-icon">🍎</div><h3>Teacher records once</h3><p>Mark attendance, log one group activity, or share a permitted photo. Review who actually participated.</p><span class="ql-outcome-bottom">A SMALL, INTENTIONAL ACTION</span></article>'+
  '<div class="ql-outcome-arrow" aria-hidden="true">↗</div><article><span class="ql-outcome-no">02</span><div class="ql-outcome-icon">✦</div><h3>Quiet Classroom organizes</h3><p>Existing facts become a daily summary and a reviewable draft. No extra typing, no invented data.</p><span class="ql-outcome-bottom">THE ASSISTANT DOES THE ORGANIZING</span></article>'+
  '<div class="ql-outcome-arrow" aria-hidden="true">↗</div><article><span class="ql-outcome-no">03</span><div class="ql-outcome-icon">💌</div><h3>Family sees their child</h3><p>Linked parents view private updates, milestones and authorized media—without a classroom WhatsApp group.</p><span class="ql-outcome-bottom">ONE FAMILY, THEIR OWN STORY</span></article></div></section>';
@@ -67,11 +76,11 @@ export function renderLanding(app,root){
   '<div class="ql-quiet-checks"><p><span>✓</span> A quick checklist, not an extra daily report</p><p><span>✓</span> Class-wide activity templates and present-child selection</p><p><span>✓</span> Parent drafts that stay private until someone acts</p><p><span>✓</span> No external AI or always-on classroom listening</p></div>'+
   '<a class="ql-btn ql-btn-light" href="'+go('teacher')+'?tab=quiet">Explore the teacher assistant <span>↗</span></a>'+
   '<small>Quiet Classroom currently uses simple rules and existing school records. It is not a self-operating AI agent.</small></div></div></section>';
- const featureHtml='<section class="ql-section ql-features" id="features"><div class="ql-section-head"><span class="ql-kicker">THOUGHTFUL DETAILS, NOT MORE CLUTTER</span><h2>Everything you need.<br><em>Nothing you do not.</em></h2><p>Family communication, care and school administration belong together—with a different experience for each person.</p></div>'+
+ const featureHtml='<section class="ql-section ql-features" id="features"><div class="ql-section-head"><span class="ql-kicker">THOUGHTFUL DETAILS, NOT MORE CLUTTER</span><h2>All the little things<br><em>that make a big difference.</em></h2><p>Thoughtfully made for the people who care for little learners: parents, teachers and the school family.</p></div>'+
  '<div class="ql-feature-grid">'+features.map(x=>'<article class="ql-feature ql-f-'+x.tone+'"><div class="ql-feature-top"><span>'+x.icon+'</span><small>'+x.label+'</small></div><h3>'+x.title+'</h3><p>'+x.body+'</p><span aria-hidden="true" class="ql-feature-decoration">✦</span></article>').join('')+'</div></section>';
- const preview='<section class="ql-section ql-experience" id="experience"><div class="ql-section-head"><span class="ql-kicker">STEP INSIDE BRIGHTPATH</span><h2>One school. Three<br><em>very different happy places.</em></h2><p>Choose a role to preview what BrightPath is designed to help them do. The examples below are illustrations, not live customer records.</p></div>'+
+ const preview='<section class="ql-section ql-experience" id="experience"><div class="ql-section-head"><span class="ql-kicker">STEP INSIDE BRIGHTPATH</span><h2>A special place for<br><em>everyone who cares.</em></h2><p>Choose a role to preview what BrightPath is designed to help them do. The examples below are illustrations, not live customer records.</p></div>'+
  '<div class="ql-role-tabs" role="tablist" aria-label="Choose a BrightPath role"><button type="button" role="tab" id="ql-tab-teacher" aria-selected="true" aria-controls="ql-role-output" data-role="teacher">🍎 Teacher</button><button type="button" role="tab" id="ql-tab-parent" aria-selected="false" aria-controls="ql-role-output" data-role="parent">💛 Parent</button><button type="button" role="tab" id="ql-tab-school" aria-selected="false" aria-controls="ql-role-output" data-role="school">🏫 School team</button></div>'+
- '<div class="ql-role-content" id="ql-role-output" role="tabpanel" aria-labelledby="ql-tab-teacher"><div class="ql-role-art"><div class="ql-role-scene" id="ql-role-scene"><span>🍎</span><div class="ql-role-scene-paper"><span>✓ Attendance</span><span>☀️ Group updates</span><span>📔 Factual recaps</span></div></div></div>'+
+ '<div class="ql-role-content" id="ql-role-output" role="tabpanel" aria-labelledby="ql-tab-teacher"><div class="ql-role-art"><div class="ql-role-scene" id="ql-role-scene"><div class="ql-role-kids-art" id="ql-role-kids-art">'+welcomeArt('teacher')+'<div class="ql-role-scene-paper"><span>✓ Attendance</span><span>☀️ Group updates</span><span>📔 Factual recaps</span></div></div></div>'+
  '<div class="ql-role-copy"><span id="ql-role-tag">TEACHER VIEW</span><h3 id="ql-role-title">The children come first.</h3><p id="ql-role-desc">One small group update can support daily family records. Quiet Classroom shows what’s missing without making optional moments mandatory.</p>'+
  '<div id="ql-role-points" class="ql-role-points"><span>✓ Real classroom facts</span><span>✓ No repetitive daily essays</span><span>✓ Fast mobile actions</span></div>'+
  '<a class="ql-btn ql-btn-dark" id="ql-role-link" href="'+go('teacher')+'">Explore teacher space <span>↗</span></a></div></div></section>';
@@ -91,12 +100,12 @@ export function renderLanding(app,root){
  '<div><span>✍️</span><b>Guardian acknowledgments</b><small>Sign school documents without giving staff a reusable signature.</small></div>'+
  '<div><span>👩‍🏫</span><b>Staff keep their judgment</b><small>Nothing claims a care moment happened unless someone recorded it.</small></div></div></section>';
  const questions='<section class="ql-section ql-faq" id="questions"><div class="ql-section-head"><span class="ql-kicker">GOOD QUESTIONS DESERVE CLEAR ANSWERS</span><h2>Questions we would<br><em>ask, too.</em></h2></div><div class="ql-faq-list">'+faq.map(([title,body],idx)=>'<details '+(idx===0?'open':'')+'><summary><span>'+String(idx+1).padStart(2,'0')+'</span>'+title+'<b aria-hidden="true">+</b></summary><p>'+body+'</p></details>').join('')+'</div></section>';
- const cta='<section class="ql-last"><div class="ql-last-inner"><span>🌻</span><h2>Let childhood be the<br><em>main event.</em></h2><p>Bring families closer while keeping the teacher’s day simple. Start with a school portal and test the routines with your team.</p>'+
+ const cta='<section class="ql-last"><div class="ql-last-inner"><div class="ql-last-friends">'+welcomeArt('parent')+'</div><h2>A little more wonder.<br><em>A lot more together.</em></h2><p>Bring families closer while keeping the teacher’s day simple. Start with a school portal and test the routines with your team.</p>'+
  '<div><a class="ql-btn ql-btn-dark ql-btn-lg" href="'+go('school-admin')+'">Open the school portal <span>↗</span></a><a class="ql-btn ql-btn-outline" href="'+go('pricing')+'">Explore pricing</a></div>'+
  '<small>Registration and private school access are controlled by account approvals. Payment collection is not active.</small></div></section>';
  const footer='<footer class="ql-footer"><div class="ql-footer-top"><div><a class="ql-brand mark-logo" href="'+go('home')+'"><span class="ql-brand-star">✦</span><span>brightpath<span>.</span></span></a><p>More time with little learners.<br>Closer connections with families.</p></div><div><b>Explore</b><a href="#how">How it works</a><a href="#quiet">Quiet Classroom</a><a href="#experience">Explore portals</a><a href="'+go('pricing')+'">Plans & pricing</a></div><div><b>Portals</b><a href="'+go('school-admin')+'">School admin</a><a href="'+go('teacher')+'">Teachers</a><a href="'+go('parent')+'">Parents</a></div><div><b>Important</b><a href="#privacy">Child privacy</a><a href="#questions">FAQ</a><a href="#teacher-time">Time calculator</a></div></div>'+
  '<div class="ql-footer-bottom"><span>© BrightPath · Built for everyday childhood.</span><span>✦ Little moments. Big futures.</span></div></footer>';
- app.innerHTML='<div class="ql-page">'+nav+'<main>'+hero+strip+how+relaySection+quiet+featureHtml+preview+time+trust+questions+cta+'</main>'+footer+'</div>';
+ app.innerHTML='<div class="ql-page">'+nav+'<main>'+hero+strip+momentsSection+how+relaySection+quiet+featureHtml+preview+time+trust+questions+cta+'</main>'+footer+'</div>';
  const menu=document.getElementById('ql-menu'),navLinks=document.getElementById('ql-nav-links');
  menu.onclick=()=>{const open=navLinks.classList.toggle('ql-nav-open');menu.setAttribute('aria-expanded',String(open));menu.querySelector('span').textContent=open?'✕':'☰'};
  navLinks.querySelectorAll('a').forEach(a=>a.onclick=()=>{navLinks.classList.remove('ql-nav-open');menu.setAttribute('aria-expanded','false');menu.querySelector('span').textContent='☰'});
@@ -122,7 +131,7 @@ export function renderLanding(app,root){
   panel.setAttribute('aria-labelledby','ql-tab-'+role);
   document.getElementById('ql-role-tag').textContent=r.tag;document.getElementById('ql-role-title').textContent=r.title;
   document.getElementById('ql-role-desc').textContent=r.desc;
-  const scene=document.getElementById('ql-role-scene');scene.querySelector(':scope > span').textContent=r.icon;
+  const scene=document.getElementById('ql-role-scene');document.getElementById('ql-role-kids-art').innerHTML=welcomeArt(role==='school'?'school':role==='teacher'?'teacher':'parent');
   const rows=scene.querySelectorAll('.ql-role-scene-paper span');rows.forEach((x,i)=>x.textContent=r.sample[i]);
   document.getElementById('ql-role-points').innerHTML=r.points.map(s=>'<span>✓ '+s+'</span>').join('');
   const link=document.getElementById('ql-role-link');link.href=r.href;link.innerHTML=r.link+' <span aria-hidden="true">↗</span>';

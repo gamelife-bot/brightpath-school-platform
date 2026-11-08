@@ -1,0 +1,103 @@
+/* BrightPath preschool-first home: warmer, richer illustrations, unmistakable early-years character. */
+.ql-page{--ql-deep:#245f50;--ql-mid:#3c9b80;--ql-muted:#67857a;--ql-cream:#fffdf5;background:#fffdf5;color:#285f52}
+.ql-page .ql-kinder-hero{position:relative;display:grid;grid-template-columns:minmax(0,.87fr) minmax(0,1.13fr);gap:3%;align-items:center;max-width:none;padding:78px max(4%,calc((100vw - 1420px)/2)) 105px;min-height:690px;overflow:hidden;background:radial-gradient(ellipse at 5% 22%,#ffedc9 0,transparent 30%),radial-gradient(ellipse at 83% 38%,#cef0e1 0,transparent 52%),linear-gradient(180deg,#fffaf0,#fffdf4 78%,#f5fbea)}
+.ql-kinder-hero:before{content:"";position:absolute;left:-2%;right:-2%;bottom:-4px;height:44px;background:#fffdf5;clip-path:polygon(0 45%,7% 60%,13% 35%,20% 54%,27% 24%,34% 46%,41% 22%,49% 54%,57% 27%,66% 51%,74% 31%,83% 60%,91% 35%,100% 53%,100% 100%,0 100%);z-index:4}
+.ql-kinder-hero .ql-hero-content{max-width:690px;position:relative;z-index:5}
+.ql-kinder-hero .ql-eyebrow{background:#fff3d6;border-color:#f8dda6;color:#3e8d74;font-size:11px;letter-spacing:.65px;box-shadow:0 5px 13px #e5cc953b}
+.ql-kinder-hero h1{font-size:clamp(49px,5.55vw,83px);color:#235c4d;font-weight:950;letter-spacing:-.068em;line-height:1.09;max-width:750px;margin:25px 0 21px}
+.ql-kinder-hero h1 em{color:#ec9478;font-style:normal;white-space:nowrap}
+.ql-kinder-hero h1 em:after{background:#fbd49c;bottom:-7px}
+.ql-kinder-hero h1>span{color:#328b75}
+.ql-kinder-hero .ql-hero-content>p{font-size:16px;line-height:1.85;color:#627f73;max-width:585px}
+.ql-kinder-hero .ql-hero-actions{margin-top:28px;gap:12px}
+.ql-kinder-hero .ql-btn-dark{background:#287c65;box-shadow:0 5px 0 #1c594a}
+.ql-kinder-hero .ql-btn-dark:hover{background:#206651}
+.ql-kinder-hero .ql-btn-outline{background:#fffefd;box-shadow:0 5px 0 #e7dfc7}
+.ql-kinder-hero .ql-hero-proof{margin-top:33px;max-width:570px}
+.ql-kinder-hero .ql-hero-proof span{font-size:10px;font-weight:850;color:#617c70;line-height:1.5}
+.ql-kinder-hero .ql-hero-proof b{color:#2ea17e}
+.ql-kids-hero-visual{min-width:0;min-height:460px;position:relative;display:grid;place-items:center;isolation:isolate;transform:translateY(3px)}
+.ql-kids-hero-visual:before{content:"";position:absolute;left:3%;right:1%;top:11%;bottom:3%;border-radius:42% 58% 44% 56%/45% 50% 50% 55%;background:#c7efdcaa;filter:blur(28px);z-index:-1}
+.ql-kids-hero-scene{width:100%;max-width:750px;filter:drop-shadow(0 22px 18px #619a7c23)}
+.ql-kids-main-svg{display:block;width:100%;height:auto;overflow:visible;transform:rotate(-1.5deg)}
+.ql-kids-sun-sticker{position:absolute;left:4%;top:5%;font-size:56px;transform:rotate(-15deg);filter:drop-shadow(0 8px 8px #d4b9784d)}
+.ql-kids-rainbow-sticker{position:absolute;right:2%;top:4%;font-size:53px;transform:rotate(13deg);filter:drop-shadow(0 8px 7px #ceb58b55)}
+.ql-kids-scene-badge{position:absolute;left:6%;bottom:9%;display:flex;align-items:center;gap:11px;background:#fffdf7;border:2px solid #fff3d4;border-radius:20px;padding:13px 17px;box-shadow:5px 7px 0 #e9dbae66;transform:rotate(-6deg);z-index:3}
+.ql-kids-scene-badge>span{font-size:31px}
+.ql-kids-scene-badge b{display:block;font-size:12px;color:#347e66}
+.ql-kids-scene-badge small{font-size:10px;color:#9b9b83;display:block;margin-top:3px}
+.ql-kids-speech-sticker{position:absolute;right:2%;bottom:15%;background:#ffda96;color:#8e674a;border:3px solid #fff8e2;border-radius:26px 26px 12px 26px;padding:15px 19px;font:950 18px/1.1 ui-rounded,"Trebuchet MS",sans-serif;box-shadow:5px 7px 0 #eec7a26d;transform:rotate(7deg);z-index:3}
+.ql-kids-speech-sticker span{color:#f58a82}
+.ql-hero-handnote{position:absolute;left:35%;bottom:-68px;display:flex;align-items:center;gap:8px;color:#d1926c;transform:rotate(-8deg);font:900 12px/1.15 ui-rounded,"Trebuchet MS",sans-serif}
+.ql-hero-handnote>span:first-child{font-size:30px}
+.ql-hero-sprinkles{position:absolute;inset:0;pointer-events:none;z-index:1}
+.ql-hero-sprinkles span{position:absolute;font-size:40px;opacity:.55}
+.ql-hero-sprinkles span:nth-child(1){top:48px;left:42%;color:#ecbf79;transform:rotate(18deg)}
+.ql-hero-sprinkles span:nth-child(2){bottom:65px;left:12%;color:#ed9b9b}
+.ql-hero-sprinkles span:nth-child(3){top:15%;right:4%;color:#e7a1a0}
+.ql-hero-sprinkles span:nth-child(4){bottom:70px;right:26%;color:#8fcfae}
+.ql-brightbar{background:#f7db9d;padding:20px 4%;position:relative;z-index:2}
+.ql-tiny-world{position:relative;padding:84px 5% 96px;background:#fffdf5;overflow:hidden}
+.ql-tiny-world:before{content:"✿";position:absolute;left:-46px;top:8px;font-size:150px;line-height:1;color:#f7eacb;transform:rotate(-18deg)}
+.ql-tiny-world:after{content:"✳";position:absolute;right:-31px;bottom:25px;font-size:165px;line-height:1;color:#dff2e4;transform:rotate(20deg)}
+.ql-tiny-world-wrap{max-width:1290px;margin:0 auto;position:relative;z-index:2}
+.ql-tiny-world-top{display:grid;grid-template-columns:1.3fr .7fr;align-items:end;gap:5%;margin-bottom:29px}
+.ql-tiny-world-top h2{font-size:clamp(35px,4.15vw,54px);line-height:1.12;letter-spacing:-.055em;color:#2c6555;margin:19px 0 6px}
+.ql-tiny-world-top h2 em{font-style:normal;color:#e99b79}
+.ql-tiny-world-top>p{font-size:14px;color:#759082;line-height:1.8;padding-bottom:5px;max-width:425px}
+.ql-tiny-moment-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+.ql-tiny-moment{position:relative;min-width:0;overflow:hidden;border-radius:26px;padding:12px 12px 24px;border:1px solid #eadfd0;box-shadow:0 12px 28px #446c4d0a;transition:transform .18s ease,box-shadow .18s ease}
+.ql-tiny-moment:hover{transform:translateY(-5px) rotate(-1deg);box-shadow:0 17px 31px #446c4d16}
+.ql-tiny-peach{background:#fff0e8}
+.ql-tiny-yellow{background:#fff5db}
+.ql-tiny-lilac{background:#f1efff}
+.ql-tiny-mint{background:#eaf8ef}
+.ql-tiny-moment-art{position:relative;overflow:hidden;background:#ffffff99;border-radius:19px;border:4px solid #fff;box-shadow:0 4px 12px #636b5613}
+.ql-tiny-moment-art .bp-moment-svg{display:block;width:100%;height:auto;aspect-ratio:320/194}
+.ql-tiny-moment-copy{padding:16px 9px 0}
+.ql-tiny-moment-copy small{font-size:10px;color:#3a9a7b;font-weight:950;letter-spacing:1.25px}
+.ql-tiny-moment-copy h3{font-size:20px;color:#37665c;line-height:1.22;letter-spacing:-.03em;margin:8px 0}
+.ql-tiny-moment-copy p{font-size:12px;color:#809689;line-height:1.6;margin:0}
+.ql-tiny-moment-doodle{position:absolute;right:13px;bottom:5px;color:#ffffffaa;font-size:51px}
+.ql-tiny-world-legend{display:flex;justify-content:center;gap:25px;flex-wrap:wrap;margin-top:28px;font-size:12px;color:#578774;font-weight:900}
+.ql-tiny-world-legend span{background:#f4faf3;border:1px solid #e3f1e5;padding:9px 13px;border-radius:24px}
+.ql-page .ql-how{padding-top:73px;background:#f5fbf6;border-radius:45px 45px 0 0;max-width:none;padding-inline:max(5%,calc((100vw - 1290px)/2))}
+.ql-page .ql-how .ql-section-head{max-width:750px}
+.ql-page .ql-how .ql-section-head h2{color:#2e6657}
+.ql-page .ql-outcomes article{border-radius:27px}
+.ql-page .ql-outcomes article:nth-of-type(1){background:#fff1e6}
+.ql-page .ql-outcomes article:nth-of-type(2){background:#e5f5ea}
+.ql-page .ql-outcomes article:nth-of-type(3){background:#e8f4ff}
+.ql-page .ql-outcomes h3{font-size:22px}
+.ql-page .ql-outcomes p{font-size:13px}
+.ql-page .ql-outcome-icon{font-size:45px;width:76px;height:76px;border-radius:23px;box-shadow:4px 5px 0 #ffffff77}
+.ql-page .ql-feature-grid{gap:19px}
+.ql-page .ql-feature{border-radius:27px;min-height:265px}
+.ql-page .ql-feature .ql-feature-top>span{font-size:34px;width:75px;height:75px;border-radius:24px}
+.ql-page .ql-feature h3{font-size:26px;max-width:415px}
+.ql-page .ql-feature p{font-size:13px}
+.ql-page .ql-role-art{background:linear-gradient(135deg,#fcebcf,#d9f1e2);position:relative;min-height:340px;border-radius:22px}
+.ql-page .ql-role-art:before{content:"✳";position:absolute;top:12px;left:20px;font-size:67px;color:#fbcb7b}
+.ql-page .ql-role-art:after{content:"🌼";position:absolute;bottom:17px;right:12px;font-size:43px}
+.ql-page .ql-role-scene{display:grid;justify-items:center;align-items:center;width:100%;padding:19px;gap:0}
+.ql-role-kids-art{position:relative;width:100%;max-width:420px;filter:drop-shadow(0 10px 10px #42846b16)}
+.ql-role-kids-art .bp-friends-svg{display:block;width:100%;height:auto}
+.ql-page .ql-role-scene-paper{position:relative;z-index:3;justify-self:center;display:flex;flex-wrap:wrap;gap:5px;transform:rotate(1deg);border-radius:17px;padding:12px 13px}
+.ql-page .ql-role-scene-paper>span{display:inline-block;font-size:10px;margin:0}
+.ql-page .ql-experience{background:#f7faf6}
+.ql-page .ql-quiet{border-top:14px solid #cfe9d6}
+.ql-quiet-illustration:before{content:"☁️";position:absolute;right:3%;top:5%;font-size:52px;z-index:2}
+.ql-quiet-illustration:after{content:"🧸";position:absolute;left:2%;bottom:5%;font-size:53px;transform:rotate(-15deg);z-index:2}
+.ql-page .ql-trust:before{content:"🌸";position:absolute;right:3%;top:15%;font-size:65px;opacity:.6}
+.ql-page .ql-trust{position:relative}
+.ql-last-inner{isolation:isolate}
+.ql-last-inner .ql-last-friends{max-width:300px;margin:-8px auto 5px;position:relative;z-index:1}
+.ql-last-inner .ql-last-friends .bp-friends-svg{width:100%;height:auto;display:block}
+.ql-last-inner h2{margin-top:4px}
+.ql-last-inner:before{content:"✿";position:absolute;left:7%;top:14%;font-size:130px;color:#f1b9959a;transform:rotate(-14deg);z-index:-1}
+.ql-last-inner:after{content:"☀";position:absolute;right:9%;top:12%;font-size:100px;color:#f1bf6780;z-index:-1}
+@media(max-width:1250px){.ql-page .ql-kinder-hero{min-height:620px;padding-inline:4%}.ql-kinder-hero h1{font-size:clamp(45px,5.1vw,67px)}.ql-kids-hero-visual{min-height:0}.ql-kids-speech-sticker{font-size:14px;padding:11px 13px}.ql-kids-scene-badge{padding:9px 12px}.ql-tiny-moment-grid{gap:12px}.ql-tiny-moment-copy h3{font-size:19px}}
+@media(max-width:1000px){.ql-page .ql-kinder-hero{grid-template-columns:1fr;gap:0;padding:60px 5% 95px}.ql-kinder-hero .ql-hero-content{max-width:810px;text-align:center;margin:0 auto}.ql-kinder-hero .ql-hero-content>p{margin-inline:auto}.ql-kinder-hero h1{max-width:850px;font-size:clamp(49px,8vw,75px)}.ql-kinder-hero .ql-hero-proof,.ql-kinder-hero .ql-hero-actions{justify-content:center;margin-inline:auto}.ql-kids-hero-visual{max-width:770px;width:100%;margin:20px auto 0}.ql-kids-speech-sticker{right:6%}.ql-hero-handnote{display:none}.ql-tiny-world-top{grid-template-columns:1fr;gap:4px;text-align:center}.ql-tiny-world-top>p{max-width:680px;margin:0 auto}.ql-tiny-moment-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.ql-tiny-moment-copy h3{font-size:21px}}
+@media(max-width:650px){.ql-page .ql-kinder-hero{padding:46px 5% 78px}.ql-kinder-hero .ql-eyebrow{font-size:9px;padding:10px 12px;letter-spacing:.2px}.ql-kinder-hero h1{font-size:clamp(41px,9.1vw,55px);line-height:1.1;margin:17px auto}.ql-kinder-hero h1 em{white-space:normal}.ql-kinder-hero .ql-hero-content>p{font-size:13px;line-height:1.75}.ql-kinder-hero .ql-hero-actions{margin-top:23px}.ql-kinder-hero .ql-hero-proof{justify-content:center;gap:7px 12px}.ql-kinder-hero .ql-hero-proof span{font-size:10px}.ql-kids-hero-visual{margin:17px auto 0}.ql-kids-sun-sticker{font-size:34px}.ql-kids-rainbow-sticker{font-size:32px}.ql-kids-scene-badge{bottom:5%;left:1%;border-radius:13px;gap:7px;transform:rotate(-4deg)}.ql-kids-scene-badge>span{font-size:24px}.ql-kids-scene-badge b{font-size:10px}.ql-kids-scene-badge small{font-size:9px}.ql-kids-speech-sticker{right:1%;bottom:8%;font-size:12px;padding:9px 10px;border-radius:13px}.ql-tiny-world{padding:60px 5% 68px}.ql-tiny-world-top h2{font-size:36px}.ql-tiny-world-top>p{font-size:13px}.ql-tiny-moment-grid{gap:10px}.ql-tiny-moment{padding:8px 8px 15px;border-radius:19px}.ql-tiny-moment-art{border-width:2px;border-radius:13px}.ql-tiny-moment-copy{padding:12px 5px 0}.ql-tiny-moment-copy small{font-size:9px}.ql-tiny-moment-copy h3{font-size:16px}.ql-tiny-moment-copy p{font-size:11px}.ql-tiny-world-legend{gap:8px}.ql-tiny-world-legend span{font-size:10px}.ql-last-inner .ql-last-friends{max-width:250px}.ql-page .ql-how{border-radius:27px 27px 0 0}}
+@media(max-width:390px){.ql-page .ql-kinder-hero{padding-inline:4%}.ql-kinder-hero h1{font-size:40px}.ql-kids-scene-badge{bottom:-1%;left:1%}.ql-kids-speech-sticker{right:-1%;bottom:7%;font-size:10px}.ql-kids-hero-visual{margin-bottom:16px}.ql-tiny-moment-copy h3{font-size:15px}.ql-role-scene-paper>span{font-size:9px!important;padding:8px 9px}.ql-last-inner .ql-last-friends{max-width:220px}}
+@media(prefers-reduced-motion:reduce){.ql-tiny-moment{transition:none}.ql-tiny-moment:hover{transform:none}}
