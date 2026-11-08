@@ -1,0 +1,88 @@
+/* BrightPath early-years visual system: warm, accessible and playful. */
+:root{--bp-mint:#c7f1dc;--bp-sun:#ffdc83;--bp-sky:#d8effc;--bp-blush:#ffe2d4;--bp-lilac:#ece7ff;--bp-ink:#293e55}
+body{background:#fffcf6}
+.classroom-nav{border-bottom:1px solid #f7e6d8;background:#fffdf8}
+.classroom-nav:before{content:"";position:absolute;left:34%;top:0;width:87px;height:19px;background:linear-gradient(90deg,#b6eddd 25%,#ffda8c 25% 50%,#fac1b5 50% 75%,#d4d9fd 75%);border-radius:0 0 18px 18px;opacity:.7}
+.mark-logo .logo-apple{background:linear-gradient(145deg,#21b297,#087d71);box-shadow:2px 3px 0 #b5e8d7}
+.school-hero{background:radial-gradient(ellipse at 92% 20%,#dff3ff,transparent 44%),radial-gradient(ellipse at 22% 85%,#ffe9c9,transparent 40%),#fbfaf0;min-height:650px}
+.school-hero:after{content:"";position:absolute;z-index:0;bottom:-15px;left:0;width:100%;height:56px;background:#fffcf6;clip-path:polygon(0 45%,6% 29%,12% 38%,19% 20%,27% 43%,36% 28%,44% 46%,54% 26%,63% 43%,71% 23%,80% 45%,89% 30%,100% 40%,100% 100%,0 100%)}
+.bp-art-stage{position:relative;min-width:0;isolation:isolate;align-self:center}
+.bp-art-stage .scene-wrap{width:100%;max-width:540px;margin:0 auto}
+.bp-hero-friends{position:absolute;z-index:7;bottom:-6px;left:45%;transform:translateX(-50%);width:min(88%,355px);pointer-events:none;filter:drop-shadow(0 8px 4px #244e4620)}
+.bp-hero-friends .bp-friends-svg{width:100%;display:block;max-height:220px}
+.bp-art-stage .school-scene{bottom:90px}
+.bp-art-stage .scene-grass{background:#98d99f}
+.bp-art-stage .top-note{right:-7px;top:106px}
+.bp-art-stage .bottom-note{bottom:12px;right:-7px}
+.bp-day-section{padding-top:80px;padding-bottom:80px;position:relative}
+.bp-day-section:before{content:"✦";position:absolute;left:1.5%;top:62px;font-size:36px;color:#f4c45e;opacity:.6;transform:rotate(-15deg)}
+.bp-day-intro{text-align:center;max-width:720px;margin:0 auto 28px}
+.bp-day-intro h2{font-size:clamp(28px,3.3vw,42px);line-height:1.15;color:#2a4857;margin:0 0 14px}
+.bp-day-intro p.sub{font-size:15px;color:#69808c;line-height:1.7}
+.bp-day-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:17px}
+.bp-day-card{border:1px solid #eceded;border-radius:23px;overflow:hidden;background:#fff;box-shadow:0 13px 23px #2043420b;transition:transform .18s ease,box-shadow .18s ease}
+.bp-day-card:hover{transform:translateY(-5px);box-shadow:0 20px 29px #20434212}
+.bp-day-card .bp-moment-svg{width:100%;height:auto;display:block;aspect-ratio:320/194}
+.bp-day-card-copy{padding:20px 18px 23px}
+.bp-day-card-copy>span{font-size:11px;color:#168b79;letter-spacing:.3px;font-weight:850;background:#e7f7ed;border-radius:14px;padding:6px 10px}
+.bp-day-card h3{font-size:17px;line-height:1.3;margin:18px 0 7px;color:#2f4a56}
+.bp-day-card p{font-size:12px;color:#738891;line-height:1.7;margin:0}
+.bp-day-card:nth-child(2) .bp-day-card-copy>span{background:#ecebff;color:#6965a3}
+.bp-day-card:nth-child(3) .bp-day-card-copy>span{background:#fff2d7;color:#a07334}
+.bp-day-card:nth-child(4) .bp-day-card-copy>span{background:#ffebea;color:#ae6e65}
+.what-section{padding-top:74px}
+.fun-card{border-radius:29px;min-height:292px;box-shadow:0 11px 23px #263c4810;transition:transform .16s ease}
+.fun-card:hover{transform:translateY(-4px)}
+.fun-card:before{content:"";position:absolute;right:-55px;top:-52px;width:135px;height:135px;background:#fff8;border-radius:50%}
+.fun-card.peach{background:linear-gradient(145deg,#ffe7d4,#fff1e8)}
+.fun-card.sky{background:linear-gradient(145deg,#e2f2ff,#f3fbff)}
+.fun-card.lemon{background:linear-gradient(145deg,#fff0be,#fff9df)}
+.fun-emoji{display:grid;place-items:center;width:73px;height:73px;background:#fff9;border-radius:21px;transform:rotate(-7deg);box-shadow:4px 5px 0 #ffffff60}
+.class-steps{background:radial-gradient(ellipse at 5% 20%,#e9edff,transparent 22%),radial-gradient(ellipse at 98% 78%,#fcead2,transparent 21%),#f7fafb}
+.path-card:nth-child(1) .path-icon{background:#fff1d2}
+.path-card:nth-child(2) .path-icon{background:#e8f5ff}
+.path-card:nth-child(3) .path-icon{background:#e8f8ee}
+.path-card{border-radius:25px;box-shadow:0 8px 18px #1a43430c}
+.path-card:hover{box-shadow:0 16px 26px #1a434316}
+.pricing-hero{position:relative}
+.pricing-hero:before{content:"☁️    ✦    ☀️";position:absolute;top:22px;left:5%;font-size:26px;opacity:.5;letter-spacing:14px}
+.pricing-hero:after{content:"✳    🌻";position:absolute;right:7%;bottom:20px;font-size:31px;opacity:.58}
+.price-card{transition:transform .18s}
+.price-card:hover{transform:translateY(-4px)}
+.price-card:nth-child(1){background:linear-gradient(180deg,#fff9ec,#fff 32%);border-top:6px solid #f6cd72}
+.price-card:nth-child(2){background:linear-gradient(180deg,#ecfbf4,#fff 36%);border-top:6px solid #32ba93}
+.price-card:nth-child(3){background:linear-gradient(180deg,#f2f0ff,#fff 35%);border-top:6px solid #b9a9eb}
+.parent-benefits .family-art{border-radius:34% 65% 42% 55%}
+.monetization-panel{background:linear-gradient(120deg,#1b7468,#1d5969);position:relative}
+.monetization-panel:before{content:"✦";font-size:70px;color:#ffffff1b;position:absolute;left:35%;top:-27px}
+.trust-section{background:#f3faf5;border-radius:25px;margin-top:42px;margin-bottom:42px}
+.playful-foot{background:linear-gradient(95deg,#fffaec,#ebf8f1,#f2f3ff)}
+@media(max-width:1080px){
+ .bp-day-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .bp-art-stage .scene-wrap{margin:0 auto}
+ .bp-art-stage .school-scene{bottom:95px}
+ .bp-hero-friends{left:50%;bottom:0}
+}
+@media(max-width:750px){
+ .bp-art-stage{max-width:560px;width:100%;margin:auto}
+ .bp-day-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .bp-day-section{padding-top:45px;padding-bottom:56px}
+ .bp-art-stage .scene-wrap{height:385px}
+ .bp-art-stage .school-scene{bottom:71px}
+ .bp-hero-friends{max-width:265px;bottom:-12px}
+ .school-hero{padding-bottom:46px}
+}
+@media(max-width:480px){
+ .bp-day-grid{grid-template-columns:1fr 1fr;gap:10px}
+ .bp-day-card-copy{padding:13px 12px 17px}
+ .bp-day-card h3{font-size:14px;line-height:1.33;margin:15px 0 7px}
+ .bp-day-card p{font-size:11px}
+ .bp-day-card-copy>span{font-size:10px;padding:4px 7px}
+ .bp-art-stage .school-scene{bottom:84px}
+ .bp-hero-friends{max-width:215px;bottom:17px}
+ .bp-art-stage .scene-wrap{height:342px}
+ .bp-art-stage .top-note{right:0;top:43px}
+ .bp-art-stage .bottom-note{right:0;bottom:8px}
+ .bp-day-section:before{display:none}
+}
+@media(prefers-reduced-motion:reduce){.bp-day-card,.fun-card,.path-card,.price-card{transition:none}}

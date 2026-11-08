@@ -1,3 +1,4 @@
+import {welcomeArt} from './playful-art.js';
 import {renderCareDiary,renderMilestones,renderChildMessages} from './daycare.js';
 import {renderPickupDesk} from './daycare-pickup.js';
 import {renderChildMoments} from './daycare-media.js';
@@ -41,7 +42,7 @@ export async function renderTeacherPage(ctx,tab){
    '<div class="mw-metrics">'+stat('My classes',classes.length,'📚','teal')+stat('My students',students.length,'🎒','blue')+
    stat('Daily care updates',careToday.length,'☀','violet')+stat('Milestones',recentMilestones.length,'🌱','amber')+'</div>'+
    '<div class="mw-welcome mw-welcome-teacher"><div><span class="mw-welcome-kicker">TEACHER WORKSPACE</span><h2>Every little moment counts</h2><p>Share nap times, meals, playtime, photo updates and growing milestones with families.</p>'+
-   button('Log a care moment →','mw-new-post','light')+'</div><div class="mw-welcome-art">✏️<span>★</span></div></div>'+
+   button('Log a care moment →','mw-new-post','light')+'</div><div class="mw-welcome-art">'+welcomeArt('teacher')+'</div></div>'+
    '<div class="mw-section-title"><h2>Your daily tools</h2></div>'+
    '<div class="mw-actions-grid">'+[
     ['Log daily care','care','☀'],['Share photos & videos','moments','📸'],['Record a milestone','milestones','🌱'],['Parent messages','messages','💌']

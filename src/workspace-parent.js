@@ -1,3 +1,4 @@
+import {welcomeArt} from './playful-art.js';
 import {renderCareDiary,renderMilestones,renderChildMessages} from './daycare.js';
 import {renderPickupDesk} from './daycare-pickup.js';
 import {renderChildMoments} from './daycare-media.js';
@@ -49,7 +50,7 @@ export async function renderParentPage(ctx,tab){
    stat('Care updates today',todayCare.length,'☀','blue')+
    stat('Development moments',growth.length,'🌱','violet')+'</div>'+
    '<div class="mw-welcome mw-welcome-parent"><div><span class="mw-welcome-kicker">HELLO, FAMILY!</span><h2>Little moments. Big milestones.</h2><p>Celebrate every achievement and stay close to your child’s school day.</p>'+
-   button('See today’s care diary →','mw-family-journal','light')+'</div><div class="mw-welcome-art">🌈<span>♡</span></div></div>'+
+   button('See today’s care diary →','mw-family-journal','light')+'</div><div class="mw-welcome-art">'+welcomeArt('parent')+'</div></div>'+
    '<div class="mw-section-title"><h2>Your child’s day</h2></div><div class="mw-actions-grid">'+[['Daily diary','care','☀'],['Photos & videos','moments','📸'],['Milestones','milestones','🌱'],['Send a message','messages','💌']].map(([label,tab,icon])=>'<button class="mw-action" type="button" data-family-quick="'+tab+'"><span>'+icon+'</span><b>'+label+'</b><small>Open updates ↗</small></button>').join('')+'</div>'+
    '<div class="mw-two">'+box('My children',
     children.length?'<div class="mw-children-mini">'+children.map(s=>

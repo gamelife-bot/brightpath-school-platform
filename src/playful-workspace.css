@@ -1,0 +1,182 @@
+/* BrightPath's unified early-years workspace design. Decorative, no fake student content. */
+:root{--bp-coral:#fa9d8e;--bp-cream:#fff8e9;--bp-butter:#ffe5a5;--bp-sky:#dceefa;--bp-mint:#dbf4e8;--bp-lilac:#e9e5ff}
+.mw-app{background:
+ radial-gradient(ellipse at 92% 2%,#fff1dc 0%,transparent 25%),
+ radial-gradient(ellipse at 1% 36%,#ecf3ff 0%,transparent 23%),
+ radial-gradient(circle at 82% 77%,#eaf8f3 0%,transparent 20%),#fafbf8;color:#294a56}
+.mw-role-parent{background:
+ radial-gradient(ellipse at 92% 2%,#ffecd6 0%,transparent 29%),
+ radial-gradient(ellipse at 1% 44%,#e9f4fd 0%,transparent 25%),#fffcf7}
+.mw-role-teacher{background:radial-gradient(ellipse at 92% 2%,#e9f6fe 0%,transparent 28%),#fafbf8}
+.mw-role-owner{background:#f5f8fa}
+.mw-brandzone{position:relative;overflow:hidden;min-height:125px}
+.mw-brandzone:before{content:"✦";position:absolute;right:20px;top:4px;color:#ffffff20;font-size:63px;transform:rotate(15deg);pointer-events:none}
+.bp-side-tiles{display:flex;gap:5px;margin-top:12px}
+.bp-side-tiles span{display:grid;place-items:center;width:25px;height:25px;border-radius:7px;background:#ffd997;color:#945d30;font-size:12px;font-weight:900;transform:rotate(-8deg)}
+.bp-side-tiles span:nth-child(2){background:#adebd7;color:#236c63;transform:rotate(6deg)}
+.bp-side-tiles span:nth-child(3){background:#b9dbfa;color:#426c90;transform:rotate(-4deg)}
+.bp-side-tiles span:nth-child(4){background:#f8cbd5;color:#914d67;transform:rotate(9deg)}
+.mw-role-owner .bp-side-tiles{display:none}
+.mw-role-owner .mw-brandzone{min-height:105px}
+.mw-role-parent .mw-sidebar{background:linear-gradient(180deg,#fff9ea,#fff4e4);border-right:1px solid #eedfcc;box-shadow:6px 0 26px #d9ac7c12}
+.mw-role-parent .mw-brandzone{border-bottom:1px solid #f0e4cf}
+.mw-role-parent .mw-brandzone:before{color:#fbd59c;opacity:.7}
+.mw-role-parent .mw-brand{color:#3a685e}.mw-role-parent .mw-brand span{color:#ee947d}
+.mw-role-parent .mw-brandzone p{color:#997b67}
+.mw-role-parent .mw-side-caption{color:#9b867b}
+.mw-role-parent .mw-navitem{color:#626e70}
+.mw-role-parent .mw-navitem:hover{color:#356b63;background:#fff3d9}
+.mw-role-parent .mw-navitem.mw-nav-active{background:#ffe2ca;color:#744d3d;box-shadow:inset 4px 0 #f39b77}
+.mw-role-parent .mw-navico{color:#b88d72}
+.mw-role-parent .mw-side-footer{background:#fff;border-color:#f0e3ce}
+.mw-role-parent .mw-side-footer b{color:#395866}
+.mw-role-parent .mw-side-footer span{color:#967f76}
+.mw-role-parent .mw-avatar{background:#ffdeb3;color:#825934}
+.mw-role-teacher .mw-sidebar{background:linear-gradient(175deg,#145663,#187b72)}
+.mw-role-teacher .mw-navitem.mw-nav-active{background:#ffffff2b;box-shadow:inset 4px 0 #fbd88b}
+.mw-role-school_admin .mw-sidebar{background:linear-gradient(160deg,#1b4653,#1a6570)}
+.mw-role-school_admin .mw-navitem.mw-nav-active{box-shadow:inset 4px 0 #ffc97b}
+.mw-role-parent .mw-topbar{background:#fffefa}
+.mw-role-teacher .mw-topbar{background:#fafeff}
+.mw-role-school_admin .mw-topbar{background:#fffefa}
+.bp-top-doodle{color:#eebd63;margin-left:7px;font-size:14px}
+.mw-role-owner .bp-top-doodle{display:none}
+.mw-role-parent .mw-location-dot{background:#f4a56f;box-shadow:0 0 0 4px #fff0d6}
+.mw-content{position:relative;z-index:0}
+.mw-page-head{position:relative;overflow:hidden;min-height:139px;border-radius:20px;padding:24px 27px;background:linear-gradient(100deg,#e9f8ee 0%,#f7fbef 62%,#fff4e5 100%);border:1px solid #e2ede5;box-shadow:0 5px 14px #244d5006;align-items:center}
+.mw-role-parent .mw-page-head{background:linear-gradient(100deg,#fff0db 0%,#fffaf1 61%,#e9f7f1 100%);border-color:#f2e9dc}
+.mw-role-teacher .mw-page-head{background:linear-gradient(100deg,#e5f4fd 0%,#f6fbff 55%,#fdf2d9 100%);border-color:#e2eef4}
+.mw-role-owner .mw-page-head{background:transparent;border:0;box-shadow:none;min-height:0;padding:0;overflow:visible}
+.bp-heading-content{max-width:760px;position:relative;z-index:1}
+.bp-heading-deco{position:absolute;right:30px;top:8px;width:190px;height:120px;pointer-events:none;opacity:.74}
+.bp-heading-deco span{position:absolute;font-size:34px;line-height:1}
+.bp-heading-deco span:first-child{top:14px;right:8px;color:#f2a1a1;transform:rotate(14deg)}
+.bp-heading-deco span:nth-child(2){top:66px;right:94px;color:#e5b862;transform:rotate(-24deg)}
+.bp-heading-deco span:last-child{top:21px;right:105px;color:#e1ecfa;font-size:54px;text-shadow:0 2px 0 #a9d6e1}
+.mw-role-owner .bp-heading-deco{display:none}
+.mw-role-parent .bp-heading-deco{opacity:.88}
+.mw-page-head h1{font-family:"Trebuchet MS",ui-rounded,system-ui,sans-serif;font-size:clamp(25px,2.9vw,35px);color:#2e5261;letter-spacing:-1.1px}
+.mw-page-head .mw-eyebrow{color:#159b7d;font-weight:900}
+.mw-role-parent .mw-page-head .mw-eyebrow{color:#ce7e52}
+.mw-page-sub{color:#69858d;max-width:650px;line-height:1.65}
+.mw-role-owner .mw-page-sub{max-width:unset}
+.mw-metrics{gap:15px}
+.mw-stat{border:1px solid #e9ece8;border-top:5px solid #89d5bb;border-radius:20px;box-shadow:0 8px 19px #25525b09;min-height:144px;transition:transform .15s ease}
+.mw-stat:hover{transform:translateY(-2px)}
+.mw-stat:before{height:84px;width:84px;right:-29px;bottom:-37px}
+.mw-stat:nth-child(4n+2){border-top-color:#a3cbea}
+.mw-stat:nth-child(4n+3){border-top-color:#f1c579}
+.mw-stat:nth-child(4n+4){border-top-color:#d0bcf4}
+.mw-stat-icon{border-radius:14px;font-size:23px;width:42px;height:42px;flex:0 0 42px;transform:rotate(6deg)}
+.mw-stat>strong{font-family:"Trebuchet MS",ui-rounded,sans-serif;font-size:31px;color:#2c555f}
+.mw-role-owner .mw-stat{border-radius:17px;min-height:132px;transform:none}
+.mw-welcome{grid-template-columns:minmax(0,1fr) 280px;min-height:236px;border-radius:26px;padding:30px 35px;background:linear-gradient(112deg,#148b7b,#237c81);box-shadow:0 13px 26px #217d721a}
+.mw-welcome-school{background:linear-gradient(112deg,#237b75,#299e87)}
+.mw-welcome-teacher{background:linear-gradient(112deg,#3769a4,#2c8a8d)}
+.mw-welcome-parent{background:linear-gradient(112deg,#e89375,#d77d79)}
+.mw-welcome:before{content:"✦";position:absolute;left:42%;top:22px;color:#ffffff2d;font-size:48px;transform:rotate(20deg)}
+.mw-welcome h2{font-family:"Trebuchet MS",ui-rounded,system-ui,sans-serif;font-size:clamp(22px,2.7vw,30px);letter-spacing:-.8px}
+.mw-welcome p{color:#f3fdf9;line-height:1.7}
+.mw-welcome-kicker{color:#fff7cb}
+.mw-welcome-art{width:100%;max-width:295px;position:relative;z-index:1;transform:none;font-size:initial;filter:none}
+.mw-welcome-art svg{display:block;width:100%;height:auto;max-height:214px;filter:drop-shadow(0 9px 8px #124a4725)}
+.mw-welcome-art span{position:static;font-size:inherit}
+.mw-welcome .mw-btn-light{background:#fffbea;color:#2f6b64;border-radius:13px;font-size:12px;box-shadow:0 4px 0 #ffffff36}
+.mw-welcome-parent .mw-btn-light{color:#a75c50}
+.mw-section-title h2,.mw-card-head h2{font-family:"Trebuchet MS",ui-rounded,system-ui,sans-serif;color:#365664}
+.mw-card{border-radius:20px;border:1px solid #e4ede8;box-shadow:0 8px 22px #24425109;overflow:hidden}
+.mw-role-parent .mw-card{border-color:#f1ebe1}
+.mw-card-head h2{font-size:17px}
+.mw-card-head h2:before{content:"✿";font-size:15px;color:#e7a65f;opacity:.9;margin-right:7px}
+.mw-role-owner .mw-card-head h2:before{display:none}
+.mw-action{border-radius:18px;border:1px solid #e4eeeb;min-height:139px;box-shadow:0 5px 14px #23504508;background:linear-gradient(155deg,#fff,#f9fefa)}
+.mw-action:nth-child(4n+2){background:linear-gradient(155deg,#fff,#f2f8ff)}
+.mw-action:nth-child(4n+3){background:linear-gradient(155deg,#fff,#fff8e8)}
+.mw-action:nth-child(4n+4){background:linear-gradient(155deg,#fff,#fff1f3)}
+.mw-action>span{font-size:29px;display:grid;place-items:center;width:54px;height:54px;background:#e7f7ee;border-radius:16px;transform:rotate(-7deg)}
+.mw-action:nth-child(4n+2)>span{background:#e6f2fd}
+.mw-action:nth-child(4n+3)>span{background:#ffeed2}
+.mw-action:nth-child(4n+4)>span{background:#ffe8eb}
+.mw-action>b{font-size:13px;color:#335564}
+.mw-action>small{font-size:11px}
+.mw-role-school_admin .mw-actions-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+.mw-role-parent .mw-action{background:linear-gradient(160deg,#fffef9,#fff5ee);border-color:#f1e7d8}
+.mw-role-owner .mw-action{background:#fff;min-height:133px}
+.mw-role-owner .mw-action>span{transform:none}
+.mw-empty{background:radial-gradient(ellipse at 50% 8%,#f5fbf8,transparent 68%),#fffdfa;padding:25px 20px 27px;border-radius:18px;border:2px dashed #d8e9e0;position:relative;overflow:hidden}
+.mw-role-parent .mw-empty{background:#fffaf2;border-color:#f3dfca}
+.bp-empty-scene{height:99px;position:relative;display:grid;place-items:center;margin:0 auto 15px;max-width:180px}
+.mw-empty-icon{margin:0;z-index:1;height:71px;width:71px;border-radius:24px;background:linear-gradient(145deg,#ffe8ae,#ccefd8);font-size:34px;box-shadow:5px 7px 0 #e9f4ec;transform:rotate(-5deg)}
+.bp-empty-cloud{position:absolute;left:5px;top:2px;color:#afd5f2;line-height:1;font-size:39px;transform:rotate(-16deg)}
+.bp-empty-star{position:absolute;right:12px;top:12px;font-size:30px;color:#ebc26f}
+.bp-empty-flower{position:absolute;left:23px;bottom:0;font-size:27px;color:#e9958e}
+.mw-empty h3{font-size:15px}
+.mw-empty p{font-size:12px}
+.mw-round-icon{border-radius:15px;background:linear-gradient(135deg,#ffe1bc,#bfead9);box-shadow:0 3px 0 #e3f1e6;color:#477568;font-family:"Trebuchet MS",sans-serif;font-weight:900}
+.mw-child-avatar{background:linear-gradient(145deg,#ffd9a7,#a9e4d0);border-radius:24px}
+.mw-role-parent .mw-children-mini>div{padding:10px;border-radius:13px;background:#fff9ec;border:1px solid #f7e8d2}
+.mw-role-parent .mw-children-mini .mw-round-icon{background:#f5d9b4;color:#936145}
+.mw-children-mini small{color:#b38e74}
+.mw-role-parent .mw-class-card{background:linear-gradient(145deg,#fff7e6,#fff);border-color:#f2e4d3}
+.mw-role-teacher .mw-class-card{background:linear-gradient(145deg,#eaf6fd,#fff)}
+.mw-class-card{border-radius:23px}
+.mw-class-icon{background:linear-gradient(135deg,#fff1c9,#b9eadc);border-radius:18px}
+.mw-journal-entry,.mw-notice-entry{border-radius:17px}
+.mw-journal-entry:nth-child(2n){background:#fffaf3}
+.bp-care-emoji{box-shadow:0 3px 0 #dceee2;transform:rotate(-3deg)}
+.bp-milestone-card{box-shadow:0 7px 16px #365e5a0b}
+.bp-chat-child.active{background:#dff5ea}
+.bp-media-tile{border-radius:21px}
+.bp-child-avatar{background:linear-gradient(135deg,#fff0c7,#c2e8e2)}
+.mw-btn{border-radius:12px}
+.mw-btn-primary{background:#139d83}
+.mw-btn-primary:hover{background:#087966}
+.mw-role-parent .mw-btn-primary{background:#d7866e}
+.mw-role-parent .mw-btn-primary:hover{background:#b86753}
+.mw-role-parent .mw-pill-green{background:#e2f7e8}
+.mw-role-parent .mw-stat-icon{background:#fff0d5}
+.mw-role-parent .mw-stat:nth-child(2){border-top-color:#f1aa8e}
+.mw-role-parent .mw-stat:nth-child(3){border-top-color:#8ed5bd}
+.mw-table th{background:#f9fcfa}
+.mw-table-scroll{border-radius:12px}
+.mw-topbar .mw-logout{border-radius:12px}
+@media(max-width:1120px){
+ .mw-role-school_admin .mw-actions-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .mw-welcome{grid-template-columns:1fr 225px;padding:25px}
+}
+@media(max-width:850px){
+ .mw-brandzone{min-height:initial;padding:14px 20px}
+ .mw-role-owner .mw-brandzone{min-height:initial}
+ .mw-brandzone:before,.bp-side-tiles{display:none}
+ .mw-role-parent .mw-sidebar{background:#fff9ee}
+ .mw-role-parent .mw-navigation{border-top:1px solid #f4e6d2}
+ .mw-role-parent .mw-navitem{background:#fff5e6}
+ .mw-role-school_admin .mw-actions-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .mw-page-head{min-height:115px;padding:20px}
+}
+@media(max-width:650px){
+ .mw-page-head{padding:20px 19px}
+ .bp-heading-deco{right:-14px;top:15px;transform:scale(.65);opacity:.35!important}
+ .mw-welcome{grid-template-columns:minmax(0,1fr) 93px;min-height:200px;gap:5px;padding:20px}
+ .mw-welcome-art{width:125px;margin-left:-12px;align-self:end;overflow:visible}
+ .mw-welcome-art svg{max-height:155px}
+ .mw-welcome h2{font-size:20px}
+ .mw-welcome p{font-size:11px;line-height:1.65}
+ .mw-stat{min-height:128px}
+ .mw-stat>strong{font-size:25px}
+ .mw-action>span{width:42px;height:42px;font-size:23px}
+ .mw-action{min-height:121px}
+ .mw-role-school_admin .mw-actions-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .mw-page-head h1{font-size:24px}
+}
+@media(max-width:400px){
+ .mw-welcome{grid-template-columns:1fr 72px}
+ .mw-welcome-art{width:112px;transform:translateX(-8px)}
+ .mw-welcome h2{font-size:18px}
+ .mw-welcome .mw-btn-light{font-size:10px;padding:9px}
+}
+@media(prefers-reduced-motion:reduce){.mw-stat,.mw-action{transition:none}.mw-stat:hover{transform:none}}
+/* Keep management headings aligned correctly after adding the flower accent. */
+.mw-card-head h2{justify-content:flex-start}
+.mw-card-head h2 .mw-count{margin-left:auto}
+.mw-role-owner .mw-card-head h2{justify-content:space-between}

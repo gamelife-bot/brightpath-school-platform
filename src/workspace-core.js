@@ -1,4 +1,5 @@
 import './workspace.css';
+import './playful-workspace.css';
 import {renderOwnerPage} from './workspace-owner.js';
 import {renderSchoolPage} from './workspace-school.js';
 import {renderTeacherPage} from './workspace-teacher.js';
@@ -12,14 +13,14 @@ export const initial = (s) => (String(s||'U').trim()[0]||'U').toUpperCase();
 export const option = (value,label) => '<option value="'+escapeHtml(value)+'">'+escapeHtml(label)+'</option>';
 export const stat = (label,value,icon='✦',tone='teal',description='') => '<article class="mw-stat mw-tone-'+tone+'"><div class="mw-stat-top"><span>'+escapeHtml(label)+'</span><span class="mw-stat-icon">'+icon+'</span></div><strong>'+escapeHtml(value)+'</strong>'+(description?'<small>'+escapeHtml(description)+'</small>':'')+'</article>';
 export const box = (title,content,extra='')=>'<section class="mw-card '+extra+'"><div class="mw-card-head"><h2>'+title+'</h2></div>'+content+'</section>';
-export const empty = (icon,title,description,cta='')=>'<div class="mw-empty"><div class="mw-empty-icon">'+icon+'</div><h3>'+escapeHtml(title)+'</h3><p>'+escapeHtml(description)+'</p>'+cta+'</div>';
+export const empty = (icon,title,description,cta='')=>'<div class="mw-empty"><div class="bp-empty-scene" aria-hidden="true"><span class="bp-empty-cloud">☁</span><div class="mw-empty-icon">'+icon+'</div><span class="bp-empty-star">✦</span><span class="bp-empty-flower">✿</span></div><h3>'+escapeHtml(title)+'</h3><p>'+escapeHtml(description)+'</p>'+cta+'</div>';
 export const pill = (value,kind='neutral') => '<span class="mw-pill mw-pill-'+kind+'">'+escapeHtml(value)+'</span>';
 export const field = (label,input)=>'<label class="mw-field"><span>'+escapeHtml(label)+'</span>'+input+'</label>';
 export const input = (id,placeholder='',type='text',extra='')=>'<input id="'+id+'" name="'+id+'" placeholder="'+escapeHtml(placeholder)+'" type="'+type+'" '+extra+'>';
 export const select = (id,options,extra='')=>'<select id="'+id+'" '+extra+'>'+options+'</select>';
 export const textarea=(id,placeholder='',extra='')=>'<textarea id="'+id+'" placeholder="'+escapeHtml(placeholder)+'" '+extra+'></textarea>';
 export const button=(label,id,kind='primary',extra='')=>'<button class="mw-btn mw-btn-'+kind+'" id="'+id+'" '+extra+'>'+label+'</button>';
-export const heading=(eyebrow,title,description,actions='')=>'<div class="mw-page-head"><div><p class="mw-eyebrow">'+escapeHtml(eyebrow)+'</p><h1>'+escapeHtml(title)+'</h1><p class="mw-page-sub">'+escapeHtml(description)+'</p></div>'+actions+'</div>';
+export const heading=(eyebrow,title,description,actions='')=>'<div class="mw-page-head"><div class="bp-heading-content"><p class="mw-eyebrow">'+escapeHtml(eyebrow)+'</p><h1>'+escapeHtml(title)+'</h1><p class="mw-page-sub">'+escapeHtml(description)+'</p></div><div class="bp-heading-deco" aria-hidden="true"><span>✿</span><span>✦</span><span>☁</span></div>'+actions+'</div>';
 export const table=(headers,rows,emptyHtml='')=>rows.length?'<div class="mw-table-scroll"><table class="mw-table"><thead><tr>'+headers.map(x=>'<th scope="col">'+escapeHtml(x)+'</th>').join('')+'</tr></thead><tbody>'+rows.join('')+'</tbody></table></div>':emptyHtml;
 export const td=(content)=>'<td>'+content+'</td>';
 export const tr=(cells)=>'<tr>'+cells.map(td).join('')+'</tr>';
@@ -90,12 +91,13 @@ export async function launchWorkspace({db,user,role,context,root,logout,photoDat
  const memberships=(context?.memberships||[]).filter(m=>m.role===role&&m.active);
  const schoolPicker=memberships.length>1?'<select id="mw-school" aria-label="Select school">'+memberships.map(m=>option(m.school_id,m.school_name)).join('')+'</select>':(memberships[0]?'<span class="mw-school-name">'+escapeHtml(memberships[0].school_name)+'</span>':'');
  const logo='<a class="logo brand-home mw-brand" href="'+root+'home/" aria-label="BrightPath homepage">✦ <strong>brightpath<span>.</span></strong></a>';
- const navHtml=nav.map(([id,name,ico])=>'<button type="button" data-mw-page="'+id+'" class="mw-navitem" aria-current="false"><span class="mw-navico">'+ico+'</span><span>'+escapeHtml(name)+'</span></button>').join('');
- document.getElementById('app').innerHTML='<div class="mw-app"><aside class="mw-sidebar">'+
-  '<div class="mw-brandzone">'+logo+'<p>School & home connected</p></div>'+
+ const playfulIcons={overview:'🏡',schools:'🏫',classes:'🧩',students:'🧒',children:'🧒',people:'👥',teachers:'🍎',parents:'💛',families:'👨‍👩‍👧',care:'☀️',milestones:'🌱',moments:'📸',messages:'💌',pickup:'🎒',attendance:'📝',activities:'🎨',announcements:'📣',billing:'💳',settings:'⚙️',support:'💬',publish:'✏️',gradebook:'🌟',journal:'📔',membership:'💛'};
+ const navHtml=nav.map(([id,name,ico])=>'<button type="button" data-mw-page="'+id+'" class="mw-navitem" aria-current="false"><span class="mw-navico" aria-hidden="true">'+(role==='owner'?ico:(playfulIcons[id]||ico))+'</span><span>'+escapeHtml(name)+'</span></button>').join('');
+ document.getElementById('app').innerHTML='<div class="mw-app mw-role-'+role+'"><aside class="mw-sidebar">'+
+  '<div class="mw-brandzone">'+logo+'<p>'+escapeHtml(role==='owner'?'Platform administration':role==='school_admin'?'Little learners. Big care.':role==='teacher'?'Care · Play · Grow':'Every little moment matters')+'</p><div class="bp-side-tiles" aria-hidden="true"><span>A</span><span>B</span><span>C</span><span>★</span></div></div>'+
   '<div class="mw-side-caption">WORKSPACE</div><nav class="mw-navigation" aria-label="Workspace sections">'+navHtml+'</nav>'+
   '<div class="mw-side-footer"><div class="mw-avatar">'+initial(user.name||user.email)+'</div><div><b>'+escapeHtml(user.name||'My account')+'</b><span>'+escapeHtml(roleTitle[role])+'</span></div></div></aside>'+
-  '<div class="mw-main"><header class="mw-topbar"><div class="mw-location"><span class="mw-location-dot"></span> '+escapeHtml(roleTitle[role])+' workspace</div>'+
+  '<div class="mw-main"><header class="mw-topbar"><div class="mw-location"><span class="mw-location-dot"></span> '+escapeHtml(roleTitle[role])+' workspace <span class="bp-top-doodle" aria-hidden="true">✦</span></div>'+
   '<div class="mw-top-actions">'+schoolPicker+'<span class="mw-user-email">'+escapeHtml(user.email||'')+'</span><button id="mw-logout" class="mw-btn mw-btn-outline mw-logout">Sign out</button></div></header>'+
   '<main class="mw-content" id="workspace"><div id="panel-content"></div></main><footer class="mw-bottom"><span>© BrightPath</span><a href="'+root+'home/">Back to website</a></footer></div>'+
   '<div id="mw-notice" class="mw-toast" hidden role="status" aria-live="polite"></div></div>';
