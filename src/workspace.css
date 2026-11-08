@@ -257,3 +257,16 @@
 .bp-approval-refresh{display:flex;align-items:center;justify-content:space-between;gap:15px;margin-bottom:13px}
 .bp-approval-refresh span{color:#8499a1;font-size:12px}
 @media(max-width:490px){.bp-approval-refresh,.bp-application-title{align-items:flex-start;flex-wrap:wrap}}
+/* Enroll children and create daycare rooms from one place. */
+.bp-class-setup-alert{display:flex;align-items:center;gap:15px;border:1px solid #cae7d8;border-left:4px solid #1c9e7f;border-radius:14px;background:#ebf8ef;padding:17px 19px;margin:0 0 20px}
+.bp-class-setup-alert>span{font-size:30px;line-height:1;background:#d9f3e3;border-radius:12px;width:48px;height:48px;display:grid;place-items:center;flex:0 0 48px}
+.bp-class-setup-alert strong{display:block;color:#206556;font-size:14px;font-weight:850}
+.bp-class-setup-alert p{color:#547b70;font-size:12px;line-height:1.55;margin:5px 0 0}
+.bp-class-setup-alert[hidden]{display:none}
+.bp-room-ideas{display:flex;flex-wrap:wrap;align-items:center;gap:7px}
+.bp-room-ideas small{color:#7c9098;font-size:11px;margin-right:2px}
+.bp-room-ideas button{border:1px solid #d5e8e0;color:#2e7666;border-radius:20px;padding:6px 10px;background:#f5fbf7;font-size:11px;font-weight:750}
+.bp-room-ideas button:hover,.bp-room-ideas button:focus-visible{background:#e0f5eb;border-color:#78bba8}
+#mw-class-help[hidden]{display:none}
+#mw-enroll-class-result:empty{display:none}
+@media(max-width:650px){.bp-class-setup-alert{align-items:flex-start;padding:13px}.bp-class-setup-alert>span{font-size:22px;width:37px;height:37px;flex-basis:37px}}

@@ -74,10 +74,10 @@ export async function renderSchoolPage(ctx,tab){
   const teachers=new Set(teacherClasses.map(t=>t.teacher_user_id));
   const profiles=await read(db,'bp_profiles');
   const names=new Map(profiles.map(p=>[p.user_id,p.full_name]));
-  const html=heading('ACADEMIC SETUP','Classes and classrooms','Create school classes and see enrollment and teacher assignments.')+
-   '<div class="mw-two mw-two-side">'+box('Add a classroom',
-    '<form id="mw-class-form" class="mw-form">'+field('Class name',input('mw-class-name','e.g. Primary 3 Blue','text','required minlength="2" maxlength="100"'))+
-    actions(button('Create class','mw-class-create','primary','type="submit"'))+'</form>')+
+  const html=heading('ROOMS & CLASSES','Classes and daycare rooms','Organize children into their daycare rooms and assign teachers.')+
+   '<div class="mw-two mw-two-side">'+box('Create class / room',
+    '<form id="mw-class-form" class="mw-form">'+field('Class name',input('mw-class-name','e.g. Baby Room, Toddlers, Nursery A','text','required minlength="2" maxlength="100"'))+
+    actions(button('Create class / room','mw-class-create','primary','type="submit"'))+'</form>')+
     box('Class overview','<div class="mw-split-stats"><div><strong>'+n(classes.length)+'</strong><small>Classes</small></div><div><strong>'+n(students.length)+'</strong><small>Students</small></div></div>'+
      rowHelp('Teachers can only access students in classrooms assigned to them.'))+'</div>'+
    box('All classrooms',classes.length?table(['Class','Enrollment','Assigned teachers','Open'],classes.map(c=>tr([
@@ -92,24 +92,58 @@ export async function renderSchoolPage(ctx,tab){
  }
  if(tab==='students'){
   const {classes,students,activities}=await schoolData(db,sid);
-  const html=heading('STUDENT RECORDS','Students and enrollment','Manage daycare children, their rooms, and parent-approved photo and video permissions.')+
-   '<div class="mw-two mw-two-side">'+box('Enroll a new student',
-     '<form id="mw-enroll-form" class="mw-form">'+field('Student full name',input('mw-kid-name','Full name','text','required minlength="2" maxlength="160"'))+
-     field('Class',select('mw-kid-class',classOptions(classes),'required'))+
+  const noClasses=classes.length===0;
+  const html=heading('DAYCARE ENROLLMENT','Children & enrollment','Create a class or daycare room, then register children into it.')+
+   '<div class="mw-metrics">'+
+    stat('Classes & rooms',n(classes.length),'📚','teal')+
+    stat('Enrolled children',n(students.length),'🎒','blue')+
+    stat('Photo permissions',n(students.filter(s=>s.photo_consent).length),'📷','amber')+
+    stat('Video permissions',n(students.filter(s=>s.video_consent).length),'🎬','violet')+'</div>'+
+   (noClasses?'<div class="bp-class-setup-alert" id="mw-class-setup-alert"><span>🏫</span><div><strong>Start by creating your first class or daycare room</strong><p>Once saved, it will immediately appear in the Class dropdown for enrolling children.</p></div></div>':'')+
+   '<div class="mw-two mw-two-side">'+box('1. Create a class or room',
+     '<form id="mw-enroll-class-form" class="mw-form">'+
+       field('Class / daycare room name',input('mw-enroll-class-name','e.g. Toddlers, Nursery A or Preschool','text','required minlength="2" maxlength="100"'))+
+       '<div class="bp-room-ideas"><small>Examples:</small><button type="button" data-room-name="Baby Room">Baby Room</button><button type="button" data-room-name="Toddlers">Toddlers</button><button type="button" data-room-name="Nursery">Nursery</button><button type="button" data-room-name="Preschool">Preschool</button></div>'+
+       '<div id="mw-enroll-class-result" role="status" aria-live="polite"></div>'+
+       actions(button('Create class / room','mw-enroll-class-save','primary','type="submit"'))+'</form>'+rowHelp('Class names are specific to your school. Add as many rooms as you need.'))+
+   box('2. Enroll a child',
+     '<form id="mw-enroll-form" class="mw-form">'+field('Child’s full name',input('mw-kid-name','Full name','text','required minlength="2" maxlength="160"'))+
+     field('Assign to class / room',select('mw-kid-class',classOptions(classes),'required'))+
+     '<div id="mw-class-help" class="mw-form-tip" '+(noClasses?'':'hidden')+'>Create a class or room using the form on this page first.</div>'+
      '<label class="mw-check-label"><input type="checkbox" id="mw-kid-permission" required><span>I confirm the parent or guardian authorized processing of this child’s school records and the school holds that authorization.</span></label>'+
-     actions(button('Enroll student','mw-enroll-submit','primary','type="submit" '+(!classes.length?'disabled':'')))+'</form>')+
-    box('Student records',
-     '<div class="mw-split-stats"><div><strong>'+n(students.length)+'</strong><small>Enrolled students</small></div><div><strong>'+n(students.filter(s=>s.photo_consent).length)+'</strong><small>Photo permissions</small></div></div>'+
-     rowHelp('Photo and video permissions are recorded separately for each child.'))+'</div>'+
-   box('Student directory',students.length?'<div class="mw-filter-row">'+input('mw-kid-search','Search students or classes')+'</div><div id="mw-kid-table">'+
+     actions(button('Enroll child','mw-enroll-submit','primary','type="submit" '+(noClasses?'disabled':'')))+'</form>')+'</div>'+
+   box('Enrolled children',students.length?'<div class="mw-filter-row">'+input('mw-kid-search','Search children or classes')+'</div><div id="mw-kid-table">'+
     table(['Child','Room','Photo','Video','Activities','Permissions'],students.map(s=>tr([
      '<span class="mw-identity"><span class="mw-round-icon">'+initial(s.full_name)+'</span><b>'+e(s.full_name)+'</b></span>',
-     '<select class="mw-inline-select" data-move-student="'+e(s.id)+'" aria-label="Move student class">'+classes.map(c=>'<option value="'+e(c.id)+'" '+(c.id===s.class_id?'selected':'')+'>'+e(c.name)+'</option>').join('')+'</select>',
+     '<select class="mw-inline-select" data-move-student="'+e(s.id)+'" aria-label="Move child to class">'+classes.map(c=>'<option value="'+e(c.id)+'" '+(c.id===s.class_id?'selected':'')+'>'+e(c.name)+'</option>').join('')+'</select>',
      status(s.photo_consent?'approved':'not recorded'),status(s.video_consent?'approved':'not recorded'),n(activities.filter(a=>a.student_id===s.id).length),
      '<div class="bp-consent-actions">'+button(s.photo_consent?'Revoke photos':'Allow photos','mw-consent-'+s.id,s.photo_consent?'danger':'outline','data-photo-student="'+e(s.id)+'" data-photo-next="'+(!s.photo_consent)+'"')+
       button(s.video_consent?'Revoke videos':'Allow videos','mw-video-'+s.id,s.video_consent?'danger':'outline','data-video-student="'+e(s.id)+'" data-video-next="'+(!s.video_consent)+'"')+'</div>'
-    ])))+'</div>':empty('🎒','Your student directory is empty','Enroll your first student to see records here.'));
+    ])))+'</div>':empty('🎒','No children enrolled yet','Create a class or room, then use the enrollment form above.'));
   return{html,bind(){
+   document.querySelectorAll('[data-room-name]').forEach(b=>b.onclick=()=>{
+    document.getElementById('mw-enroll-class-name').value=b.dataset.roomName;
+    document.getElementById('mw-enroll-class-name').focus();
+   });
+   form('mw-enroll-class-form',async()=>{
+    const name=v('mw-enroll-class-name').replace(/\s+/g,' ').trim();
+    if(name.length<2)throw Error('Enter a class or room name');
+    const existing=await read(db,'bp_classes',q=>q.eq('school_id',sid).order('name'));
+    if(existing.some(c=>c.name.trim().toLowerCase()===name.toLowerCase()))throw Error('This class or room already exists');
+    await write(db,'bp_classes',{school_id:sid,name});
+    const updated=await read(db,'bp_classes',q=>q.eq('school_id',sid).order('name'));
+    const created=updated.find(c=>c.name.trim().toLowerCase()===name.toLowerCase());
+    if(!created)throw Error('Class could not be confirmed. Refresh to check before trying again.');
+    const dropdown=document.getElementById('mw-kid-class');
+    dropdown.innerHTML=classOptions(updated);
+    dropdown.value=created.id;
+    document.getElementById('mw-enroll-submit').disabled=false;
+    document.getElementById('mw-class-help').hidden=true;
+    const alert=document.getElementById('mw-class-setup-alert');if(alert)alert.hidden=true;
+    const total=document.querySelector('.mw-metrics .mw-stat:first-child > strong');if(total)total.textContent=n(updated.length);
+    document.getElementById('mw-enroll-class-name').value='';
+    document.getElementById('mw-enroll-class-result').innerHTML='<div class="mw-inline mw-inline-info">'+e(name)+' created. It is now selected in the enrollment form.</div>';
+   });
    form('mw-enroll-form',async()=>{
     if(!checked('mw-kid-permission'))throw Error('Guardian authorization is required');
     await write(db,'bp_students',{school_id:sid,class_id:v('mw-kid-class'),full_name:v('mw-kid-name'),guardian_processing_consent_confirmed:true});
