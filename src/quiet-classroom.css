@@ -1,0 +1,56 @@
+/* Quiet Classroom — calm, data-bound teacher assistant */
+.qc-banner{position:relative;display:flex;align-items:flex-start;gap:23px;background:linear-gradient(120deg,#1d6557,#214957);color:#eefbf4;border-radius:24px;min-height:220px;padding:28px 30px;margin-bottom:21px;overflow:hidden}
+.qc-banner:before{content:"✳";position:absolute;font-size:240px;color:#ffffff0a;right:25px;top:-85px}
+.qc-mascot{position:relative;display:grid;place-items:center;width:71px;height:71px;flex:0 0 71px;border-radius:20px;background:#fce5a9;color:#2f7a69;font-size:39px;transform:rotate(-9deg);box-shadow:5px 6px 0 #164b44}
+.qc-mascot span{position:absolute;bottom:-12px;right:-15px;font-size:23px}
+.qc-banner-text{position:relative;z-index:1;max-width:580px}
+.qc-banner-text>span{display:block;font-size:10px;letter-spacing:1.4px;font-weight:950;color:#bff6d7}
+.qc-banner-text h2{font-size:clamp(27px,3vw,40px);line-height:1.15;letter-spacing:-1.4px;margin:12px 0 10px;color:#fff}
+.qc-banner-text h2 em{font-style:normal;color:#ffda91}
+.qc-banner-text>p{font-size:12px;line-height:1.8;color:#cfe8db;max-width:570px}
+.qc-banner-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
+.qc-banner-actions .mw-btn-primary{background:#ffcc77;color:#3d4f40}
+.qc-banner-actions .mw-btn-outline{color:#fff;border-color:#96c4b4;background:#327162}
+.qc-banner-stickers{display:grid;grid-template-columns:1fr 1fr;gap:13px;position:absolute;right:25px;bottom:14px;transform:rotate(13deg)}
+.qc-banner-stickers span{display:grid;place-items:center;width:58px;height:58px;border:2px solid #f8f5d5;background:#f6eec8;border-radius:17px;font-size:27px}
+.qc-banner-stickers span:last-child{grid-column:2}
+.qc-grid{display:grid;grid-template-columns:1.2fr 1fr;gap:16px;margin-bottom:19px}
+.qc-panel{min-width:0;background:#fff;border:1px solid #e3ece6;border-radius:20px;padding:22px;box-shadow:0 9px 28px #195b4610}
+.qc-panel-title{display:flex;align-items:center;gap:11px}
+.qc-panel-title>span{display:grid;place-items:center;width:50px;height:50px;background:#f5eacd;border-radius:15px;font-size:25px}
+.qc-panel-title>div{flex:1}
+.qc-panel-title small{display:block;font-size:9px;letter-spacing:1.4px;color:#298d76;font-weight:900}
+.qc-panel-title h2{font-size:18px;letter-spacing:-.5px;color:#345f59;margin:5px 0}
+.qc-understated{font-size:12px;color:#78928b;line-height:1.75;margin:14px 0}
+.qc-task{display:flex;align-items:center;gap:12px;padding:15px 0;border-bottom:1px solid #edf1ed}
+.qc-task-symbol{display:grid;place-items:center;flex:0 0 34px;width:34px;height:34px;background:#e4f7ed;color:#19856d;border-radius:11px;font-weight:950}
+.qc-task>div{flex:1;min-width:0}
+.qc-task b{display:block;color:#375d5a;font-size:12px}
+.qc-task p{font-size:11px;color:#88a099;margin:5px 0 0;line-height:1.6}
+.qc-task .mw-btn{font-size:11px;white-space:nowrap}
+.qc-safe-note{font-size:11px;color:#7b948b;background:#f3f9f5;border-radius:12px;margin-top:13px;padding:12px;line-height:1.7}
+.qc-chat{background:linear-gradient(160deg,#f8fcf8,#fffcf5)}
+.qc-assist-chips{display:flex;gap:8px;flex-wrap:wrap;margin:22px 0 18px}
+.qc-assist-chips button{border:1px solid #d6e9dc;background:#fff;color:#316f5d;border-radius:11px;padding:10px 12px;font-size:11px;font-weight:850;flex:1 1 150px;text-align:left}
+.qc-assist-chips button:hover,.qc-assist-chips button:focus-visible{background:#e5f5eb}
+.qc-answer{display:flex;align-items:flex-start;gap:13px;background:#e6f6ed;border:1px solid #cae9d5;border-radius:15px;padding:15px;min-height:110px}
+.qc-answer>span{font-size:25px;color:#1a9c77}
+.qc-answer p{font-size:12px;white-space:pre-wrap;overflow-wrap:anywhere;color:#466c63;line-height:1.8;margin:0}
+.qc-bot-disclosure{font-size:10px;color:#94a9a0;margin:12px 0 0}
+.qc-pickers{display:grid;grid-template-columns:1fr 1fr;gap:13px;margin:12px 0}
+.qc-evidence{border:1px solid #dfebe2;border-radius:17px;padding:20px;background:#f6faf7}
+.qc-evidence-heading{display:flex;gap:12px;align-items:center}
+.qc-evidence-heading>span{display:grid;place-items:center;background:#fff0d7;width:46px;height:46px;border-radius:13px;font-size:23px}
+.qc-evidence-heading b{display:block;color:#355f57;font-size:14px}
+.qc-evidence-heading small{display:block;color:#90a49c;font-size:11px;margin-top:5px}
+.qc-preview-text{white-space:pre-wrap;font-size:12px;line-height:1.8;color:#4e6f67;background:#fff;border:1px solid #e8efe9;border-radius:13px;padding:18px;min-height:120px;overflow-wrap:anywhere}
+.qc-evidence-actions{display:flex;flex-wrap:wrap;gap:9px}
+.qc-principles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px;margin:18px 0}
+.qc-principles article{background:linear-gradient(125deg,#eaf7ed,#fffdf8);border:1px solid #e3eae3;border-radius:17px;padding:18px;min-width:0}
+.qc-principles article:nth-child(2){background:linear-gradient(125deg,#fff0d4,#fffdf8)}
+.qc-principles article:nth-child(3){background:linear-gradient(125deg,#e5f1ff,#fffdf8)}
+.qc-principles span{font-size:26px;display:block}
+.qc-principles b{display:block;color:#345c54;font-size:13px;margin-top:12px}
+.qc-principles p{font-size:11px;color:#829b90;line-height:1.7;margin:8px 0 0}
+@media(max-width:1050px){.qc-grid{grid-template-columns:1fr}.qc-banner-stickers{display:none}}
+@media(max-width:680px){.qc-banner{padding:19px;gap:12px;flex-wrap:wrap}.qc-mascot{width:50px;height:50px;flex-basis:50px;font-size:29px}.qc-banner-text{flex:1 1 240px}.qc-banner-text h2{font-size:27px}.qc-panel{padding:16px}.qc-task{flex-wrap:wrap}.qc-task .mw-btn{margin-left:45px}.qc-pickers{grid-template-columns:1fr}.qc-principles{grid-template-columns:1fr}.qc-evidence{padding:13px}.qc-evidence-actions .mw-btn{flex:1 1 100%}}
