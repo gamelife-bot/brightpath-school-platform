@@ -1,3 +1,4 @@
+import {renderCareRelay} from './care-relay.js';
 import {renderSignatures} from './signature-center.js';
 import {renderFamilyFeedback} from './family-feedback.js';
 import {renderGuardianChanges} from './guardian-requests.js';
@@ -42,6 +43,7 @@ export async function renderSchoolPage(ctx,tab){
  if(!sid)throw new Error('No school has been assigned to this account.');
  if(tab==='signatures')return renderSignatures(ctx);
  if(tab==='feedback')return renderFamilyFeedback(ctx);
+ if(tab==='relay')return renderCareRelay(ctx);
  if(tab==='events')return renderSchoolCalendar(ctx);
  if(tab==='medications')return renderMedicationSafety(ctx);
  if(tab==='staffing')return renderStaffCoverage(ctx);
@@ -86,7 +88,7 @@ export async function renderSchoolPage(ctx,tab){
    '<div class="mw-two mw-approval-overview">'+box('Teacher approvals', '<div class="mw-approval-overview-count">'+pendingTeachers+'</div><p class="mw-fine">Pending teacher access requests</p>'+button('Review teacher requests','mw-review-teachers','outline'))+box('Parent approvals','<div class="mw-approval-overview-count">'+pendingParents+'</div><p class="mw-fine">Pending parent access requests</p>'+button('Review parent requests','mw-review-parents','outline'))+'</div>'+
    '<div class="bp-admin-communication"><div><span>💌</span><div><b>'+officeMessages.length+' open parent conversation'+(officeMessages.length===1?'':'s')+'</b><small>Private questions for School Administration</small></div>'+button('Open inbox','mw-open-admin-inbox','outline')+'</div><div><span>📮</span><div><b>'+familyNotices.length+' parent notice'+(familyNotices.length===1?'':'s')+' awaiting review</b><small>Absences, arrivals and care changes</small></div>'+button('Review notices','mw-open-family-notices','outline')+'</div></div>'+
    '<div class="mw-section-title"><h2>Manage your school</h2><span>Quick actions</span></div><div class="mw-actions-grid">'+[
-    ['Parent administration inbox','admin_inbox','💌'],['Parent day notices','family_notices','📮'],['Family signatures','signatures','✍️'],['Parent surveys & reviews','feedback','💛'],['School calendar','events','🗓️'],['Staff shifts & ratios','staffing','🍎'],['Medication safety','medications','💊'],['Guardian requests','guardian_changes','👨‍👩‍👧'],['Privacy center','privacy','🛡️'],['Child profiles','profiles','🧸'],['Quick classroom updates','quickcare','✨'],['Safe pickup desk','pickup','👋'],['Approve teachers','teachers','👩‍🏫'],['Approve parents','parents','💛']
+    ['Care Relay · home to school','relay','🌈'],['Parent administration inbox','admin_inbox','💌'],['Parent day notices','family_notices','📮'],['Family signatures','signatures','✍️'],['Parent surveys & reviews','feedback','💛'],['School calendar','events','🗓️'],['Staff shifts & ratios','staffing','🍎'],['Medication safety','medications','💊'],['Guardian requests','guardian_changes','👨‍👩‍👧'],['Privacy center','privacy','🛡️'],['Child profiles','profiles','🧸'],['Quick classroom updates','quickcare','✨'],['Safe pickup desk','pickup','👋'],['Approve teachers','teachers','👩‍🏫'],['Approve parents','parents','💛']
    ].map(([t,p,i])=>'<button class="mw-action" type="button" data-goto="'+p+'"><span>'+i+'</span><b>'+t+'</b><small>Open workspace</small><i>↗</i></button>').join('')+'</div>'+
    '<div class="mw-two">'+box('School setup',
     badgeProgress([[classes.length>0,'Create your first class','Organize classrooms'],

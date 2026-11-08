@@ -1,3 +1,4 @@
+import {renderCareRelay} from './care-relay.js';
 import {renderSignatures} from './signature-center.js';
 import {renderFamilyFeedback} from './family-feedback.js';
 import {renderGuardianChanges} from './guardian-requests.js';
@@ -47,6 +48,7 @@ export async function renderParentPage(ctx,tab){
  const avg=activities.length?Math.round(activities.reduce((sum,a)=>sum+a.score,0)/activities.length):null;
  if(tab==='signatures')return renderSignatures(ctx);
  if(tab==='feedback')return renderFamilyFeedback(ctx);
+ if(tab==='relay')return renderCareRelay(ctx);
  if(tab==='events')return renderSchoolCalendar(ctx);
  if(tab==='medications')return renderMedicationSafety(ctx);
  if(tab==='guardian_changes')return renderGuardianChanges(ctx);
@@ -75,7 +77,8 @@ export async function renderParentPage(ctx,tab){
    stat('Development moments',growth.length,'🌱','violet')+'</div>'+
    '<div class="mw-welcome mw-welcome-parent"><div><span class="mw-welcome-kicker">HELLO, FAMILY!</span><h2>Little moments. Big milestones.</h2><p>Celebrate every achievement and stay close to your child’s school day.</p>'+
    button('See today’s care diary →','mw-family-journal','light')+'</div><div class="mw-welcome-art">'+welcomeArt('parent')+'</div></div>'+
-   '<div class="mw-section-title"><h2>Your child’s day</h2></div><div class="mw-actions-grid">'+[['Today’s care diary','care','☀'],['Daily summary','daily_summary','📔'],['Photos & videos','moments','📸'],['Message School Admin','admin_inbox','💌'],['Notify absence','family_notices','📮'],['Child profile','children','🧸'],['Medication plans','medications','💊'],['Guardian changes','guardian_changes','👨‍👩‍👧'],['Privacy & records','privacy','🛡️'],['Milestones','milestones','🌱'],['Classroom messages','messages','✉'],['School documents','signatures','✍️'],['Parent surveys & reviews','feedback','💛'],['School events','events','🗓️']].map(([label,tab,icon])=>'<button class="mw-action" type="button" data-family-quick="'+tab+'"><span>'+icon+'</span><b>'+label+'</b><small>Open updates ↗</small></button>').join('')+'</div>'+
+   '<div class="cr-home-banner"><span>🌈</span><div><b>Morning note. Safer pickup. Verified evening handback.</b><p>Care Relay connects your child’s day at home and at school without extra teacher paperwork.</p></div>'+button('Open Care Relay','cr-family-home','outline')+'</div>'+
+   '<div class="mw-section-title"><h2>Your child’s day</h2></div><div class="mw-actions-grid">'+[['Home ↔ School Care Relay','relay','🌈'],['Today’s care diary','care','☀'],['Daily summary','daily_summary','📔'],['Photos & videos','moments','📸'],['Message School Admin','admin_inbox','💌'],['Notify absence','family_notices','📮'],['Child profile','children','🧸'],['Medication plans','medications','💊'],['Guardian changes','guardian_changes','👨‍👩‍👧'],['Privacy & records','privacy','🛡️'],['Milestones','milestones','🌱'],['Classroom messages','messages','✉'],['School documents','signatures','✍️'],['Parent surveys & reviews','feedback','💛'],['School events','events','🗓️']].map(([label,tab,icon])=>'<button class="mw-action" type="button" data-family-quick="'+tab+'"><span>'+icon+'</span><b>'+label+'</b><small>Open updates ↗</small></button>').join('')+'</div>'+
    '<div class="bp-parent-office-banner"><span>💌</span><div><strong>Need to speak with School Administration?</strong><p>Ask about fees, family concerns, school policies or your child’s needs. Only school administrators can read the conversation.</p></div>'+button('Message the school office','bp-parent-admin-cta','outline')+'</div>'+
    '<div class="mw-two">'+box('My little ones',
     children.length?'<div class="mw-children-mini">'+children.map(k=>
@@ -90,7 +93,7 @@ export async function renderParentPage(ctx,tab){
    box('Safe arrivals and pickups',pickup.length?'<div class="mw-recent">'+pickup.slice(0,5).map(x=>
     '<div><b>'+(x.event_type==='check_in'?'🎒 Arrived safely':'💛 Picked up')+'</b><small>'+e(children.find(c=>c.id===x.student_id)?.full_name||'Child')+'</small><span>'+new Date(x.occurred_at).toLocaleTimeString('en-KE',{hour:'2-digit',minute:'2-digit'})+'</span></div>'
    ).join('')+'</div>':empty('🎒','No arrivals recorded yet','School staff will record safe check-ins and pickups here.'))+'</div>';
-  return{html,bind(){click('bp-parent-admin-cta',()=>go('admin_inbox'));click('mw-family-journal',()=>go('care'));document.querySelectorAll('[data-family-quick]').forEach(b=>b.onclick=()=>go(b.dataset.familyQuick));document.querySelectorAll('[data-open-child]').forEach(b=>b.onclick=()=>{const url=new URL(location.href);url.searchParams.set('child',b.dataset.openChild);history.replaceState(null,'',url.pathname+url.search);go('children')})}};
+  return{html,bind(){click('bp-parent-admin-cta',()=>go('admin_inbox'));click('cr-family-home',()=>go('relay'));click('mw-family-journal',()=>go('care'));document.querySelectorAll('[data-family-quick]').forEach(b=>b.onclick=()=>go(b.dataset.familyQuick));document.querySelectorAll('[data-open-child]').forEach(b=>b.onclick=()=>{const url=new URL(location.href);url.searchParams.set('child',b.dataset.openChild);history.replaceState(null,'',url.pathname+url.search);go('children')})}};
  }
  if(tab==='children'){
   const html=heading('MY FAMILY','My children','View each linked child’s profile and subject progress.')+

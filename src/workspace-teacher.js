@@ -1,3 +1,4 @@
+import {renderCareRelay} from './care-relay.js';
 import {renderQuietClassroom} from './quiet-classroom.js';
 import {renderStaffCoverage} from './staff-coverage.js';
 import {renderMedicationSafety} from './medication-safety.js';
@@ -35,6 +36,7 @@ export async function renderTeacherPage(ctx,tab){
  if(!sid)throw Error('Teacher account has not been assigned to a school.');
  const {classes,students,activities}=await teacherData(db,sid);
  if(tab==='quiet')return renderQuietClassroom(ctx);
+ if(tab==='relay')return renderCareRelay(ctx);
  if(tab==='events')return renderSchoolCalendar(ctx);
  if(tab==='medications')return renderMedicationSafety(ctx);
  if(tab==='staffing')return renderStaffCoverage(ctx);
@@ -61,15 +63,16 @@ export async function renderTeacherPage(ctx,tab){
    button('Log a care moment →','mw-new-post','light')+'</div><div class="mw-welcome-art">'+welcomeArt('teacher')+'</div></div>'+
    '<div class="mw-section-title"><h2>Your daily tools</h2></div>'+
    '<div class="mw-actions-grid">'+[
-    ['Quiet Classroom assistant','quiet','🌿'],['Log daily care','care','☀'],['Share photos & videos','moments','📸'],['Record a milestone','milestones','🌱'],['Parent messages','messages','💌']
+    ['Care Relay · family handovers','relay','🌈'],['Quiet Classroom assistant','quiet','🌿'],['Log daily care','care','☀'],['Share photos & videos','moments','📸'],['Record a milestone','milestones','🌱'],['Parent messages','messages','💌']
    ].map(([label,p,ico])=>'<button class="mw-action" data-goto="'+p+'"><span>'+ico+'</span><b>'+label+'</b><small>Open workspace</small><i>↗</i></button>').join('')+'</div>'+
+   '<div class="cr-home-banner"><span>🌈</span><div><b>Know what needs your attention today.</b><p>Important morning notes, safely recorded pickups and reviewed daily summaries—without an extra report for every child.</p></div>'+button('Care Relay →','cr-teacher-home','outline')+'</div>'+
    '<div class="bp-teacher-callout"><span>🌿</span><div><b>Less paperwork, more presence.</b><p>Quiet Classroom shows today’s actual records and prepares private drafts. No compulsory extra report.</p></div>'+button('Open my assistant →','bp-open-quiet','outline')+'</div>'+
    '<div class="bp-teacher-callout"><span>✨</span><div><b>Group storytime, snacks or rest?</b><p>Post the same routine to every child who participated, with one quick update.</p></div>'+button('Quick classroom update →','bp-quick-start','outline')+'</div>'+
    '<div class="mw-two">'+box('My classes',classes.length?'<div class="mw-class-mini">'+classes.map(c=>'<div><b>'+e(c.name)+'</b><span>'+students.filter(s=>s.class_id===c.id).length+' students</span></div>').join('')+'</div>':
     empty('📗','Awaiting class assignment','Your school administrator will assign your classrooms.'))+
    box('Recent activities',activities.length?'<div class="mw-recent">'+activities.slice(0,5).map(a=>'<div><b>'+e(a.title)+'</b><small>'+e(students.find(s=>s.id===a.student_id)?.full_name||'Student')+' · '+dateLabel(a.created_at)+'</small><span>'+a.score+'%</span></div>').join('')+'</div>':
     empty('✎','Your activity journal is ready','Publish your first lesson update.'))+'</div>';
-  return {html,bind(){click('mw-new-post',()=>go('care'));click('bp-quick-start',()=>go('quickcare'));click('bp-open-quiet',()=>go('quiet'));document.querySelectorAll('[data-goto]').forEach(b=>b.onclick=()=>go(b.dataset.goto))}};
+  return {html,bind(){click('mw-new-post',()=>go('care'));click('bp-quick-start',()=>go('quickcare'));click('bp-open-quiet',()=>go('quiet'));click('cr-teacher-home',()=>go('relay'));document.querySelectorAll('[data-goto]').forEach(b=>b.onclick=()=>go(b.dataset.goto))}};
  }
  if(tab==='classes'){
   const html=heading('MY CLASSROOMS','Assigned classes','View your classroom assignments and student groups.')+

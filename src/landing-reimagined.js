@@ -1,3 +1,4 @@
+import {careRelayArt} from './care-relay-art.js';
 import {welcomeArt,momentArt} from './playful-art.js';
 import './landing-reimagined.css';
 
@@ -20,7 +21,7 @@ const door=(root,path)=>root+path+'/';
 export function renderLanding(app,root){
  const go=(route)=>door(root,route);
  const nav='<header class="ql-nav" id="top"><a class="ql-brand mark-logo" href="'+go('home')+'" aria-label="BrightPath home"><span class="ql-brand-star">✦</span><span>brightpath<span>.</span></span></a>'+
-  '<nav class="ql-nav-links" id="ql-nav-links" aria-label="Main navigation"><a href="#how">How it works</a><a href="#quiet">Quiet Classroom</a><a href="#experience">See the experience</a><a href="#questions">FAQs</a><a href="'+go('pricing')+'">Pricing</a></nav>'+
+  '<nav class="ql-nav-links" id="ql-nav-links" aria-label="Main navigation"><a href="#relay">Care Relay</a><a href="#how">How it works</a><a href="#quiet">Quiet Classroom</a><a href="#experience">See the experience</a><a href="#questions">FAQs</a><a href="'+go('pricing')+'">Pricing</a></nav>'+
   '<div class="ql-nav-actions"><a class="ql-signin" href="'+go('parent')+'">Family sign in</a><a class="ql-btn ql-btn-dark" href="'+go('school-admin')+'">For schools <span>↗</span></a></div>'+
   '<button type="button" class="ql-menu" id="ql-menu" aria-label="Open navigation" aria-controls="ql-nav-links" aria-expanded="false"><span>☰</span></button></header>';
  const sample='Illustrative classroom demo — not real child data';
@@ -43,6 +44,17 @@ export function renderLanding(app,root){
  '<div class="ql-outcomes"><article><span class="ql-outcome-no">01</span><div class="ql-outcome-icon">🍎</div><h3>Teacher records once</h3><p>Mark attendance, log one group activity, or share a permitted photo. Review who actually participated.</p><span class="ql-outcome-bottom">A SMALL, INTENTIONAL ACTION</span></article>'+
  '<div class="ql-outcome-arrow" aria-hidden="true">↗</div><article><span class="ql-outcome-no">02</span><div class="ql-outcome-icon">✦</div><h3>Quiet Classroom organizes</h3><p>Existing facts become a daily summary and a reviewable draft. No extra typing, no invented data.</p><span class="ql-outcome-bottom">THE ASSISTANT DOES THE ORGANIZING</span></article>'+
  '<div class="ql-outcome-arrow" aria-hidden="true">↗</div><article><span class="ql-outcome-no">03</span><div class="ql-outcome-icon">💌</div><h3>Family sees their child</h3><p>Linked parents view private updates, milestones and authorized media—without a classroom WhatsApp group.</p><span class="ql-outcome-bottom">ONE FAMILY, THEIR OWN STORY</span></article></div></section>';
+ const relaySection='<section class="ql-relay" id="relay"><div class="ql-relay-wrapper"><div class="ql-relay-left">'+
+  '<span class="ql-kicker">🌈 THE HEART OF BRIGHTPATH</span><h2>One little day.<br><em>Two worlds connected.</em></h2>'+
+  '<p>From that first sleepy goodbye to the final wave at the school gate, parents and teachers can care for a child together—without sharing everyone’s private information or filling endless forms.</p>'+
+  '<div class="ql-relay-controls" role="tablist" aria-label="A day with Care Relay">'+
+  '<button type="button" role="tab" id="ql-relay-tab-morning" aria-selected="true" aria-controls="ql-relay-story" data-ql-relay="morning">☀️ Morning</button>'+
+  '<button type="button" role="tab" id="ql-relay-tab-school" aria-selected="false" aria-controls="ql-relay-story" data-ql-relay="school">🧸 Classroom</button>'+
+  '<button type="button" role="tab" id="ql-relay-tab-pickup" aria-selected="false" aria-controls="ql-relay-story" data-ql-relay="pickup">🎒 Pickup</button>'+
+  '<button type="button" role="tab" id="ql-relay-tab-evening" aria-selected="false" aria-controls="ql-relay-story" data-ql-relay="evening">🌙 Evening</button></div>'+
+  '<div class="ql-relay-story" id="ql-relay-story" role="tabpanel" aria-labelledby="ql-relay-tab-morning"><span id="ql-relay-story-icon">☀️</span><div><b id="ql-relay-story-title">A gentle note from home</b><p id="ql-relay-story-copy">A parent shares a useful morning handover. Important care notes are flagged for an assigned teacher to acknowledge.</p></div></div>'+
+  '<div class="ql-relay-actions"><a class="ql-btn ql-btn-dark" href="'+go('parent')+'?tab=relay">See the family side <span>↗</span></a><a class="ql-btn ql-btn-outline" href="'+go('teacher')+'?tab=relay">See the teacher side</a></div></div>'+
+  '<div class="ql-relay-right"><div class="ql-relay-art-frame">'+careRelayArt()+'<div class="ql-relay-art-caption"><span>🏡</span><div><strong>Where home and school meet.</strong><small>Original BrightPath illustration · sample scene</small></div></div></div><div class="ql-relay-stars" aria-hidden="true">✦  ✳  🌼</div></div></div></section>';
  const quiet='<section class="ql-quiet" id="quiet"><div class="ql-quiet-inner"><div class="ql-quiet-illustration"><span class="ql-doodle ql-doodle-a">✳</span><span class="ql-doodle ql-doodle-b">🌼</span>'+
   '<div class="ql-quiet-board"><span class="ql-quiet-label">✦ QUIET CLASSROOM</span><h3>What needs my attention?</h3>'+
   '<div><span>✓</span><p><b>Attendance</b><small>See which children have a recorded status</small></p></div>'+
@@ -84,10 +96,21 @@ export function renderLanding(app,root){
  '<small>Registration and private school access are controlled by account approvals. Payment collection is not active.</small></div></section>';
  const footer='<footer class="ql-footer"><div class="ql-footer-top"><div><a class="ql-brand mark-logo" href="'+go('home')+'"><span class="ql-brand-star">✦</span><span>brightpath<span>.</span></span></a><p>More time with little learners.<br>Closer connections with families.</p></div><div><b>Explore</b><a href="#how">How it works</a><a href="#quiet">Quiet Classroom</a><a href="#experience">Explore portals</a><a href="'+go('pricing')+'">Plans & pricing</a></div><div><b>Portals</b><a href="'+go('school-admin')+'">School admin</a><a href="'+go('teacher')+'">Teachers</a><a href="'+go('parent')+'">Parents</a></div><div><b>Important</b><a href="#privacy">Child privacy</a><a href="#questions">FAQ</a><a href="#teacher-time">Time calculator</a></div></div>'+
  '<div class="ql-footer-bottom"><span>© BrightPath · Built for everyday childhood.</span><span>✦ Little moments. Big futures.</span></div></footer>';
- app.innerHTML='<div class="ql-page">'+nav+'<main>'+hero+strip+how+quiet+featureHtml+preview+time+trust+questions+cta+'</main>'+footer+'</div>';
+ app.innerHTML='<div class="ql-page">'+nav+'<main>'+hero+strip+how+relaySection+quiet+featureHtml+preview+time+trust+questions+cta+'</main>'+footer+'</div>';
  const menu=document.getElementById('ql-menu'),navLinks=document.getElementById('ql-nav-links');
  menu.onclick=()=>{const open=navLinks.classList.toggle('ql-nav-open');menu.setAttribute('aria-expanded',String(open));menu.querySelector('span').textContent=open?'✕':'☰'};
  navLinks.querySelectorAll('a').forEach(a=>a.onclick=()=>{navLinks.classList.remove('ql-nav-open');menu.setAttribute('aria-expanded','false');menu.querySelector('span').textContent='☰'});
+ const relayStories={
+  morning:['☀️','A gentle note from home','A parent shares an optional morning handover. Important care notes appear in an assigned teacher’s exception inbox.'],
+  school:['🧸','Only the moments that really happened','Teachers use the records they already make; no compulsory extra report or ungrounded AI observations.'],
+  pickup:['🎒','A verified hand at the school gate','Approved collectors and in-person identity checks are required; a parent note cannot authorize pickup.'],
+  evening:['🌙','A small, verified story to take home','Assigned staff review real records and publish private, child-specific day summaries to verified guardians.']
+ };
+ const relayButtons=[...document.querySelectorAll('[data-ql-relay]')];
+ const updateRelay=(key)=>{const d=relayStories[key];if(!d)return;relayButtons.forEach(b=>b.setAttribute('aria-selected',String(b.dataset.qlRelay===key)));
+  document.getElementById('ql-relay-story').setAttribute('aria-labelledby','ql-relay-tab-'+key);
+  document.getElementById('ql-relay-story-icon').textContent=d[0];document.getElementById('ql-relay-story-title').textContent=d[1];document.getElementById('ql-relay-story-copy').textContent=d[2];};
+ relayButtons.forEach((b,i)=>{b.onclick=()=>updateRelay(b.dataset.qlRelay);b.onkeydown=event=>{if(!['ArrowLeft','ArrowRight'].includes(event.key))return;event.preventDefault();const next=relayButtons[(i+(event.key==='ArrowRight'?1:relayButtons.length-1))%relayButtons.length];next.focus();updateRelay(next.dataset.qlRelay)}});
  const roles={
   teacher:{tag:'TEACHER VIEW',title:'The children come first.',desc:'One small group update can support the family diary and daily summary. The assistant points to real missing records without making optional moments compulsory.',icon:'🍎',sample:['✓ Attendance','☀️ Group updates','📔 Factual recaps'],points:['Real classroom facts','No repetitive daily essays','Fast mobile actions'],href:go('teacher'),link:'Explore teacher space'},
   parent:{tag:'PARENT VIEW',title:'Be close, even when apart.',desc:'See your verified child’s private photos, care moments, daily summaries and growth observations, plus school office messages and forms.',icon:'💛',sample:['🧸 Their daily care','📸 Consented photos','✍️ School forms'],points:['Only your linked child','Private school messages','Daily facts, not guesses'],href:go('parent'),link:'Explore family space'},
