@@ -38,7 +38,10 @@ export async function renderSchoolPage(ctx,tab){
   const careToday=await read(db,'bp_care_logs',q=>q.eq('school_id',sid).order('occurred_at',{ascending:false}).limit(100));
   const careCount=careToday.filter(x=>new Date(x.occurred_at).toDateString()===new Date().toDateString()).length;
   let approvalQueueError=null;
-  const pendingRequests=await read(db,'bp_access_requests',q=>q.eq('school_id',sid).eq('status','pending')).catch(err=>{approvalQueueError=err;return []});
+  const pendingRequests=await Promise.all(['teacher','parent'].map(role=>rpc(db,'bp_school_request_queue',{p_school:sid,p_role:role}).catch(async()=>{
+   try{return await read(db,'bp_access_requests',q=>q.eq('school_id',sid).eq('requested_role',role))}
+   catch(err){approvalQueueError=err;return []}
+  }))).then(items=>items.flat().filter(r=>r.status==='pending'));
   const pendingTeachers=approvalQueueError?'—':pendingRequests.filter(r=>r.requested_role==='teacher').length;
   const pendingParents=approvalQueueError?'—':pendingRequests.filter(r=>r.requested_role==='parent').length;
   const teachers=members.filter(m=>m.active&&m.role==='teacher').length;

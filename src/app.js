@@ -2,6 +2,7 @@ import './style.css';
 import { renderMarketing } from './marketing.js';
 import { enableBrandShortcut } from './logo-shortcut.js';
 import { launchWorkspace } from './workspace-core.js';
+import {renderAccessPending} from './access-request.js';
 import { createClient, BetterAuthVanillaAdapter } from '@neondatabase/neon-js';
 
 const ROOT='/brightpath-school-platform/';
@@ -63,37 +64,7 @@ async function enterPortal(){
  await launchWorkspace({ db, user: currentUser, role: portal, context, root: ROOT, logout, photoData });
  }catch(err){shell('<div class="card"><h2>Unable to open this account</h2>'+msg(errText(err),'err')+'<p class="muted">Verify your email and sign in again if needed.</p><button class="btn" id="relogin">Back to sign in</button></div>');$('relogin').onclick=()=>renderAuth('signin')}
 }
-async function renderDenied(){
- const isOwner=context?.is_owner===true;
- const heading=isOwner?'Your owner account is active':portal==='owner'?'Owner access required':'School access pending';
- const detail=isOwner?'Use your platform-owner dashboard to register a school and appoint its school administrator.':portal==='owner'?'Sign in with your authorized platform-owner account.':portal==='school_admin'?'The BrightPath platform owner must approve your school administrator account.':portal==='teacher'?'Choose your school below to request teacher access.':'Choose your school below to request parent access.';
- const ownerButton=isOwner?'<a class="btn" href="'+url('owner/')+'">Open owner dashboard ↗</a>':'';
- let requestPanel='';
- let schools=[];let requests=[];
- if(!isOwner&&(portal==='teacher'||portal==='parent')){
-  try{
-   schools=check(await db.rpc('bp_school_directory'))||[];
-   requests=check(await db.from('bp_access_requests').select('school_id,status,requested_role,requested_at').eq('requested_role',portal).order('requested_at',{ascending:false}))||[];
-   requestPanel='<section class="card" style="margin-top:18px"><h2>Request '+(portal==='teacher'?'teacher':'parent')+' access</h2>'+
-    (schools.length?'<form id="bp-request-access"><label class="field">Select your school<select class="form-control" id="bp-request-school" required><option value="">Choose your school</option>'+schools.map(s=>'<option value="'+h(s.id)+'">'+h(s.name)+'</option>').join('')+'</select></label><button class="btn" type="submit">Send approval request</button><div id="bp-request-note"></div></form>':
-      '<p class="muted">Your school will appear here after it joins BrightPath.</p>')+
-    (requests.length?'<h3 style="margin-top:22px">Your requests</h3><div class="mw-request-list">'+requests.map(r=>'<div class="mw-request-item"><strong>'+h(schools.find(s=>s.id===r.school_id)?.name||'School')+'</strong><span>'+h(r.status)+'</span></div>').join('')+'</div>':'')+
-    '<p class="smallnote">A parent approval does not give access to a child’s records until the school verifies and links the guardian. Teachers must also be assigned to classes.</p></section>';
-  }catch(err){requestPanel=msg('School requests are temporarily unavailable. '+errText(err),'warn')}
- }
- shell('<div class="card" style="max-width:680px"><h1>'+h(heading)+'</h1><p class="muted">'+h(detail)+'</p><div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:20px">'+ownerButton+'<button class="btn ghost" id="refresh">Check access again</button></div></div>'+requestPanel);
- $('refresh').onclick=()=>enterPortal();
- const form=$('bp-request-access');
- if(form)form.onsubmit=async ev=>{
-  ev.preventDefault();const submit=form.querySelector('button[type=submit]');submit.disabled=true;
-  try{
-   const school=$('bp-request-school').value;
-   if(!school)throw new Error('Please select your school');
-   check(await db.rpc('bp_request_school_access',{p_school:school,p_role:portal}));
-   await renderDenied();
-  }catch(err){$('bp-request-note').innerHTML=msg(errText(err),'err');submit.disabled=false}
- };
-}
+async function renderDenied(options={}){return renderAccessPending({db,context,portal,root:ROOT,shell,enterPortal},options)}
 
 async function photoData(file){
  if(!file)return null;

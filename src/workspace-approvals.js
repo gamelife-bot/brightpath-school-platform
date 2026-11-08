@@ -9,7 +9,10 @@ export async function renderSchoolApprovals(ctx,kind){
  const isTeacher=kind==='teacher',role=isTeacher?'teacher':'parent';
  let approvalQueueError=null;
  const [requests,members,profiles,classes,students,links,assignments]=await Promise.all([
-  read(db,'bp_access_requests',q=>q.eq('school_id',sid).eq('requested_role',role).order('requested_at',{ascending:false}).limit(150)).catch(err=>{approvalQueueError=err;return []}),
+  rpc(db,'bp_school_request_queue',{p_school:sid,p_role:role}).catch(async err=>{
+   try{return await read(db,'bp_access_requests',q=>q.eq('school_id',sid).eq('requested_role',role).order('requested_at',{ascending:false}).limit(150))}
+   catch(fallbackErr){approvalQueueError=fallbackErr;return []}
+  }),
   read(db,'bp_memberships',q=>q.eq('school_id',sid).eq('role',role)),
   read(db,'bp_profiles'),
   read(db,'bp_classes',q=>q.eq('school_id',sid).order('name')),
@@ -52,7 +55,7 @@ export async function renderSchoolApprovals(ctx,kind){
  stat('Approved '+(isTeacher?'teachers':'parents'),n(active.length),isTeacher?'👩‍🏫':'💛','teal')+
  stat(isTeacher?'Assigned classrooms':'Verified family links',n(isTeacher?assignments.length:links.length),isTeacher?'📚':'♡','blue')+'</div>'+
  box('Waiting for approval '+(pending.length?'<span class="mw-count">'+pending.length+'</span>':''),
- requestTable)+
+ '<div class="bp-approval-refresh"><span>Applications submitted to this school</span>'+button('↻ Refresh requests','mw-refresh-approvals','outline')+'</div>'+requestTable)+
  '<div class="mw-two mw-two-side">'+
  box('Approve by registered email',
  '<form class="mw-form" id="mw-direct-approve">'+
@@ -80,6 +83,8 @@ export async function renderSchoolApprovals(ctx,kind){
   dateLabel(r.reviewed_at)
  ]))):empty('✓','No previous decisions','Your approval history will appear here.'));
  return {html,bind(){
+  const refresh=document.getElementById('mw-refresh-approvals');
+  if(refresh)refresh.onclick=async()=>{refresh.disabled=true;refresh.textContent='Checking…';await reload()};
   document.querySelectorAll('[data-request-id]').forEach(btn=>btn.addEventListener('click',async()=>{
    const decision=btn.dataset.decision;
    if(!confirm(decision==='approved'?
