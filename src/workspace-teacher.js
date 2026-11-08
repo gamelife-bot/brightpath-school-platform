@@ -1,3 +1,5 @@
+import {renderChildProfiles,renderIncidents} from './child-center.js';
+import {renderNotifications,renderQuickCare,renderDailySummary} from './activity-hub.js';
 import {welcomeArt} from './playful-art.js';
 import {renderCareDiary,renderMilestones,renderChildMessages} from './daycare.js';
 import {renderPickupDesk} from './daycare-pickup.js';
@@ -28,6 +30,11 @@ export async function renderTeacherPage(ctx,tab){
  const {db,schoolId:sid,user,go,reload,photoData}=ctx;
  if(!sid)throw Error('Teacher account has not been assigned to a school.');
  const {classes,students,activities}=await teacherData(db,sid);
+ if(tab==='notifications')return renderNotifications(ctx);
+ if(tab==='profiles')return renderChildProfiles(ctx);
+ if(tab==='incidents')return renderIncidents(ctx);
+ if(tab==='daily_summary')return renderDailySummary(ctx);
+ if(tab==='quickcare')return renderQuickCare(ctx);
  if(tab==='care')return renderCareDiary(ctx);
  if(tab==='milestones')return renderMilestones(ctx);
  if(tab==='messages')return renderChildMessages(ctx);
@@ -38,7 +45,7 @@ export async function renderTeacherPage(ctx,tab){
   const [careLogs,milestones]=await Promise.all([read(db,'bp_care_logs',q=>q.eq('school_id',sid).order('occurred_at',{ascending:false}).limit(80)),read(db,'bp_milestones',q=>q.eq('school_id',sid).order('observed_at',{ascending:false}).limit(80))]);
   const childIds=new Set(students.map(s=>s.id));const careToday=careLogs.filter(x=>childIds.has(x.student_id)&&new Date(x.occurred_at).toDateString()===new Date().toDateString());const recentMilestones=milestones.filter(x=>childIds.has(x.student_id));
   const recorded=attendance.filter(a=>students.some(s=>s.id===a.student_id));
-  const html=heading('MY CLASSROOM','Welcome, '+(user.name?.split(' ')[0]||'Teacher'),'Plan learning moments, share progress and keep attendance up to date.')+
+  const html=heading('WELCOME TO YOUR CLASSROOM','Good morning, '+(user.name?.split(' ')[0]||'Teacher'),'Everything you need for a caring, happy day with your little learners.')+
    '<div class="mw-metrics">'+stat('My classes',classes.length,'📚','teal')+stat('My students',students.length,'🎒','blue')+
    stat('Daily care updates',careToday.length,'☀','violet')+stat('Milestones',recentMilestones.length,'🌱','amber')+'</div>'+
    '<div class="mw-welcome mw-welcome-teacher"><div><span class="mw-welcome-kicker">TEACHER WORKSPACE</span><h2>Every little moment counts</h2><p>Share nap times, meals, playtime, photo updates and growing milestones with families.</p>'+
@@ -47,11 +54,12 @@ export async function renderTeacherPage(ctx,tab){
    '<div class="mw-actions-grid">'+[
     ['Log daily care','care','☀'],['Share photos & videos','moments','📸'],['Record a milestone','milestones','🌱'],['Parent messages','messages','💌']
    ].map(([label,p,ico])=>'<button class="mw-action" data-goto="'+p+'"><span>'+ico+'</span><b>'+label+'</b><small>Open workspace</small><i>↗</i></button>').join('')+'</div>'+
+   '<div class="bp-teacher-callout"><span>✨</span><div><b>Group storytime, snacks or rest?</b><p>Post the same routine to every child who participated, with one quick update.</p></div>'+button('Quick classroom update →','bp-quick-start','outline')+'</div>'+
    '<div class="mw-two">'+box('My classes',classes.length?'<div class="mw-class-mini">'+classes.map(c=>'<div><b>'+e(c.name)+'</b><span>'+students.filter(s=>s.class_id===c.id).length+' students</span></div>').join('')+'</div>':
     empty('📗','Awaiting class assignment','Your school administrator will assign your classrooms.'))+
    box('Recent activities',activities.length?'<div class="mw-recent">'+activities.slice(0,5).map(a=>'<div><b>'+e(a.title)+'</b><small>'+e(students.find(s=>s.id===a.student_id)?.full_name||'Student')+' · '+dateLabel(a.created_at)+'</small><span>'+a.score+'%</span></div>').join('')+'</div>':
     empty('✎','Your activity journal is ready','Publish your first lesson update.'))+'</div>';
-  return {html,bind(){click('mw-new-post',()=>go('care'));document.querySelectorAll('[data-goto]').forEach(b=>b.onclick=()=>go(b.dataset.goto))}};
+  return {html,bind(){click('mw-new-post',()=>go('care'));click('bp-quick-start',()=>go('quickcare'));document.querySelectorAll('[data-goto]').forEach(b=>b.onclick=()=>go(b.dataset.goto))}};
  }
  if(tab==='classes'){
   const html=heading('MY CLASSROOMS','Assigned classes','View your classroom assignments and student groups.')+

@@ -1,5 +1,6 @@
 import './workspace.css';
 import './playful-workspace.css';
+import './modern-v2.css';
 import {renderOwnerPage} from './workspace-owner.js';
 import {renderSchoolPage} from './workspace-school.js';
 import {renderTeacherPage} from './workspace-teacher.js';
@@ -7,7 +8,7 @@ import {renderParentPage} from './workspace-parent.js';
 
 export const escapeHtml = (input) => String(input ?? '').replace(/[&<>"']/g,(c)=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'}[c]));
 export const dollar = (v) => 'KSh '+(Number(v||0)/100).toLocaleString('en-KE',{maximumFractionDigits:2});
-export const dateLabel = (d) => d ? new Date(d).toLocaleDateString('en-KE',{day:'numeric',month:'short',year:'numeric'}) : '—';
+export const dateLabel = (d) => d ? new Date(/^\d{4}-\d{2}-\d{2}$/.test(String(d))?String(d)+'T12:00:00':d).toLocaleDateString('en-KE',{day:'numeric',month:'short',year:'numeric'}) : '—';
 export const numberLabel = (v) => Number(v||0).toLocaleString('en-KE');
 export const initial = (s) => (String(s||'U').trim()[0]||'U').toUpperCase();
 export const option = (value,label) => '<option value="'+escapeHtml(value)+'">'+escapeHtml(label)+'</option>';
@@ -74,10 +75,17 @@ export const checked=(id)=>document.getElementById(id)?.checked===true;
 
 const pages={
  owner:[['overview','Overview','⌂'],['schools','Schools','▦'],['people','Accounts & access','♙'],['analytics','Activity monitor','▥'],['revenue','Revenue & plans','◈'],['support','Support inbox','✉']],
- school_admin:[['overview','Overview','⌂'],['classes','Classes & rooms','▦'],['students','Children','♧'],['people','Staff directory','♙'],['teachers','Teacher approvals','✓'],['parents','Parent approvals','♡'],['families','Guardian links','↗'],['care','Daily care diary','☀'],['milestones','Development','🌱'],['moments','Photos & videos','▣'],['messages','Family messages','✉'],['pickup','Safe pickup','✓'],['attendance','Attendance','▤'],['activities','Learning reports','▥'],['announcements','Announcements','✉'],['billing','Subscription & earnings','◈'],['settings','School settings','⚙'],['support','Support','?']],
- teacher:[['overview','Today','⌂'],['classes','My groups','▦'],['students','My children','♧'],['care','Daily care','☀'],['milestones','Milestones','🌱'],['moments','Photos & videos','▣'],['messages','Parent messages','✉'],['pickup','Check-in & pickup','✓'],['publish','Learning notes','✎'],['gradebook','Assessments','▥'],['attendance','Attendance','▤'],['announcements','Announcements','✉']],
- parent:[['overview','Today at daycare','⌂'],['children','My children','♡'],['care','Daily diary','☀'],['moments','Photos & videos','▣'],['milestones','Development','🌱'],['messages','Messages','✉'],['pickup','Safe pickup','✓'],['journal','Learning journal','▥'],['attendance','Attendance','▤'],['announcements','Announcements','✉'],['membership','My membership','◈']]
+ school_admin:[['overview','Dashboard','⌂'],['setup','School setup','🌻'],['notifications','Notifications','🔔'],['classes','Classes & rooms','▦'],['students','Enrollment','♧'],['profiles','Child profiles','🧸'],['families','Guardian links','↗'],['parents','Parent approvals','♡'],['teachers','Teacher approvals','✓'],['people','Staff directory','♙'],['care','Daily care diary','☀'],['quickcare','Quick group updates','🧩'],['milestones','Development','🌱'],['moments','Photos & videos','▣'],['daily_summary','Daily summaries','📔'],['messages','Family messages','✉'],['incidents','Health & incidents','🩹'],['pickup','Safe pickup','✓'],['attendance','Attendance','▤'],['activities','Learning reports','▥'],['announcements','Announcements','✉'],['billing','Subscription & earnings','◈'],['settings','School settings','⚙'],['support','Support','?']],
+ teacher:[['overview','Today','⌂'],['notifications','Notifications','🔔'],['classes','My rooms','▦'],['students','My classroom','♧'],['profiles','Child profiles','🧸'],['care','Daily care','☀'],['quickcare','Quick group updates','🧩'],['milestones','Milestones','🌱'],['moments','Photos & videos','▣'],['daily_summary','Daily summaries','📔'],['messages','Parent messages','✉'],['incidents','Health & incidents','🩹'],['pickup','Check-in & pickup','✓'],['publish','Learning notes','✎'],['gradebook','Assessments','▥'],['attendance','Attendance','▤'],['announcements','Announcements','✉']],
+ parent:[['overview','Today at daycare','⌂'],['notifications','Notifications','🔔'],['children','My little ones','♡'],['daily_summary','Daily summary','📔'],['care','Daily diary','☀'],['moments','Photos & videos','▣'],['milestones','Development','🌱'],['messages','Messages','✉'],['incidents','Health & incidents','🩹'],['pickup','Safe pickup','✓'],['journal','Learning journal','▥'],['attendance','Attendance','▤'],['announcements','Announcements','✉'],['membership','My membership','◈']]
 };
+const navGroups={
+ owner:[['PLATFORM',['overview','schools','people']],['BUSINESS',['analytics','revenue']],['HELP',['support']]],
+ school_admin:[['AT A GLANCE',['overview','setup','notifications']],['CHILDREN & FAMILIES',['classes','students','profiles','families','parents']],['YOUR TEAM',['teachers','people']],['EVERYDAY CARE',['care','quickcare','milestones','moments','daily_summary','messages','incidents','pickup','attendance']],['SCHOOL OPERATIONS',['activities','announcements','billing','settings','support']]],
+ teacher:[['MY DAY',['overview','notifications']],['CLASSROOM',['classes','students','profiles']],['DAILY ROUTINES',['care','quickcare','milestones','moments','daily_summary','messages','incidents','pickup']],['LEARNING & SCHOOL',['publish','gradebook','attendance','announcements']]],
+ parent:[['MY FAMILY',['overview','notifications','children','daily_summary']],['LITTLE MOMENTS',['care','moments','milestones','messages']],['SAFETY & SCHOOL',['incidents','pickup','journal','attendance','announcements','membership']]]
+};
+
 const roleTitle={owner:'Platform owner',school_admin:'School administrator',teacher:'Teacher',parent:'Parent'};
 const renderer={owner:renderOwnerPage,school_admin:renderSchoolPage,teacher:renderTeacherPage,parent:renderParentPage};
 
@@ -91,14 +99,16 @@ export async function launchWorkspace({db,user,role,context,root,logout,photoDat
  const memberships=(context?.memberships||[]).filter(m=>m.role===role&&m.active);
  const schoolPicker=memberships.length>1?'<select id="mw-school" aria-label="Select school">'+memberships.map(m=>option(m.school_id,m.school_name)).join('')+'</select>':(memberships[0]?'<span class="mw-school-name">'+escapeHtml(memberships[0].school_name)+'</span>':'');
  const logo='<a class="logo brand-home mw-brand" href="'+root+'home/" aria-label="BrightPath homepage">✦ <strong>brightpath<span>.</span></strong></a>';
- const playfulIcons={overview:'🏡',schools:'🏫',classes:'🧩',students:'🧒',children:'🧒',people:'👥',teachers:'🍎',parents:'💛',families:'👨‍👩‍👧',care:'☀️',milestones:'🌱',moments:'📸',messages:'💌',pickup:'🎒',attendance:'📝',activities:'🎨',announcements:'📣',billing:'💳',settings:'⚙️',support:'💬',publish:'✏️',gradebook:'🌟',journal:'📔',membership:'💛'};
- const navHtml=nav.map(([id,name,ico])=>'<button type="button" data-mw-page="'+id+'" class="mw-navitem" aria-current="false"><span class="mw-navico" aria-hidden="true">'+(role==='owner'?ico:(playfulIcons[id]||ico))+'</span><span>'+escapeHtml(name)+'</span></button>').join('');
+ const playfulIcons={overview:'🏡',setup:'🌻',notifications:'🔔',schools:'🏫',classes:'🧩',students:'🧒',children:'🧒',profiles:'🧸',people:'👥',teachers:'🍎',parents:'💛',families:'👨‍👩‍👧',care:'☀️',quickcare:'✨',milestones:'🌱',moments:'📸',daily_summary:'📔',messages:'💌',incidents:'🩹',pickup:'🎒',attendance:'📝',activities:'🎨',announcements:'📣',billing:'💳',settings:'⚙️',support:'💬',publish:'✏️',gradebook:'🌟',journal:'📔',membership:'💛'};
+ const navEntry=(id,name,ico)=>'<button type="button" data-mw-page="'+id+'" class="mw-navitem" aria-current="false"><span class="mw-navico" aria-hidden="true">'+(role==='owner'?ico:(playfulIcons[id]||ico))+'</span><span>'+escapeHtml(name)+'</span>'+(id==='notifications'?'<span id="mw-nav-notifications" class="bp-notification-dot" hidden></span>':'')+'</button>';
+ const navMap=new Map(nav.map(([id,name,ico])=>[id,[name,ico]]));
+ const navHtml=(navGroups[role]||[]).map(([title,ids],idx)=>'<section class="mw-nav-group"><button type="button" class="mw-nav-group-label" data-nav-toggle="'+idx+'" aria-expanded="true"><span>'+escapeHtml(title)+'</span><span class="mw-nav-chevron">⌄</span></button><div class="mw-nav-group-items" id="mw-nav-group-'+idx+'">'+ids.filter(id=>navMap.has(id)).map(id=>navEntry(id,...navMap.get(id))).join('')+'</div></section>').join('');
  document.getElementById('app').innerHTML='<div class="mw-app mw-role-'+role+'"><aside class="mw-sidebar">'+
   '<div class="mw-brandzone">'+logo+'<p>'+escapeHtml(role==='owner'?'Platform administration':role==='school_admin'?'Little learners. Big care.':role==='teacher'?'Care · Play · Grow':'Every little moment matters')+'</p><div class="bp-side-tiles" aria-hidden="true"><span>A</span><span>B</span><span>C</span><span>★</span></div></div>'+
   '<div class="mw-side-caption">WORKSPACE</div><nav class="mw-navigation" aria-label="Workspace sections">'+navHtml+'</nav>'+
   '<div class="mw-side-footer"><div class="mw-avatar">'+initial(user.name||user.email)+'</div><div><b>'+escapeHtml(user.name||'My account')+'</b><span>'+escapeHtml(roleTitle[role])+'</span></div></div></aside>'+
   '<div class="mw-main"><header class="mw-topbar"><div class="mw-location"><span class="mw-location-dot"></span> '+escapeHtml(roleTitle[role])+' workspace <span class="bp-top-doodle" aria-hidden="true">✦</span></div>'+
-  '<div class="mw-top-actions">'+schoolPicker+'<span class="mw-user-email">'+escapeHtml(user.email||'')+'</span><button id="mw-logout" class="mw-btn mw-btn-outline mw-logout">Sign out</button></div></header>'+
+  '<div class="mw-top-actions">'+(role!=='owner'?'<button class="bp-top-notice" id="mw-open-notifications" aria-label="Open notifications" title="Notifications">🔔 <span id="mw-notification-count" hidden></span></button>':'')+schoolPicker+'<span class="mw-user-email">'+escapeHtml(user.email||'')+'</span><button id="mw-logout" class="mw-btn mw-btn-outline mw-logout">Sign out</button></div></header>'+
   '<main class="mw-content" id="workspace"><div id="panel-content"></div></main><footer class="mw-bottom"><span>© BrightPath</span><a href="'+root+'home/">Back to website</a></footer></div>'+
   '<div id="mw-notice" class="mw-toast" hidden role="status" aria-live="polite"></div></div>';
  const contextObj={
@@ -107,11 +117,27 @@ export async function launchWorkspace({db,user,role,context,root,logout,photoDat
   get memberships(){return memberships},
   get tab(){return current},
   reload:()=>show(current),
-  go:(tab)=>show(tab)
+  go:(tab)=>show(tab),
+  refreshNotifications:()=>refreshNotificationCount()
  };
+ async function refreshNotificationCount(){
+  if(role==='owner')return;
+  try{
+   const notes=await read(db,'bp_notifications',q=>q.eq('recipient_user_id',user.id).eq('school_id',school).order('created_at',{ascending:false}).limit(200));
+   const unread=notes.filter(x=>!x.read_at).length;
+   const badge=document.getElementById('mw-notification-count');
+   const navBadge=document.getElementById('mw-nav-notifications');
+   if(badge){badge.hidden=unread===0;badge.textContent=unread>99?'99+':String(unread)}
+   if(navBadge)navBadge.hidden=unread===0;
+  }catch{ /* A notification service error must not block the workspace. */ }
+ }
  async function show(tab){
   if(!nav.some(([id])=>id===tab))tab='overview';
   current=tab;
+  document.querySelectorAll('.mw-nav-group').forEach(group=>{
+   const button=group.querySelector('.mw-nav-group-label'),items=group.querySelector('.mw-nav-group-items');
+   if(group.querySelector('[data-mw-page="'+tab+'"]')&&items?.hidden){items.hidden=false;if(button)button.setAttribute('aria-expanded','true')}
+  });
   const q=new URLSearchParams(window.location.search);
   if(tab==='overview')q.delete('tab');else q.set('tab',tab);
   window.history.replaceState(null,'',window.location.pathname+(q.toString()?'?'+q:''));
@@ -127,6 +153,7 @@ export async function launchWorkspace({db,user,role,context,root,logout,photoDat
    if(id!==request)return;
    dest.innerHTML=view?.html||view||'';
    if(view?.bind)await view.bind();
+   if(role!=='owner')void refreshNotificationCount();
   }catch(err){
    if(id!==request)return;
    dest.innerHTML=heading('Workspace','Couldn’t load this section','Please try refreshing or open another section.')+banners('error',err.message||String(err))+button('Retry','mw-retry','outline');
@@ -134,7 +161,14 @@ export async function launchWorkspace({db,user,role,context,root,logout,photoDat
   }
  }
  document.querySelectorAll('[data-mw-page]').forEach(el=>el.onclick=()=>show(el.dataset.mwPage));
- document.getElementById('mw-logout').onclick=logout;
+ document.querySelectorAll('[data-nav-toggle]').forEach(el=>el.onclick=()=>{
+  const items=document.getElementById('mw-nav-group-'+el.dataset.navToggle);
+  if(!items)return;items.hidden=!items.hidden;el.setAttribute('aria-expanded',String(!items.hidden));
+ });
+ if(role!=='owner')document.getElementById('mw-open-notifications').onclick=()=>show('notifications');
+ document.getElementById('mw-logout').onclick=()=>{if(window.__bpNoticeTimer)window.clearInterval(window.__bpNoticeTimer);logout()};
+ if(window.__bpNoticeTimer)window.clearInterval(window.__bpNoticeTimer);
+ if(role!=='owner')window.__bpNoticeTimer=window.setInterval(()=>{if(document.visibilityState==='visible')void refreshNotificationCount()},45000);
  const picker=document.getElementById('mw-school');
  if(picker){picker.value=school;picker.onchange=()=>{school=picker.value;show(current)}}
  await show(current);
