@@ -26,10 +26,22 @@ async function loadMedia(db,id){
  const content=await r.blob();
  return URL.createObjectURL(content);
 }
+async function verifyFileSignature(file){
+ const bytes=new Uint8Array(await file.slice(0,24).arrayBuffer());
+ const text=String.fromCharCode(...bytes);
+ const jpg=bytes[0]===0xff&&bytes[1]===0xd8&&bytes[2]===0xff;
+ const png=bytes.slice(0,8).join(',')==='137,80,78,71,13,10,26,10';
+ const webp=text.startsWith('RIFF')&&text.slice(8,12)==='WEBP';
+ const mp4=text.slice(4,8)==='ftyp';
+ const webm=bytes.slice(0,4).join(',')==='26,69,223,163';
+ return file.type==='image/jpeg'?jpg:file.type==='image/png'?png:file.type==='image/webp'?webp:
+  ['video/mp4','video/quicktime'].includes(file.type)?mp4:file.type==='video/webm'?webm:false;
+}
 async function uploadChildMedia(db,schoolId,studentId,kind,file,caption,user){
  if(!EXTS.has(file.type)||kind==='photo'&&!file.type.startsWith('image/')||kind==='video'&&!file.type.startsWith('video/'))throw Error('Choose a JPG, PNG, WebP, MP4, WebM or MOV file.');
  const limit=kind==='photo'?MAX_PHOTO:MAX_VIDEO;
  if(!file.size||file.size>limit)throw Error(kind==='video'?'Choose a short video under 25 MB.':'Choose a photo under 8 MB.');
+ if(!await verifyFileSignature(file))throw Error('The file content does not match the selected photo or video format.');
  const token=await authToken(db);
  const r=await callMedia('upload',token,{headers:{
    'content-type':file.type,'x-bp-school':schoolId,'x-bp-student':studentId,'x-bp-kind':kind
@@ -43,6 +55,8 @@ function mediaTile(m,students){
  return '<article class="bp-media-tile"><div class="bp-media-placeholder" id="bp-media-display-'+h(m.id)+'"><div class="bp-media-icon">'+(m.kind==='video'?'🎬':'📷')+'</div><button class="mw-btn mw-btn-outline" type="button" data-view-media="'+h(m.id)+'">'+(m.kind==='video'?'Play video':'View photo')+'</button></div>'+
  '<div class="bp-media-tile-caption"><strong>'+h(m.caption)+'</strong><small>'+h(name)+' · '+dateLabel(m.created_at)+'</small></div></article>';
 }
+const mediaUrls=new Set();
+if(typeof window!=='undefined')window.__bpRevokeMediaUrls=()=>{for(const u of mediaUrls)URL.revokeObjectURL(u);mediaUrls.clear()};
 export async function renderChildMoments(ctx){
  const {db,schoolId:sid,user,role,reload}=ctx;
  let children=await read(db,'bp_students',q=>q.eq('school_id',sid).order('full_name'));
@@ -99,9 +113,9 @@ export async function renderChildMoments(ctx){
     if(!record)return;
     b.disabled=true;b.textContent='Opening…';
     try{
-     const blobUrl=await loadMedia(db,id);
+     const blobUrl=await loadMedia(db,id);mediaUrls.add(blobUrl);
      const target=document.getElementById('bp-media-display-'+id);
-     if(!target){URL.revokeObjectURL(blobUrl);return}
+     if(!target){URL.revokeObjectURL(blobUrl);mediaUrls.delete(blobUrl);return}
      target.innerHTML=record.kind==='photo'?
       '<img src="'+blobUrl+'" alt="'+h(record.caption)+'" loading="lazy">':
       '<video src="'+blobUrl+'" controls playsinline preload="metadata"></video>';

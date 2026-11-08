@@ -2,6 +2,7 @@ import './workspace.css';
 import './playful-workspace.css';
 import './modern-v2.css';
 import './modern-mobile-office.css';
+import './operations-safety.css';
 import {renderOwnerPage} from './workspace-owner.js';
 import {renderSchoolPage} from './workspace-school.js';
 import {renderTeacherPage} from './workspace-teacher.js';
@@ -76,15 +77,15 @@ export const checked=(id)=>document.getElementById(id)?.checked===true;
 
 const pages={
  owner:[['overview','Overview','⌂'],['schools','Schools','▦'],['people','Accounts & access','♙'],['analytics','Activity monitor','▥'],['revenue','Revenue & plans','◈'],['support','Support inbox','✉']],
- school_admin:[['overview','Dashboard','⌂'],['setup','School setup','🌻'],['notifications','Notifications','🔔'],['classes','Classes & rooms','▦'],['students','Enrollment','♧'],['profiles','Child profiles','🧸'],['families','Guardian links','↗'],['parents','Parent approvals','♡'],['teachers','Teacher approvals','✓'],['people','Staff directory','♙'],['care','Daily care diary','☀'],['quickcare','Quick group updates','🧩'],['milestones','Development','🌱'],['moments','Photos & videos','▣'],['daily_summary','Daily summaries','📔'],['messages','Classroom messages','✉'],['admin_inbox','Parent–admin inbox','💌'],['family_notices','Parent day notices','📮'],['events','School calendar','🗓️'],['incidents','Health & incidents','🩹'],['pickup','Safe pickup','✓'],['attendance','Attendance','▤'],['activities','Learning reports','▥'],['announcements','Announcements','✉'],['billing','Subscription & earnings','◈'],['settings','School settings','⚙'],['support','Support','?']],
- teacher:[['overview','Today','⌂'],['notifications','Notifications','🔔'],['classes','My rooms','▦'],['students','My classroom','♧'],['profiles','Child profiles','🧸'],['care','Daily care','☀'],['quickcare','Quick group updates','🧩'],['milestones','Milestones','🌱'],['moments','Photos & videos','▣'],['daily_summary','Daily summaries','📔'],['messages','Parent messages','✉'],['events','School calendar','🗓️'],['incidents','Health & incidents','🩹'],['pickup','Check-in & pickup','✓'],['publish','Learning notes','✎'],['gradebook','Assessments','▥'],['attendance','Attendance','▤'],['announcements','Announcements','✉']],
- parent:[['overview','Today at daycare','⌂'],['notifications','Notifications','🔔'],['children','My little ones','♡'],['daily_summary','Daily summary','📔'],['care','Daily diary','☀'],['moments','Photos & videos','▣'],['milestones','Development','🌱'],['messages','Teacher messages','✉'],['admin_inbox','School Administration','💌'],['family_notices','Absence & day notices','📮'],['events','School calendar','🗓️'],['incidents','Health & incidents','🩹'],['pickup','Safe pickup','✓'],['journal','Learning journal','▥'],['attendance','Attendance','▤'],['announcements','Announcements','✉'],['membership','My membership','◈']]
+ school_admin:[['overview','Dashboard','⌂'],['setup','School setup','🌻'],['notifications','Notifications','🔔'],['classes','Classes & rooms','▦'],['students','Enrollment','♧'],['profiles','Child profiles','🧸'],['guardian_changes','Guardian change requests','👨‍👩‍👧'],['families','Guardian links','↗'],['parents','Parent approvals','♡'],['teachers','Teacher approvals','✓'],['people','Staff directory','♙'],['care','Daily care diary','☀'],['quickcare','Quick group updates','🧩'],['milestones','Development','🌱'],['moments','Photos & videos','▣'],['daily_summary','Daily summaries','📔'],['medications','Medication safety','💊'],['messages','Classroom messages','✉'],['admin_inbox','Parent–admin inbox','💌'],['family_notices','Parent day notices','📮'],['events','School calendar','🗓️'],['incidents','Health & incidents','🩹'],['staffing','Staff shifts & ratios','🍎'],['privacy','Privacy & records','🛡️'],['pickup','Safe pickup','✓'],['attendance','Attendance','▤'],['activities','Learning reports','▥'],['announcements','Announcements','✉'],['billing','Subscription & earnings','◈'],['settings','School settings','⚙'],['support','Support','?']],
+ teacher:[['overview','Today','⌂'],['notifications','Notifications','🔔'],['classes','My rooms','▦'],['students','My classroom','♧'],['profiles','Child profiles','🧸'],['care','Daily care','☀'],['quickcare','Quick group updates','🧩'],['staffing','My shifts','🍎'],['milestones','Milestones','🌱'],['moments','Photos & videos','▣'],['daily_summary','Daily summaries','📔'],['medications','Medication safety','💊'],['messages','Parent messages','✉'],['events','School calendar','🗓️'],['incidents','Health & incidents','🩹'],['pickup','Check-in & pickup','✓'],['publish','Learning notes','✎'],['gradebook','Assessments','▥'],['attendance','Attendance','▤'],['announcements','Announcements','✉']],
+ parent:[['overview','Today at daycare','⌂'],['notifications','Notifications','🔔'],['children','My little ones','♡'],['guardian_changes','Guardian changes','👨‍👩‍👧'],['daily_summary','Daily summary','📔'],['care','Daily diary','☀'],['medications','Medication plans','💊'],['moments','Photos & videos','▣'],['milestones','Development','🌱'],['messages','Teacher messages','✉'],['admin_inbox','School Administration','💌'],['family_notices','Absence & day notices','📮'],['events','School calendar','🗓️'],['incidents','Health & incidents','🩹'],['pickup','Safe pickup','✓'],['journal','Learning journal','▥'],['privacy','Privacy & records','🛡️'],['attendance','Attendance','▤'],['announcements','Announcements','✉'],['membership','My membership','◈']]
 };
 const navGroups={
  owner:[['PLATFORM',['overview','schools','people']],['BUSINESS',['analytics','revenue']],['HELP',['support']]],
- school_admin:[['AT A GLANCE',['overview','setup','notifications']],['CHILDREN & FAMILIES',['classes','students','profiles','families','parents']],['YOUR TEAM',['teachers','people']],['EVERYDAY CARE',['care','quickcare','milestones','moments','daily_summary','messages','admin_inbox','family_notices','incidents','pickup','attendance']],['SCHOOL OPERATIONS',['events','activities','announcements','billing','settings','support']]],
- teacher:[['MY DAY',['overview','notifications']],['CLASSROOM',['classes','students','profiles']],['DAILY ROUTINES',['care','quickcare','milestones','moments','daily_summary','messages','incidents','pickup']],['LEARNING & SCHOOL',['publish','gradebook','attendance','events','announcements']]],
- parent:[['MY FAMILY',['overview','notifications','children','daily_summary']],['LITTLE MOMENTS',['care','moments','milestones','messages','admin_inbox','family_notices']],['SAFETY & SCHOOL',['incidents','pickup','journal','attendance','events','announcements','membership']]]
+ school_admin:[['AT A GLANCE',['overview','setup','notifications']],['CHILDREN & FAMILIES',['classes','students','profiles','guardian_changes','families','parents']],['YOUR TEAM',['teachers','people','staffing']],['EVERYDAY CARE',['care','quickcare','milestones','moments','daily_summary','medications','messages','admin_inbox','family_notices','incidents','pickup','attendance']],['SCHOOL OPERATIONS',['events','activities','announcements','privacy','billing','settings','support']]],
+ teacher:[['MY DAY',['overview','notifications']],['CLASSROOM',['classes','students','profiles']],['DAILY ROUTINES',['care','quickcare','staffing','milestones','moments','daily_summary','medications','messages','incidents','pickup']],['LEARNING & SCHOOL',['publish','gradebook','attendance','events','announcements']]],
+ parent:[['MY FAMILY',['overview','notifications','children','daily_summary','guardian_changes']],['LITTLE MOMENTS',['care','medications','moments','milestones','messages','admin_inbox','family_notices']],['SAFETY & SCHOOL',['incidents','pickup','journal','attendance','privacy','events','announcements','membership']]]
 };
 
 const roleTitle={owner:'Platform owner',school_admin:'School administrator',teacher:'Teacher',parent:'Parent'};
@@ -96,11 +97,11 @@ export async function launchWorkspace({db,user,role,context,root,logout,photoDat
  let school=(context?.memberships||[]).find(m=>m.role===role&&m.active)?.school_id||null;
  let current=new URLSearchParams(window.location.search).get('tab')||'overview';
  if(!nav.some(([id])=>id===current))current='overview';
- let request=0;
+ let request=0,previousUnread=null;
  const memberships=(context?.memberships||[]).filter(m=>m.role===role&&m.active);
  const schoolPicker=memberships.length>1?'<select id="mw-school" aria-label="Select school">'+memberships.map(m=>option(m.school_id,m.school_name)).join('')+'</select>':(memberships[0]?'<span class="mw-school-name">'+escapeHtml(memberships[0].school_name)+'</span>':'');
  const logo='<a class="logo brand-home mw-brand" href="'+root+'home/" aria-label="BrightPath homepage">✦ <strong>brightpath<span>.</span></strong></a>';
- const playfulIcons={overview:'🏡',setup:'🌻',notifications:'🔔',schools:'🏫',classes:'🧩',students:'🧒',children:'🧒',profiles:'🧸',people:'👥',teachers:'🍎',parents:'💛',families:'👨‍👩‍👧',care:'☀️',quickcare:'✨',admin_inbox:'💌',family_notices:'📮',events:'🗓️',milestones:'🌱',moments:'📸',daily_summary:'📔',messages:'💌',incidents:'🩹',pickup:'🎒',attendance:'📝',activities:'🎨',announcements:'📣',billing:'💳',settings:'⚙️',support:'💬',publish:'✏️',gradebook:'🌟',journal:'📔',membership:'💛'};
+ const playfulIcons={overview:'🏡',setup:'🌻',notifications:'🔔',schools:'🏫',classes:'🧩',students:'🧒',children:'🧒',profiles:'🧸',people:'👥',teachers:'🍎',parents:'💛',families:'👨‍👩‍👧',care:'☀️',quickcare:'✨',admin_inbox:'💌',family_notices:'📮',events:'🗓️',staffing:'🍎',guardian_changes:'👨‍👩‍👧',medications:'💊',privacy:'🛡️',milestones:'🌱',moments:'📸',daily_summary:'📔',messages:'💌',incidents:'🩹',pickup:'🎒',attendance:'📝',activities:'🎨',announcements:'📣',billing:'💳',settings:'⚙️',support:'💬',publish:'✏️',gradebook:'🌟',journal:'📔',membership:'💛'};
  const navEntry=(id,name,ico)=>'<button type="button" data-mw-page="'+id+'" class="mw-navitem" aria-current="false"><span class="mw-navico" aria-hidden="true">'+(role==='owner'?ico:(playfulIcons[id]||ico))+'</span><span>'+escapeHtml(name)+'</span>'+(id==='notifications'?'<span id="mw-nav-notifications" class="bp-notification-dot" hidden></span>':'')+'</button>';
  const navMap=new Map(nav.map(([id,name,ico])=>[id,[name,ico]]));
  const mobileTabIds={owner:['overview','schools','revenue','support'],school_admin:['overview','students','admin_inbox','family_notices'],teacher:['overview','care','quickcare','messages'],parent:['overview','daily_summary','admin_inbox','family_notices']};
@@ -137,6 +138,12 @@ export async function launchWorkspace({db,user,role,context,root,logout,photoDat
   try{
    const notes=await read(db,'bp_notifications',q=>q.eq('recipient_user_id',user.id).eq('school_id',school).order('created_at',{ascending:false}).limit(200));
    const unread=notes.filter(x=>!x.read_at).length;
+   if(previousUnread!==null&&unread>previousUnread&&document.visibilityState==='hidden'&&
+       typeof Notification!=='undefined'&&Notification.permission==='granted'&&
+       window.localStorage?.getItem('bp-notice-browser-'+user.id+'-'+school)==='yes'){
+     try{const popup=new Notification('New BrightPath update',{body:'Open BrightPath to read your private school message.',tag:'bp-update-'+school});popup.onclick=()=>window.focus()}catch{}
+   }
+   previousUnread=unread;
    const badge=document.getElementById('mw-notification-count');
    const navBadge=document.getElementById('mw-nav-notifications');
    if(badge){badge.hidden=unread===0;badge.textContent=unread>99?'99+':String(unread)}
@@ -159,6 +166,7 @@ export async function launchWorkspace({db,user,role,context,root,logout,photoDat
    el.classList.toggle('mw-nav-active',active);
    el.setAttribute('aria-current',active?'page':'false');
   });
+  if(typeof window.__bpRevokeMediaUrls==='function')window.__bpRevokeMediaUrls();
   const dest=document.getElementById('panel-content');dest.innerHTML='<div class="mw-loader"><div class="mw-spinner"></div>Opening workspace…</div>';
   const id=++request;
   try{
@@ -194,7 +202,7 @@ export async function launchWorkspace({db,user,role,context,root,logout,photoDat
  if(role!=='owner')document.getElementById('mw-open-notifications').onclick=()=>show('notifications');
  document.getElementById('mw-logout').onclick=()=>{if(window.__bpNoticeTimer)window.clearInterval(window.__bpNoticeTimer);logout()};
  if(window.__bpNoticeTimer)window.clearInterval(window.__bpNoticeTimer);
- if(role!=='owner')window.__bpNoticeTimer=window.setInterval(()=>{if(document.visibilityState==='visible')void refreshNotificationCount()},45000);
+ if(role!=='owner')window.__bpNoticeTimer=window.setInterval(()=>void refreshNotificationCount(),45000);
  const picker=document.getElementById('mw-school');
  if(picker){picker.value=school;picker.onchange=()=>{school=picker.value;show(current)}}
  await show(current);

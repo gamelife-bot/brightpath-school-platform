@@ -134,3 +134,8 @@
 .bp-admin-communication small{display:block;font-size:11px;color:#859ba1;line-height:1.6;margin-top:5px}
 @media(max-width:1050px){.bp-admin-communication{grid-template-columns:1fr}}
 @media(max-width:600px){.bp-admin-communication>div{flex-wrap:wrap}.bp-admin-communication .mw-btn{margin-left:auto}}
+
+.bp-unlink-verify{margin-top:18px;padding:19px;border:1px solid #e9c8be;background:#fff7f4;border-radius:16px}
+.bp-unlink-verify[hidden]{display:none!important}
+.bp-unlink-verify h3{color:#965a50;font-size:15px;margin:0}
+.bp-unlink-verify p{color:#9a7772;font-size:12px;line-height:1.7;margin:4px 0}

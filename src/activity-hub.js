@@ -18,10 +18,28 @@ export async function renderNotifications(ctx){
  '<div class="mw-metrics">'+stat('Unread',unread.length,'🔔','amber')+stat('All updates',notifications.length,'💌','teal')+'</div>'+
  box('Notification inbox',
   '<div class="bp-notifications-toolbar"><span>'+unread.length+' unread update'+(unread.length===1?'':'s')+'</span>'+button('Mark all as read','bp-mark-all','outline','type="button" '+(!unread.length?'disabled':''))+
-   button('Refresh','bp-notes-refresh','outline','type="button"')+'</div>'+
+   button('Refresh','bp-notes-refresh','outline','type="button"')+button('Enable browser alerts','bp-enable-browser-notices','outline','type="button"')+'</div>'+
  (notifications.length?'<div class="bp-notifications-list">'+cards+'</div>':emptyAction('You’ll receive private updates when the school shares new moments or requests.'))),bind(){
   const setRead=async ids=>{await rpc(db,'bp_mark_notifications_read',{p_ids:ids});if(refreshNotifications)await refreshNotifications();await reload();};
   document.getElementById('bp-notes-refresh').onclick=()=>reload();
+  const enable=document.getElementById('bp-enable-browser-notices');
+  if(enable){
+   const key='bp-notice-browser-'+user.id+'-'+sid;
+   if(typeof Notification==='undefined'||!window.isSecureContext){enable.disabled=true;enable.textContent='Browser alerts unavailable';}
+   else{
+    if(Notification.permission==='granted'&&localStorage.getItem(key)==='yes')enable.textContent='Browser alerts enabled';
+    enable.onclick=async()=>{
+     try{
+      if(Notification.permission==='denied')throw Error('Browser notifications are blocked in site settings');
+      const permission=Notification.permission==='granted'?'granted':await Notification.requestPermission();
+      if(permission!=='granted')throw Error('Browser alert permission was not granted');
+      localStorage.setItem(key,'yes');enable.textContent='Browser alerts enabled';
+      notice('Browser alerts enabled while BrightPath is open in a tab');
+     }catch(err){notice(err.message,'error')}
+    };
+   }
+  }
+
   document.getElementById('bp-mark-all').onclick=async()=>{try{await setRead(null)}catch(err){notice(err.message,'error')}};
   document.querySelectorAll('[data-read-notice]').forEach(b=>b.onclick=async()=>{try{await setRead([Number(b.dataset.readNotice)])}catch(err){notice(err.message,'error')}});
   document.querySelectorAll('[data-open-notice]').forEach(b=>b.onclick=async()=>{

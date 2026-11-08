@@ -6,7 +6,7 @@ import {escapeHtml as e,stat,box,empty,pill,button,heading,read,rpc,notice} from
  */
 export async function renderSchoolSetup(ctx){
  const {db,schoolId:sid,go}=ctx;
- const [schools,rooms,kids,roles,teacherLinks,parentLinks,care,contacts,media,events]=await Promise.all([
+ const [schools,rooms,kids,roles,teacherLinks,parentLinks,care,contacts,media,events,coverageRules,shifts]=await Promise.all([
   read(db,'bp_schools',q=>q.eq('id',sid)),
   read(db,'bp_classes',q=>q.eq('school_id',sid)),
   read(db,'bp_students',q=>q.eq('school_id',sid)),
@@ -16,7 +16,9 @@ export async function renderSchoolSetup(ctx){
   read(db,'bp_care_logs',q=>q.eq('school_id',sid).limit(1)),
   read(db,'bp_pickup_contacts',q=>q.eq('school_id',sid).limit(1)),
   read(db,'bp_child_media',q=>q.eq('school_id',sid).limit(1)),
-  read(db,'bp_school_events',q=>q.eq('school_id',sid).eq('is_published',true).limit(1))
+  read(db,'bp_school_events',q=>q.eq('school_id',sid).eq('is_published',true).limit(1)),
+  read(db,'bp_room_coverage_rules',q=>q.eq('school_id',sid)),
+  read(db,'bp_staff_shifts',q=>q.eq('school_id',sid).limit(1))
  ]);
  let pendingTeacher=0,pendingParent=0;
  try{
@@ -36,7 +38,9 @@ export async function renderSchoolSetup(ctx){
   {id:8,label:'Publish your first daily care update',desc:'Start with a meal, nap, mood or playtime observation.',done:care.length>0,tab:'care',cta:'Daily care diary',icon:'☀️'},
   {id:9,label:'Set up safe pickups',desc:'Add and approve the adults authorized to collect each child.',done:contacts.length>0,tab:'pickup',cta:'Pickup safety',icon:'🎒'},
   {id:10,label:'Share a family moment',desc:'Share a private photo or short video after individual guardian consent.',done:media.length>0,tab:'moments',cta:'Photos & videos',icon:'📸'},
-  {id:11,label:'Publish your first school calendar event',desc:'Schedule a family meeting, celebration or important school closure.',done:events.length>0,tab:'events',cta:'School calendar',icon:'🗓️'}
+  {id:11,label:'Publish your first school calendar event',desc:'Schedule a family meeting, celebration or important school closure.',done:events.length>0,tab:'events',cta:'School calendar',icon:'🗓️'},
+  {id:12,label:'Set classroom caregiver targets',desc:'Set each room’s school-defined coverage target after checking the requirements that apply to your school.',done:rooms.length>0&&rooms.every(r=>coverageRules.some(c=>c.class_id===r.id)),tab:'staffing',cta:'Staff ratios',icon:'🍎'},
+  {id:13,label:'Schedule the teaching team',desc:'Create a staff rota and have teachers confirm arrival on their scheduled day.',done:shifts.length>0,tab:'staffing',cta:'Staff shifts',icon:'🗓️'}
  ];
  const details=await read(db,'bp_child_details',q=>q.eq('school_id',sid));
  checks[6].done=details.some(x=>x.emergency_contact_name&&x.emergency_contact_phone);
@@ -48,6 +52,8 @@ export async function renderSchoolSetup(ctx){
  '<h3>'+e(c.label)+'</h3><p>'+e(c.desc)+'</p><button class="mw-btn mw-btn-outline" type="button" data-setup-go="'+c.tab+'">'+e(c.cta)+' ↗</button></div></article>').join('')+'</div>'+
  box('Before you invite real families','<div class="bp-care-safety-guide"><div>🔐 <b>Check permissions</b><p>Verify accounts, classroom assignments, guardian relationships and photo consent.</p></div>'+
  '<div>☎️ <b>Complete emergency information</b><p>Ensure contact details and care instructions have been confirmed by the family.</p></div>'+
- '<div>🧪 <b>Test actual workflows</b><p>Run a parent–teacher test before using real child information. Payments and external alerts are not yet live.</p></div></div>');
+ '<div>🧪 <b>Test actual workflows</b><p>Run a real parent–teacher–admin test before adding children’s sensitive information. Payments and email/SMS delivery are not active.</p></div>'+
+ '<div>💊 <b>Medication plans when needed</b><p>Families authorize plans in writing; an administrator verifies each plan before trained staff record administration.</p><button type="button" data-setup-go="medications" class="mw-btn mw-btn-outline">Medication safety ↗</button></div>'+
+ '<div>🔐 <b>Family privacy</b><p>Review requests for access, correction and retention with documented safeguards.</p><button type="button" data-setup-go="privacy" class="mw-btn mw-btn-outline">Privacy center ↗</button></div></div>');
  return{html,bind(){document.querySelectorAll('[data-setup-go]').forEach(b=>b.onclick=()=>go(b.dataset.setupGo))}};
 }

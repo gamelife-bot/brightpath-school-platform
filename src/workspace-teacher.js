@@ -1,3 +1,5 @@
+import {renderStaffCoverage} from './staff-coverage.js';
+import {renderMedicationSafety} from './medication-safety.js';
 import {renderSchoolCalendar} from './school-calendar.js';
 import {renderChildProfiles,renderIncidents} from './child-center.js';
 import {renderNotifications,renderQuickCare,renderDailySummary} from './activity-hub.js';
@@ -25,13 +27,16 @@ function teachingActivity(a,students){
  const s=students.find(x=>x.id===a.student_id);
  return '<article class="mw-journal-entry"><div class="mw-line-between"><div><span class="mw-mini-meta">'+e(s?.full_name||'Student')+' · '+dateLabel(a.created_at)+'</span><h3>'+e(a.title)+'</h3></div>'+pill(a.score+'%','green')+'</div>'+
   '<span class="mw-subject-label">'+e(a.subject)+'</span><p>'+e(a.notes)+'</p>'+
-  (a.photo_data_url?'<img class="mw-activity-photo" alt="Classroom activity" loading="lazy" src="'+e(a.photo_data_url)+'">':'')+'</article>';
+  ''+'</article>';
 }
 export async function renderTeacherPage(ctx,tab){
  const {db,schoolId:sid,user,go,reload,photoData}=ctx;
  if(!sid)throw Error('Teacher account has not been assigned to a school.');
  const {classes,students,activities}=await teacherData(db,sid);
  if(tab==='events')return renderSchoolCalendar(ctx);
+ if(tab==='medications')return renderMedicationSafety(ctx);
+ if(tab==='staffing')return renderStaffCoverage(ctx);
+
  if(tab==='notifications')return renderNotifications(ctx);
  if(tab==='profiles')return renderChildProfiles(ctx);
  if(tab==='incidents')return renderIncidents(ctx);

@@ -1,3 +1,7 @@
+import {renderGuardianChanges} from './guardian-requests.js';
+import {renderPrivacyCenter} from './privacy-center.js';
+import {renderStaffCoverage} from './staff-coverage.js';
+import {renderMedicationSafety} from './medication-safety.js';
 import {renderAdminInbox} from './family-office.js';
 import {renderFamilyNotices} from './family-notices.js';
 import {renderSchoolCalendar} from './school-calendar.js';
@@ -35,6 +39,11 @@ export async function renderSchoolPage(ctx,tab){
  const {db,user,reload,go,schoolId:sid}=ctx;
  if(!sid)throw new Error('No school has been assigned to this account.');
  if(tab==='events')return renderSchoolCalendar(ctx);
+ if(tab==='medications')return renderMedicationSafety(ctx);
+ if(tab==='staffing')return renderStaffCoverage(ctx);
+ if(tab==='guardian_changes')return renderGuardianChanges(ctx);
+ if(tab==='privacy')return renderPrivacyCenter(ctx);
+
  if(tab==='admin_inbox')return renderAdminInbox(ctx);
  if(tab==='family_notices')return renderFamilyNotices(ctx);
  if(tab==='notifications')return renderNotifications(ctx);
@@ -73,7 +82,7 @@ export async function renderSchoolPage(ctx,tab){
    '<div class="mw-two mw-approval-overview">'+box('Teacher approvals', '<div class="mw-approval-overview-count">'+pendingTeachers+'</div><p class="mw-fine">Pending teacher access requests</p>'+button('Review teacher requests','mw-review-teachers','outline'))+box('Parent approvals','<div class="mw-approval-overview-count">'+pendingParents+'</div><p class="mw-fine">Pending parent access requests</p>'+button('Review parent requests','mw-review-parents','outline'))+'</div>'+
    '<div class="bp-admin-communication"><div><span>💌</span><div><b>'+officeMessages.length+' open parent conversation'+(officeMessages.length===1?'':'s')+'</b><small>Private questions for School Administration</small></div>'+button('Open inbox','mw-open-admin-inbox','outline')+'</div><div><span>📮</span><div><b>'+familyNotices.length+' parent notice'+(familyNotices.length===1?'':'s')+' awaiting review</b><small>Absences, arrivals and care changes</small></div>'+button('Review notices','mw-open-family-notices','outline')+'</div></div>'+
    '<div class="mw-section-title"><h2>Manage your school</h2><span>Quick actions</span></div><div class="mw-actions-grid">'+[
-    ['Parent administration inbox','admin_inbox','💌'],['Parent day notices','family_notices','📮'],['School calendar','events','🗓️'],['Child profiles','profiles','🧸'],['Quick classroom updates','quickcare','✨'],['Safe pickup desk','pickup','👋'],['Approve teachers','teachers','👩‍🏫'],['Approve parents','parents','💛']
+    ['Parent administration inbox','admin_inbox','💌'],['Parent day notices','family_notices','📮'],['School calendar','events','🗓️'],['Staff shifts & ratios','staffing','🍎'],['Medication safety','medications','💊'],['Guardian requests','guardian_changes','👨‍👩‍👧'],['Privacy center','privacy','🛡️'],['Child profiles','profiles','🧸'],['Quick classroom updates','quickcare','✨'],['Safe pickup desk','pickup','👋'],['Approve teachers','teachers','👩‍🏫'],['Approve parents','parents','💛']
    ].map(([t,p,i])=>'<button class="mw-action" type="button" data-goto="'+p+'"><span>'+i+'</span><b>'+t+'</b><small>Open workspace</small><i>↗</i></button>').join('')+'</div>'+
    '<div class="mw-two">'+box('School setup',
     badgeProgress([[classes.length>0,'Create your first class','Organize classrooms'],
@@ -233,6 +242,7 @@ export async function renderSchoolPage(ctx,tab){
     '<form id="mw-parent-link-form" class="mw-form">'+field('Verified parent email',input('mw-parent-email','parent@email.com','email','required'))+
     field('Student',select('mw-parent-student',kidOptions(students),'required'))+
     '<label class="mw-check-label"><input id="mw-guardian-verified" type="checkbox" required><span>I have confirmed this guardian’s identity and their relationship to the student.</span></label>'+
+    field('Independent verification record',textarea('mw-guardian-proof','Record verification method and date. Do not enter ID numbers or upload identity documents here.','required minlength="12" maxlength="700"'))+
     actions(button('Link account','mw-parent-link-submit','primary','type="submit" '+(!students.length?'disabled':'')))+'</form>')+
    box('Account setup',badgeProgress([[members.some(m=>m.role==='parent'&&m.active),'Approve parent account','In Parent approvals'],[students.length>0,'Enroll student','In Students'],[links.length>0,'Connect family','Link the guardian here']])+
      '<div class="mw-form-actions">'+button('Open Parent approvals ↗','mw-go-members','outline')+'</div>')+'</div>'+
@@ -240,17 +250,32 @@ export async function renderSchoolPage(ctx,tab){
     const s=students.find(k=>k.id===l.student_id),p=names.get(l.parent_user_id);
     return tr([e(s?.full_name||'Student'),e(findClass(classes,s?.class_id)),
       '<b>'+e(p?.full_name||'Parent')+'</b><br><small>'+e(p?.email||'')+'</small>',dateLabel(l.verified_at),
-      button('Unlink','mw-unlink-'+l.student_id,'danger','data-unlink-student="'+e(l.student_id)+'" data-unlink-parent="'+e(l.parent_user_id)+'"')]);
-   })):empty('♡','Family connections will appear here','Each verified guardian will be linked to their own child.'));
+      (links.filter(x=>x.student_id===l.student_id).length<=1?pill('Last verified guardian','amber'):button('Unlink','mw-unlink-'+l.student_id,'danger','data-unlink-student="'+e(l.student_id)+'" data-unlink-parent="'+e(l.parent_user_id)+'"'))]);
+   })):empty('♡','Family connections will appear here','Each verified guardian will be linked to their own child.'))+
+   '<form id="mw-unlink-confirm" class="mw-form bp-unlink-verify" hidden><h3>Verify guardian access removal</h3><p id="mw-unlink-target">A school administrator must independently verify and document this change.</p>'+ 
+   field('Independent verification reference',textarea('mw-unlink-proof','Why and how was this guardian access change authorized?','required minlength="12" maxlength="700"'))+
+   '<label class="mw-check-label"><input type="checkbox" id="mw-unlink-checked" required><span>I verified the request and confirmed that another authorized guardian remains linked to the child.</span></label>'+ 
+   '<div class="bp-review-actions">'+button('Confirm access removal','mw-unlink-do','danger','type="submit"')+button('Cancel','mw-unlink-cancel','outline','type="button"')+'</div></form>';
   return{html,bind(){
    form('mw-parent-link-form',async()=>{
     if(!checked('mw-guardian-verified'))throw Error('Please verify the guardian first');
-    await rpc(db,'bp_link_parent',{p_school:sid,p_email:v('mw-parent-email'),p_student:v('mw-parent-student')});await reload();
+    await rpc(db,'bp_verified_link_parent',{p_school:sid,p_email:v('mw-parent-email'),p_student:v('mw-parent-student'),p_verification_ref:v('mw-guardian-proof')});await reload();
    });
    click('mw-go-members',()=>go('parents'));
-   document.querySelectorAll('[data-unlink-student]').forEach(b=>b.onclick=async()=>{
-    if(!confirm('Remove this guardian’s access to the student?'))return;
-    try{await rpc(db,'bp_unlink_parent',{p_school:sid,p_student:b.dataset.unlinkStudent,p_parent_id:b.dataset.unlinkParent});notice('Connection removed');await reload()}catch(err){notice(err.message,'error')}
+   let selectedLink=null;
+   document.querySelectorAll('[data-unlink-student]').forEach(b=>b.onclick=()=>{
+    selectedLink={student:b.dataset.unlinkStudent,parent:b.dataset.unlinkParent};
+    const panel=document.getElementById('mw-unlink-confirm');panel.hidden=false;
+    document.getElementById('mw-unlink-proof').value='';document.getElementById('mw-unlink-checked').checked=false;
+    document.getElementById('mw-unlink-target').textContent='Review the removal for '+(students.find(s=>s.id===selectedLink.student)?.full_name||'this child')+'. A replacement guardian must remain linked.';
+    panel.scrollIntoView({behavior:'smooth',block:'center'});
+   });
+   click('mw-unlink-cancel',()=>{document.getElementById('mw-unlink-confirm').hidden=true;selectedLink=null});
+   form('mw-unlink-confirm',async()=>{
+    if(!selectedLink||!checked('mw-unlink-checked')||v('mw-unlink-proof').length<12)throw Error('Independent verification required');
+    if(!confirm('Remove this verified guardian’s access to the child’s private information?'))return;
+    const r=await rpc(db,'bp_verified_unlink_parent',{p_school:sid,p_student:selectedLink.student,p_parent_id:selectedLink.parent,p_verification_ref:v('mw-unlink-proof')});
+    if(!r.ok)throw Error('Guardian access revocation was not confirmed');notice('Guardian link removed and audited');await reload();
    });
   }};
  }

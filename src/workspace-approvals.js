@@ -1,4 +1,4 @@
-import {escapeHtml as e,numberLabel as n,dateLabel,initial,stat,box,empty,pill,field,input,select,button,heading,table,tr,option,read,rpc,form,notice,v} from './workspace-core.js';
+import {escapeHtml as e,numberLabel as n,dateLabel,initial,stat,box,empty,pill,field,input,select,textarea,button,heading,table,tr,option,read,rpc,form,notice,v} from './workspace-core.js';
 
 /**
  * School-admin approvals: teachers and parents have separate, visible
@@ -72,6 +72,7 @@ export async function renderSchoolApprovals(ctx,kind){
   field('Approved parent',select('mw-link-person','<option value="">Choose a parent</option>'+active.map(m=>option(profilesById.get(m.user_id)?.email||'',profilesById.get(m.user_id)?.full_name||profilesById.get(m.user_id)?.email||'Parent')).join(''),'required'))+
   field('Student',select('mw-link-child','<option value="">Choose a student</option>'+students.map(s=>option(s.id,s.full_name)).join(''),'required'))+
   '<label class="mw-check-label"><input id="mw-approve-guardian-confirmed" type="checkbox" required><span>I have verified the parent’s or guardian’s identity and authority to access this student.</span></label>'+
+  field('Independent verification record',textarea('mw-approve-guardian-proof','Record how guardian authority was checked. Do not store ID numbers in this field.','required minlength="12" maxlength="700"'))+
   button('Link parent and child','mw-approve-family-button','primary','type="submit" '+(!active.length||!students.length?'disabled':''))+'</form>')+'</div>'+
  box(isTeacher?'Approved teachers':'Approved parents',
   statusRows.length?table(['Member',isTeacher?'Assigned classes':'Linked children','Status'],statusRows):
@@ -106,7 +107,7 @@ export async function renderSchoolApprovals(ctx,kind){
   }else{
    form('mw-approve-family-form',async()=>{
     if(!document.getElementById('mw-approve-guardian-confirmed').checked)throw Error('Confirm guardian identity and authority first');
-    await rpc(db,'bp_link_parent',{p_school:sid,p_student:v('mw-link-child'),p_email:v('mw-link-person')});await reload();
+    await rpc(db,'bp_verified_link_parent',{p_school:sid,p_student:v('mw-link-child'),p_email:v('mw-link-person'),p_verification_ref:v('mw-approve-guardian-proof')});await reload();
    });
   }
  }};
