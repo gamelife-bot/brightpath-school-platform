@@ -1,0 +1,74 @@
+/* BrightPath signatures, parent surveys and reviews */
+.bp-sign-note,.bp-feedback-intro{display:flex;gap:14px;align-items:flex-start;background:linear-gradient(125deg,#fff5df,#eaf8f0);border:1px solid #eee7d9;border-radius:18px;padding:17px 19px;margin-bottom:20px;font-size:12px;line-height:1.7;color:#537a78}
+.bp-feedback-intro>span{font-size:30px;flex:0 0 40px}
+.bp-feedback-intro strong{font-size:14px;color:#3c6866}
+.bp-feedback-intro p{font-size:12px;line-height:1.7;margin:5px 0 0;color:#6b8484}
+.bp-sign-list,.bp-survey-list,.bp-review-list{display:grid;gap:15px}
+.bp-sign-doc,.bp-feedback-survey,.bp-family-review{background:#fdfefa;border:1px solid #e7eeea;border-radius:19px;padding:18px;min-width:0}
+.bp-sign-doc:nth-child(2n),.bp-feedback-survey:nth-child(2n),.bp-family-review:nth-child(2n){background:#fffaf2}
+.bp-sign-doc-head,.bp-survey-head,.bp-review-head{display:flex;gap:12px;align-items:center;margin-bottom:12px}
+.bp-sign-doc-head>span,.bp-review-head>span{display:grid;place-items:center;background:#e8f8ed;border-radius:15px;font-size:25px;width:47px;height:47px;flex:0 0 47px}
+.bp-sign-doc-head>div,.bp-survey-head>div,.bp-review-head>div{flex:1;min-width:0}
+.bp-sign-doc-head h3,.bp-survey-head h3,.bp-review-head h3{font-size:15px;line-height:1.45;color:#355964;margin:0}
+.bp-sign-doc-head small,.bp-survey-head small,.bp-review-head small{display:block;color:#869f9e;font-size:11px;line-height:1.6;margin-top:5px}
+.bp-sign-doc-head .mw-pill,.bp-survey-head .mw-pill,.bp-review-head .mw-pill{font-size:10px}
+.bp-sign-document{background:#fff;border:1px solid #e8eee9;border-radius:14px;padding:18px 19px;margin:15px 0}
+.bp-sign-document>strong{display:block;text-transform:uppercase;letter-spacing:.6px;font-size:10px;color:#6e948c}
+.bp-sign-document p{white-space:pre-wrap;overflow-wrap:anywhere;font-size:12px;color:#436970;line-height:1.9;margin:10px 0 0}
+.bp-sign-doc>.mw-btn{margin-top:4px}
+.bp-sign-editor{padding:18px;background:#f1f9f4;border:1px solid #d7eadc;border-radius:17px;margin-top:15px}
+.bp-sign-editor[hidden]{display:none!important}
+.bp-sign-instruction,.bp-sign-alt,.bp-sign-status{font-size:11px;color:#62857f;line-height:1.65}
+.bp-sign-toolbar{display:flex;align-items:center;gap:12px;justify-content:space-between;margin:11px 0;font-size:12px;font-weight:850;color:#426e66}
+.bp-sign-canvas{width:100%;max-width:100%;height:auto;aspect-ratio:720/210;border:2px dashed #a5cabe;background:#fff;border-radius:14px;touch-action:none;cursor:crosshair;display:block}
+.bp-sign-canvas:focus-visible{outline:2px solid #0f9479}
+.bp-sign-editor input[type=file]{width:100%;font-size:12px;padding:12px;background:#fff;border:1px solid #d9e9df;border-radius:12px}
+.bp-sign-editor form{margin-top:17px}
+.bp-sign-completed{padding:16px;background:#eef8f1;border:1px solid #d9e9de;border-radius:14px;display:grid;gap:10px;margin-top:16px}
+.bp-sign-completed strong{font-size:13px;color:#316b5e}
+.bp-sign-completed small{font-size:10px;color:#71938c;display:block;line-height:1.6;margin-top:4px}
+.bp-sign-completed img{background:#fff;display:block;max-width:min(440px,100%);width:100%;height:140px;object-fit:contain;border:1px solid #dbe8e0;border-radius:10px}
+.bp-sign-completed code{font-size:10px;overflow-wrap:anywhere;user-select:all}
+.bp-sign-disputed{background:#fff4e5;border:1px solid #f1d1b1;border-radius:10px;padding:10px;font-size:11px;color:#8b5939}
+.bp-survey-head>div>span{font-size:10px;font-weight:900;letter-spacing:1px;color:#24a07f;display:block;margin-bottom:7px}
+.bp-survey-description{font-size:12px;color:#68888a;line-height:1.7;white-space:pre-wrap;margin:12px 0}
+.bp-survey-results{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:11px;margin:15px 0}
+.bp-survey-results>div{background:#fff;border:1px solid #e4eee9;border-radius:13px;padding:14px}
+.bp-survey-results span{font-size:11px;color:#64848a;line-height:1.55;display:block}
+.bp-survey-results b{display:block;font-size:22px;color:#2e8d75;margin:9px 0 4px}
+.bp-survey-results small{font-size:10px;color:#9eada9}
+.bp-survey-answer{margin-top:14px;background:#f6fbf6;border:1px solid #dcefe2;padding:16px;border-radius:14px}
+.bp-feedback-rating{border:0;padding:0;margin:13px 0;min-width:0}
+.bp-feedback-rating legend{font-size:12px;font-weight:750;color:#41646d;margin-bottom:10px}
+.bp-feedback-rating>div{display:flex;flex-wrap:wrap;gap:7px}
+.bp-feedback-rating label{position:relative;display:inline-flex;min-width:48px;justify-content:center;cursor:pointer}
+.bp-feedback-rating input{position:absolute;opacity:0;width:1px;height:1px}
+.bp-feedback-rating label>span{display:block;padding:9px 11px;border-radius:12px;background:#fff;border:1px solid #dcebe5;font-size:12px;color:#74928e;font-weight:850;text-align:center;min-width:46px}
+.bp-feedback-rating input:checked+span{background:#fbe7bd;border-color:#e9bd66;color:#90621f}
+.bp-feedback-rating input:focus-visible+span{outline:2px solid #168e74;outline-offset:2px}
+.bp-feedback-comments{margin:15px 0}
+.bp-feedback-comments>strong{font-size:12px;color:#3c7165}
+.bp-feedback-comments blockquote{margin:10px 0;padding:11px 14px;border-left:3px solid #a6dac1;background:#fff;border-radius:6px 12px 12px 6px}
+.bp-feedback-comments blockquote p{white-space:pre-wrap;overflow-wrap:anywhere;margin:0 0 5px;font-size:12px;color:#5a7b7a}
+.bp-feedback-comments blockquote small{font-size:10px;color:#92a29e}
+.bp-survey-thanks{padding:12px;background:#e6f5ea;border-radius:11px;font-size:12px;color:#30856e;margin-top:14px}
+.bp-review-stars{display:block;font-size:23px;color:#e1a438;letter-spacing:2px;margin:12px 0}
+.bp-family-review>p{font-size:12px;color:#5d7879;line-height:1.8;white-space:pre-wrap;overflow-wrap:anywhere}
+.bp-family-review .bp-review-response{margin-top:15px;padding-top:16px;border-top:1px solid #e3ece6}
+@media(max-width:950px){.bp-survey-results{grid-template-columns:1fr}}
+@media(max-width:520px){
+ .bp-sign-doc,.bp-feedback-survey,.bp-family-review{padding:13px}
+ .bp-sign-doc-head,.bp-review-head,.bp-survey-head{flex-wrap:wrap}
+ .bp-sign-doc-head .mw-pill,.bp-review-head .mw-pill,.bp-survey-head .mw-pill{margin-left:auto}
+ .bp-sign-document{padding:13px}
+ .bp-sign-editor{padding:12px}
+ .bp-sign-toolbar{flex-wrap:wrap}
+ .bp-sign-canvas{aspect-ratio:720/280;min-height:120px}
+ .bp-feedback-rating label>span{padding:8px}
+}
+@media print{.bp-sign-editor,.bp-sign-note,.bp-feedback-intro{display:none!important}}
+
+/* Fast teacher logging without invented attendance */
+.bp-presence-tools{display:flex;flex-wrap:wrap;align-items:center;gap:9px;padding:10px 12px;background:#f1f9f4;border:1px solid #d8eee0;border-radius:12px}
+.bp-presence-tools small{color:#5a8175;font-size:11px;line-height:1.5;flex:1}
+@media(max-width:480px){.bp-presence-tools .mw-btn{width:100%}}

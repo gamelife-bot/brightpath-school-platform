@@ -40,8 +40,12 @@ export async function renderSchoolSetup(ctx){
   {id:10,label:'Share a family moment',desc:'Share a private photo or short video after individual guardian consent.',done:media.length>0,tab:'moments',cta:'Photos & videos',icon:'📸'},
   {id:11,label:'Publish your first school calendar event',desc:'Schedule a family meeting, celebration or important school closure.',done:events.length>0,tab:'events',cta:'School calendar',icon:'🗓️'},
   {id:12,label:'Set classroom caregiver targets',desc:'Set each room’s school-defined coverage target after checking the requirements that apply to your school.',done:rooms.length>0&&rooms.every(r=>coverageRules.some(c=>c.class_id===r.id)),tab:'staffing',cta:'Staff ratios',icon:'🍎'},
-  {id:13,label:'Schedule the teaching team',desc:'Create a staff rota and have teachers confirm arrival on their scheduled day.',done:shifts.length>0,tab:'staffing',cta:'Staff shifts',icon:'🗓️'}
+  {id:13,label:'Schedule the teaching team',desc:'Create a staff rota and have teachers confirm arrival on their scheduled day.',done:shifts.length>0,tab:'staffing',cta:'Staff shifts',icon:'🗓️'},
+  {id:14,label:'Send the parent handbook for signature',desc:'Ask a verified guardian to review and sign an individual school document.',done:false,tab:'signatures',cta:'Signature requests',icon:'✍️'},
+  {id:15,label:'Ask families for feedback',desc:'Publish a three-question parent survey to learn what families need.',done:false,tab:'feedback',cta:'Parent surveys',icon:'💛'}
  ];
+ const [signatures,surveys]=await Promise.all([read(db,'bp_signature_requests',q=>q.eq('school_id',sid).limit(1)),read(db,'bp_family_surveys',q=>q.eq('school_id',sid).limit(1))]);
+ checks[13].done=signatures.length>0;checks[14].done=surveys.length>0;
  const details=await read(db,'bp_child_details',q=>q.eq('school_id',sid));
  checks[6].done=details.some(x=>x.emergency_contact_name&&x.emergency_contact_phone);
  const completed=checks.filter(x=>x.done).length,pct=Math.round(100*completed/checks.length);

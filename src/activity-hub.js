@@ -72,7 +72,12 @@ const presets=[
 export async function renderQuickCare(ctx){
  const {db,schoolId:sid,role,go,reload}=ctx;
  if(role==='parent')return{html:heading('School staff only','Care updates','Only authorized staff can publish classroom updates.')};
- const [children,classes]=await Promise.all([visibleChildren(ctx),read(db,'bp_classes',q=>q.eq('school_id',sid).order('name'))]);
+ const today=new Date().toLocaleDateString('en-CA',{timeZone:'Africa/Nairobi'});
+ const [children,classes,todayAttendance]=await Promise.all([
+  visibleChildren(ctx),read(db,'bp_classes',q=>q.eq('school_id',sid).order('name')),
+  read(db,'bp_attendance',q=>q.eq('school_id',sid).eq('attendance_date',today))
+ ]);
+ const presentIds=new Set(todayAttendance.filter(a=>['present','late'].includes(a.status)).map(a=>a.student_id));
  const available=classes.filter(c=>children.some(k=>k.class_id===c.id));
  const roster=id=>children.filter(c=>c.class_id===id);
  const html=heading('FAST CLASSROOM LOGGING','Quick classroom update','Record one routine or activity for multiple children in the same room, in a few taps.')+
@@ -80,7 +85,8 @@ export async function renderQuickCare(ctx){
  '<div class="mw-two mw-two-side">'+box('Post to your classroom',
  '<form id="bp-group-care-form" class="mw-form">'+
  field('Classroom or group',select('bp-group-class','<option value="">Choose a room</option>'+available.map(c=>option(c.id,c.name)).join(''),'required'))+
- '<div class="bp-roster-head"><b>Choose the children</b><label><input type="checkbox" id="bp-group-selectall"> Select all in this room</label></div>'+
+ '<div class="bp-roster-head"><b>Choose the children who actually participated</b><label><input type="checkbox" id="bp-group-selectall"> Select all in this room</label></div>'+
+ '<div class="bp-presence-tools"><button class="mw-btn mw-btn-outline" id="bp-group-present" type="button">✓ Select children marked present today</button><small id="bp-group-present-count">Attendance must be marked first; adjust the selection to match who participated.</small></div>'+
  '<div id="bp-group-children" class="bp-group-checklist">'+empty('🧸','Choose a classroom','Your assigned children will appear here.')+'</div>'+
  '<div id="bp-group-count" class="bp-group-counter">0 children selected</div>'+
  field('Type of activity',select('bp-group-type',Object.entries(GROUP_TYPES).map(([k,[ico,label]])=>option(k,ico+' '+label)).join('')))+
@@ -88,7 +94,7 @@ export async function renderQuickCare(ctx){
  field('Observation',input('bp-group-value','e.g. Enjoyed, Completed, Participated','text','maxlength="100"'))+
  '<p class="bp-private-hint">Do not include one child’s personal or medical information in a group update. For individual needs, use the Daily care diary.</p>'+
  '<div class="mw-form-actions">'+button('Save updates for selected children','bp-group-save','primary','type="submit" '+(!children.length?'disabled':''))+'</div></form>')+
- box('One-tap activity starters','<div class="bp-quick-presets">'+presets.map(([label,type,details])=>
+ box('Reusable classroom templates','<p class="bp-private-hint">No separate daily summary to write: BrightPath builds a child’s report from real attendance, care moments and photos already recorded. Surveys and signatures go to School Administration or parents—not teachers.</p><div class="bp-quick-presets">'+presets.map(([label,type,details])=>
  '<button type="button" class="bp-preset" data-preset-type="'+e(type)+'" data-preset-details="'+e(details)+'">'+label+' <span>↗</span></button>').join('')+'</div>'+
  '<div class="bp-care-safety-guide"><div>💛 <b>Individual privacy</b><p>Every family receives only its own child’s update.</p></div><div>🧑‍🏫 <b>Assigned classes only</b><p>Teachers can only post updates for children in their assigned rooms.</p></div></div>')+'</div>';
  return{html,bind(){
@@ -104,6 +110,15 @@ export async function renderQuickCare(ctx){
    list.querySelectorAll('[data-group-child]').forEach(x=>x.onchange=updateCount);updateCount();
   };
   chooser.onchange=draw;
+  document.getElementById('bp-group-present').onclick=()=>{
+   const rosterBoxes=[...list.querySelectorAll('[data-group-child]')];
+   if(!rosterBoxes.length)return notice('Choose a classroom first','error');
+   if(!rosterBoxes.some(x=>presentIds.has(x.value)))return notice('No children in this room have been marked present today. Mark attendance or select participants manually.','error');
+   rosterBoxes.forEach(x=>{x.checked=presentIds.has(x.value)});
+   all.checked=rosterBoxes.length>0&&rosterBoxes.every(x=>x.checked);updateCount();
+  };
+  if(available.length===1){chooser.value=available[0].id;draw();}
+  document.getElementById('bp-group-present-count').textContent=presentIds.size+' children marked present today across assigned rooms. Review selection before saving.';
   all.onchange=()=>{list.querySelectorAll('[data-group-child]').forEach(x=>x.checked=all.checked);updateCount()};
   document.querySelectorAll('[data-preset-type]').forEach(b=>b.onclick=()=>{
    document.getElementById('bp-group-type').value=b.dataset.presetType;
