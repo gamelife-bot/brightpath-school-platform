@@ -1,3 +1,6 @@
+import {renderAdminInbox} from './family-office.js';
+import {renderFamilyNotices} from './family-notices.js';
+import {renderSchoolCalendar} from './school-calendar.js';
 import {renderChildProfiles,renderIncidents} from './child-center.js';
 import {renderNotifications,renderQuickCare,renderDailySummary} from './activity-hub.js';
 import {welcomeArt} from './playful-art.js';
@@ -37,6 +40,9 @@ export async function renderParentPage(ctx,tab){
  if(!sid)throw Error('Parent account is not linked to a school.');
  const {children,activities,classes}=await familyData(db,sid);
  const avg=activities.length?Math.round(activities.reduce((sum,a)=>sum+a.score,0)/activities.length):null;
+ if(tab==='events')return renderSchoolCalendar(ctx);
+ if(tab==='admin_inbox')return renderAdminInbox(ctx);
+ if(tab==='family_notices')return renderFamilyNotices(ctx);
  if(tab==='notifications')return renderNotifications(ctx);
  if(tab==='profiles')return renderChildProfiles(ctx);
  if(tab==='incidents')return renderIncidents(ctx);
@@ -58,7 +64,8 @@ export async function renderParentPage(ctx,tab){
    stat('Development moments',growth.length,'🌱','violet')+'</div>'+
    '<div class="mw-welcome mw-welcome-parent"><div><span class="mw-welcome-kicker">HELLO, FAMILY!</span><h2>Little moments. Big milestones.</h2><p>Celebrate every achievement and stay close to your child’s school day.</p>'+
    button('See today’s care diary →','mw-family-journal','light')+'</div><div class="mw-welcome-art">'+welcomeArt('parent')+'</div></div>'+
-   '<div class="mw-section-title"><h2>Your child’s day</h2></div><div class="mw-actions-grid">'+[['Today’s care diary','care','☀'],['Daily summary','daily_summary','📔'],['Photos & videos','moments','📸'],['Message the school','messages','💌'],['Child profile','children','🧸'],['Milestones','milestones','🌱']].map(([label,tab,icon])=>'<button class="mw-action" type="button" data-family-quick="'+tab+'"><span>'+icon+'</span><b>'+label+'</b><small>Open updates ↗</small></button>').join('')+'</div>'+
+   '<div class="mw-section-title"><h2>Your child’s day</h2></div><div class="mw-actions-grid">'+[['Today’s care diary','care','☀'],['Daily summary','daily_summary','📔'],['Photos & videos','moments','📸'],['Message School Admin','admin_inbox','💌'],['Notify absence','family_notices','📮'],['Child profile','children','🧸'],['Milestones','milestones','🌱'],['Classroom messages','messages','✉'],['School events','events','🗓️']].map(([label,tab,icon])=>'<button class="mw-action" type="button" data-family-quick="'+tab+'"><span>'+icon+'</span><b>'+label+'</b><small>Open updates ↗</small></button>').join('')+'</div>'+
+   '<div class="bp-parent-office-banner"><span>💌</span><div><strong>Need to speak with School Administration?</strong><p>Ask about fees, family concerns, school policies or your child’s needs. Only school administrators can read the conversation.</p></div>'+button('Message the school office','bp-parent-admin-cta','outline')+'</div>'+
    '<div class="mw-two">'+box('My little ones',
     children.length?'<div class="mw-children-mini">'+children.map(k=>
      '<button class="bp-parent-child-quick" type="button" data-open-child="'+e(k.id)+'"><span class="mw-round-icon">'+initial(k.full_name)+'</span><span><b>'+e(k.full_name)+'</b><small>'+e(classes.find(c=>c.id===k.class_id)?.name||'Daycare room')+'</small></span><span aria-hidden="true">↗</span></button>').join('')+'</div>':
@@ -72,7 +79,7 @@ export async function renderParentPage(ctx,tab){
    box('Safe arrivals and pickups',pickup.length?'<div class="mw-recent">'+pickup.slice(0,5).map(x=>
     '<div><b>'+(x.event_type==='check_in'?'🎒 Arrived safely':'💛 Picked up')+'</b><small>'+e(children.find(c=>c.id===x.student_id)?.full_name||'Child')+'</small><span>'+new Date(x.occurred_at).toLocaleTimeString('en-KE',{hour:'2-digit',minute:'2-digit'})+'</span></div>'
    ).join('')+'</div>':empty('🎒','No arrivals recorded yet','School staff will record safe check-ins and pickups here.'))+'</div>';
-  return{html,bind(){click('mw-family-journal',()=>go('care'));document.querySelectorAll('[data-family-quick]').forEach(b=>b.onclick=()=>go(b.dataset.familyQuick));document.querySelectorAll('[data-open-child]').forEach(b=>b.onclick=()=>{const url=new URL(location.href);url.searchParams.set('child',b.dataset.openChild);history.replaceState(null,'',url.pathname+url.search);go('children')})}};
+  return{html,bind(){click('bp-parent-admin-cta',()=>go('admin_inbox'));click('mw-family-journal',()=>go('care'));document.querySelectorAll('[data-family-quick]').forEach(b=>b.onclick=()=>go(b.dataset.familyQuick));document.querySelectorAll('[data-open-child]').forEach(b=>b.onclick=()=>{const url=new URL(location.href);url.searchParams.set('child',b.dataset.openChild);history.replaceState(null,'',url.pathname+url.search);go('children')})}};
  }
  if(tab==='children'){
   const html=heading('MY FAMILY','My children','View each linked child’s profile and subject progress.')+

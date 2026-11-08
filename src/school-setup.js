@@ -6,7 +6,7 @@ import {escapeHtml as e,stat,box,empty,pill,button,heading,read,rpc,notice} from
  */
 export async function renderSchoolSetup(ctx){
  const {db,schoolId:sid,go}=ctx;
- const [schools,rooms,kids,roles,teacherLinks,parentLinks,care,contacts,media]=await Promise.all([
+ const [schools,rooms,kids,roles,teacherLinks,parentLinks,care,contacts,media,events]=await Promise.all([
   read(db,'bp_schools',q=>q.eq('id',sid)),
   read(db,'bp_classes',q=>q.eq('school_id',sid)),
   read(db,'bp_students',q=>q.eq('school_id',sid)),
@@ -15,7 +15,8 @@ export async function renderSchoolSetup(ctx){
   read(db,'bp_parent_links',q=>q.eq('school_id',sid)),
   read(db,'bp_care_logs',q=>q.eq('school_id',sid).limit(1)),
   read(db,'bp_pickup_contacts',q=>q.eq('school_id',sid).limit(1)),
-  read(db,'bp_child_media',q=>q.eq('school_id',sid).limit(1))
+  read(db,'bp_child_media',q=>q.eq('school_id',sid).limit(1)),
+  read(db,'bp_school_events',q=>q.eq('school_id',sid).eq('is_published',true).limit(1))
  ]);
  let pendingTeacher=0,pendingParent=0;
  try{
@@ -34,7 +35,8 @@ export async function renderSchoolSetup(ctx){
   {id:7,label:'Confirm individual care information',desc:'Record allergies, emergency contacts and daily routines supplied by guardians.',done:false,tab:'profiles',cta:'Child profiles',icon:'🩹'},
   {id:8,label:'Publish your first daily care update',desc:'Start with a meal, nap, mood or playtime observation.',done:care.length>0,tab:'care',cta:'Daily care diary',icon:'☀️'},
   {id:9,label:'Set up safe pickups',desc:'Add and approve the adults authorized to collect each child.',done:contacts.length>0,tab:'pickup',cta:'Pickup safety',icon:'🎒'},
-  {id:10,label:'Share a family moment',desc:'Share a private photo or short video after individual guardian consent.',done:media.length>0,tab:'moments',cta:'Photos & videos',icon:'📸'}
+  {id:10,label:'Share a family moment',desc:'Share a private photo or short video after individual guardian consent.',done:media.length>0,tab:'moments',cta:'Photos & videos',icon:'📸'},
+  {id:11,label:'Publish your first school calendar event',desc:'Schedule a family meeting, celebration or important school closure.',done:events.length>0,tab:'events',cta:'School calendar',icon:'🗓️'}
  ];
  const details=await read(db,'bp_child_details',q=>q.eq('school_id',sid));
  checks[6].done=details.some(x=>x.emergency_contact_name&&x.emergency_contact_phone);

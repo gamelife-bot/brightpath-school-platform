@@ -1,3 +1,6 @@
+import {renderAdminInbox} from './family-office.js';
+import {renderFamilyNotices} from './family-notices.js';
+import {renderSchoolCalendar} from './school-calendar.js';
 import {renderSchoolSetup} from './school-setup.js';
 import {renderChildProfiles,renderIncidents} from './child-center.js';
 import {renderNotifications,renderQuickCare,renderDailySummary} from './activity-hub.js';
@@ -31,6 +34,9 @@ async function schoolData(db,sid){
 export async function renderSchoolPage(ctx,tab){
  const {db,user,reload,go,schoolId:sid}=ctx;
  if(!sid)throw new Error('No school has been assigned to this account.');
+ if(tab==='events')return renderSchoolCalendar(ctx);
+ if(tab==='admin_inbox')return renderAdminInbox(ctx);
+ if(tab==='family_notices')return renderFamilyNotices(ctx);
  if(tab==='notifications')return renderNotifications(ctx);
  if(tab==='profiles')return renderChildProfiles(ctx);
  if(tab==='incidents')return renderIncidents(ctx);
@@ -55,14 +61,19 @@ export async function renderSchoolPage(ctx,tab){
   const pendingTeachers=approvalQueueError?'—':pendingRequests.filter(r=>r.requested_role==='teacher').length;
   const pendingParents=approvalQueueError?'—':pendingRequests.filter(r=>r.requested_role==='parent').length;
   const teachers=members.filter(m=>m.active&&m.role==='teacher').length;
+  const [officeMessages,familyNotices]=await Promise.all([
+   read(db,'bp_admin_conversations',q=>q.eq('school_id',sid).eq('status','open').limit(200)).catch(()=>[]),
+   read(db,'bp_family_notices',q=>q.eq('school_id',sid).eq('status','submitted').limit(200)).catch(()=>[])
+  ]);
   const html=heading('DAYCARE OPERATIONS',school?.name||'Your school','Care, classrooms, families and your team — everything in one organized place.')+
    '<div class="mw-metrics">'+stat('Enrolled students',n(students.length),'🎒','teal')+stat('Classes',n(classes.length),'📚','blue')+
    stat('Active teachers',n(teachers),'👩‍🏫','amber')+stat('Care notes today',careCount,'☀','violet')+'</div>'+
    '<div class="mw-welcome mw-welcome-school"><div><span class="mw-welcome-kicker">YOUR SCHOOL WORKSPACE</span><h2>Make every school day count</h2><p>Coordinate early-years classrooms, daily care, parent updates and safe pickup in one place.</p>'+button('Enroll a child ↗','mw-quick-enroll','light')+button('School setup','mw-quick-setup','light')+'</div><div class="mw-welcome-art">'+welcomeArt('school')+'</div></div>'+
    (approvalQueueError?'<div class="mw-inline mw-inline-error">Approval requests could not be loaded. The rest of your school workspace is still available. Try refreshing.</div>':'')+
    '<div class="mw-two mw-approval-overview">'+box('Teacher approvals', '<div class="mw-approval-overview-count">'+pendingTeachers+'</div><p class="mw-fine">Pending teacher access requests</p>'+button('Review teacher requests','mw-review-teachers','outline'))+box('Parent approvals','<div class="mw-approval-overview-count">'+pendingParents+'</div><p class="mw-fine">Pending parent access requests</p>'+button('Review parent requests','mw-review-parents','outline'))+'</div>'+
+   '<div class="bp-admin-communication"><div><span>💌</span><div><b>'+officeMessages.length+' open parent conversation'+(officeMessages.length===1?'':'s')+'</b><small>Private questions for School Administration</small></div>'+button('Open inbox','mw-open-admin-inbox','outline')+'</div><div><span>📮</span><div><b>'+familyNotices.length+' parent notice'+(familyNotices.length===1?'':'s')+' awaiting review</b><small>Absences, arrivals and care changes</small></div>'+button('Review notices','mw-open-family-notices','outline')+'</div></div>'+
    '<div class="mw-section-title"><h2>Manage your school</h2><span>Quick actions</span></div><div class="mw-actions-grid">'+[
-    ['Daily care updates','care','☀'],['Photos & videos','moments','📸'],['Safe pickup desk','pickup','👋'],['Parent messages','messages','💌'],['Approve teachers','teachers','👩‍🏫'],['Approve parents','parents','💛']
+    ['Parent administration inbox','admin_inbox','💌'],['Parent day notices','family_notices','📮'],['School calendar','events','🗓️'],['Child profiles','profiles','🧸'],['Quick classroom updates','quickcare','✨'],['Safe pickup desk','pickup','👋'],['Approve teachers','teachers','👩‍🏫'],['Approve parents','parents','💛']
    ].map(([t,p,i])=>'<button class="mw-action" type="button" data-goto="'+p+'"><span>'+i+'</span><b>'+t+'</b><small>Open workspace</small><i>↗</i></button>').join('')+'</div>'+
    '<div class="mw-two">'+box('School setup',
     badgeProgress([[classes.length>0,'Create your first class','Organize classrooms'],
@@ -74,7 +85,7 @@ export async function renderSchoolPage(ctx,tab){
      '<div class="mw-form-actions">'+button('View attendance','mw-view-attendance','outline')+'</div>')+'</div>'+
    box('Latest care moments',careToday.length?table(['Child','Care activity','Observation','When'],careToday.slice(0,8).map(log=>tr([e(students.find(k=>k.id===log.student_id)?.full_name||'Child'),e(log.event_type),e(log.details),dateLabel(log.occurred_at)]))):empty('☀️','Today’s care diary is ready','Staff can record snacks, naps, moods and playtime from the Daily care or Quick group updates sections.'));
   return{html,bind(){
-   click('mw-quick-setup',()=>go('setup'));click('mw-quick-enroll',()=>go('students'));click('mw-view-attendance',()=>go('attendance'));click('mw-review-teachers',()=>go('teachers'));click('mw-review-parents',()=>go('parents'));
+   click('mw-quick-setup',()=>go('setup'));click('mw-open-admin-inbox',()=>go('admin_inbox'));click('mw-open-family-notices',()=>go('family_notices'));click('mw-quick-enroll',()=>go('students'));click('mw-view-attendance',()=>go('attendance'));click('mw-review-teachers',()=>go('teachers'));click('mw-review-parents',()=>go('parents'));
    document.querySelectorAll('[data-goto]').forEach(b=>b.onclick=()=>go(b.dataset.goto));
   }};
  }

@@ -1,6 +1,7 @@
 import './workspace.css';
 import './playful-workspace.css';
 import './modern-v2.css';
+import './modern-mobile-office.css';
 import {renderOwnerPage} from './workspace-owner.js';
 import {renderSchoolPage} from './workspace-school.js';
 import {renderTeacherPage} from './workspace-teacher.js';
@@ -75,15 +76,15 @@ export const checked=(id)=>document.getElementById(id)?.checked===true;
 
 const pages={
  owner:[['overview','Overview','⌂'],['schools','Schools','▦'],['people','Accounts & access','♙'],['analytics','Activity monitor','▥'],['revenue','Revenue & plans','◈'],['support','Support inbox','✉']],
- school_admin:[['overview','Dashboard','⌂'],['setup','School setup','🌻'],['notifications','Notifications','🔔'],['classes','Classes & rooms','▦'],['students','Enrollment','♧'],['profiles','Child profiles','🧸'],['families','Guardian links','↗'],['parents','Parent approvals','♡'],['teachers','Teacher approvals','✓'],['people','Staff directory','♙'],['care','Daily care diary','☀'],['quickcare','Quick group updates','🧩'],['milestones','Development','🌱'],['moments','Photos & videos','▣'],['daily_summary','Daily summaries','📔'],['messages','Family messages','✉'],['incidents','Health & incidents','🩹'],['pickup','Safe pickup','✓'],['attendance','Attendance','▤'],['activities','Learning reports','▥'],['announcements','Announcements','✉'],['billing','Subscription & earnings','◈'],['settings','School settings','⚙'],['support','Support','?']],
- teacher:[['overview','Today','⌂'],['notifications','Notifications','🔔'],['classes','My rooms','▦'],['students','My classroom','♧'],['profiles','Child profiles','🧸'],['care','Daily care','☀'],['quickcare','Quick group updates','🧩'],['milestones','Milestones','🌱'],['moments','Photos & videos','▣'],['daily_summary','Daily summaries','📔'],['messages','Parent messages','✉'],['incidents','Health & incidents','🩹'],['pickup','Check-in & pickup','✓'],['publish','Learning notes','✎'],['gradebook','Assessments','▥'],['attendance','Attendance','▤'],['announcements','Announcements','✉']],
- parent:[['overview','Today at daycare','⌂'],['notifications','Notifications','🔔'],['children','My little ones','♡'],['daily_summary','Daily summary','📔'],['care','Daily diary','☀'],['moments','Photos & videos','▣'],['milestones','Development','🌱'],['messages','Messages','✉'],['incidents','Health & incidents','🩹'],['pickup','Safe pickup','✓'],['journal','Learning journal','▥'],['attendance','Attendance','▤'],['announcements','Announcements','✉'],['membership','My membership','◈']]
+ school_admin:[['overview','Dashboard','⌂'],['setup','School setup','🌻'],['notifications','Notifications','🔔'],['classes','Classes & rooms','▦'],['students','Enrollment','♧'],['profiles','Child profiles','🧸'],['families','Guardian links','↗'],['parents','Parent approvals','♡'],['teachers','Teacher approvals','✓'],['people','Staff directory','♙'],['care','Daily care diary','☀'],['quickcare','Quick group updates','🧩'],['milestones','Development','🌱'],['moments','Photos & videos','▣'],['daily_summary','Daily summaries','📔'],['messages','Classroom messages','✉'],['admin_inbox','Parent–admin inbox','💌'],['family_notices','Parent day notices','📮'],['events','School calendar','🗓️'],['incidents','Health & incidents','🩹'],['pickup','Safe pickup','✓'],['attendance','Attendance','▤'],['activities','Learning reports','▥'],['announcements','Announcements','✉'],['billing','Subscription & earnings','◈'],['settings','School settings','⚙'],['support','Support','?']],
+ teacher:[['overview','Today','⌂'],['notifications','Notifications','🔔'],['classes','My rooms','▦'],['students','My classroom','♧'],['profiles','Child profiles','🧸'],['care','Daily care','☀'],['quickcare','Quick group updates','🧩'],['milestones','Milestones','🌱'],['moments','Photos & videos','▣'],['daily_summary','Daily summaries','📔'],['messages','Parent messages','✉'],['events','School calendar','🗓️'],['incidents','Health & incidents','🩹'],['pickup','Check-in & pickup','✓'],['publish','Learning notes','✎'],['gradebook','Assessments','▥'],['attendance','Attendance','▤'],['announcements','Announcements','✉']],
+ parent:[['overview','Today at daycare','⌂'],['notifications','Notifications','🔔'],['children','My little ones','♡'],['daily_summary','Daily summary','📔'],['care','Daily diary','☀'],['moments','Photos & videos','▣'],['milestones','Development','🌱'],['messages','Teacher messages','✉'],['admin_inbox','School Administration','💌'],['family_notices','Absence & day notices','📮'],['events','School calendar','🗓️'],['incidents','Health & incidents','🩹'],['pickup','Safe pickup','✓'],['journal','Learning journal','▥'],['attendance','Attendance','▤'],['announcements','Announcements','✉'],['membership','My membership','◈']]
 };
 const navGroups={
  owner:[['PLATFORM',['overview','schools','people']],['BUSINESS',['analytics','revenue']],['HELP',['support']]],
- school_admin:[['AT A GLANCE',['overview','setup','notifications']],['CHILDREN & FAMILIES',['classes','students','profiles','families','parents']],['YOUR TEAM',['teachers','people']],['EVERYDAY CARE',['care','quickcare','milestones','moments','daily_summary','messages','incidents','pickup','attendance']],['SCHOOL OPERATIONS',['activities','announcements','billing','settings','support']]],
- teacher:[['MY DAY',['overview','notifications']],['CLASSROOM',['classes','students','profiles']],['DAILY ROUTINES',['care','quickcare','milestones','moments','daily_summary','messages','incidents','pickup']],['LEARNING & SCHOOL',['publish','gradebook','attendance','announcements']]],
- parent:[['MY FAMILY',['overview','notifications','children','daily_summary']],['LITTLE MOMENTS',['care','moments','milestones','messages']],['SAFETY & SCHOOL',['incidents','pickup','journal','attendance','announcements','membership']]]
+ school_admin:[['AT A GLANCE',['overview','setup','notifications']],['CHILDREN & FAMILIES',['classes','students','profiles','families','parents']],['YOUR TEAM',['teachers','people']],['EVERYDAY CARE',['care','quickcare','milestones','moments','daily_summary','messages','admin_inbox','family_notices','incidents','pickup','attendance']],['SCHOOL OPERATIONS',['events','activities','announcements','billing','settings','support']]],
+ teacher:[['MY DAY',['overview','notifications']],['CLASSROOM',['classes','students','profiles']],['DAILY ROUTINES',['care','quickcare','milestones','moments','daily_summary','messages','incidents','pickup']],['LEARNING & SCHOOL',['publish','gradebook','attendance','events','announcements']]],
+ parent:[['MY FAMILY',['overview','notifications','children','daily_summary']],['LITTLE MOMENTS',['care','moments','milestones','messages','admin_inbox','family_notices']],['SAFETY & SCHOOL',['incidents','pickup','journal','attendance','events','announcements','membership']]]
 };
 
 const roleTitle={owner:'Platform owner',school_admin:'School administrator',teacher:'Teacher',parent:'Parent'};
@@ -99,9 +100,20 @@ export async function launchWorkspace({db,user,role,context,root,logout,photoDat
  const memberships=(context?.memberships||[]).filter(m=>m.role===role&&m.active);
  const schoolPicker=memberships.length>1?'<select id="mw-school" aria-label="Select school">'+memberships.map(m=>option(m.school_id,m.school_name)).join('')+'</select>':(memberships[0]?'<span class="mw-school-name">'+escapeHtml(memberships[0].school_name)+'</span>':'');
  const logo='<a class="logo brand-home mw-brand" href="'+root+'home/" aria-label="BrightPath homepage">✦ <strong>brightpath<span>.</span></strong></a>';
- const playfulIcons={overview:'🏡',setup:'🌻',notifications:'🔔',schools:'🏫',classes:'🧩',students:'🧒',children:'🧒',profiles:'🧸',people:'👥',teachers:'🍎',parents:'💛',families:'👨‍👩‍👧',care:'☀️',quickcare:'✨',milestones:'🌱',moments:'📸',daily_summary:'📔',messages:'💌',incidents:'🩹',pickup:'🎒',attendance:'📝',activities:'🎨',announcements:'📣',billing:'💳',settings:'⚙️',support:'💬',publish:'✏️',gradebook:'🌟',journal:'📔',membership:'💛'};
+ const playfulIcons={overview:'🏡',setup:'🌻',notifications:'🔔',schools:'🏫',classes:'🧩',students:'🧒',children:'🧒',profiles:'🧸',people:'👥',teachers:'🍎',parents:'💛',families:'👨‍👩‍👧',care:'☀️',quickcare:'✨',admin_inbox:'💌',family_notices:'📮',events:'🗓️',milestones:'🌱',moments:'📸',daily_summary:'📔',messages:'💌',incidents:'🩹',pickup:'🎒',attendance:'📝',activities:'🎨',announcements:'📣',billing:'💳',settings:'⚙️',support:'💬',publish:'✏️',gradebook:'🌟',journal:'📔',membership:'💛'};
  const navEntry=(id,name,ico)=>'<button type="button" data-mw-page="'+id+'" class="mw-navitem" aria-current="false"><span class="mw-navico" aria-hidden="true">'+(role==='owner'?ico:(playfulIcons[id]||ico))+'</span><span>'+escapeHtml(name)+'</span>'+(id==='notifications'?'<span id="mw-nav-notifications" class="bp-notification-dot" hidden></span>':'')+'</button>';
  const navMap=new Map(nav.map(([id,name,ico])=>[id,[name,ico]]));
+ const mobileTabIds={owner:['overview','schools','revenue','support'],school_admin:['overview','students','admin_inbox','family_notices'],teacher:['overview','care','quickcare','messages'],parent:['overview','daily_summary','admin_inbox','family_notices']};
+ const mobileMain=(mobileTabIds[role]||[]).filter(id=>navMap.has(id));
+ const mobileFooter='<nav class="bp-mobile-tabs" aria-label="Mobile quick navigation">'+mobileMain.map(id=>{
+  const [name,ico]=navMap.get(id);
+  return '<button type="button" class="bp-mobile-tab" data-bp-mobile-tab="'+id+'"><span aria-hidden="true">'+(role==='owner'?ico:(playfulIcons[id]||ico))+'</span><small>'+escapeHtml(role==='parent'&&id==='admin_inbox'?'School office':role==='school_admin'&&id==='admin_inbox'?'Parent inbox':role==='school_admin'&&id==='family_notices'?'Notices':role==='parent'&&id==='family_notices'?'Absences':name)+'</small></button>'
+ }).join('')+'<button type="button" id="bp-mobile-more" class="bp-mobile-tab" aria-label="Open full menu" aria-expanded="false"><span>☷</span><small>More</small></button></nav>';
+ const mobileMenu='<div class="bp-mobile-overlay" id="bp-mobile-overlay" hidden></div><div class="bp-mobile-sheet" id="bp-mobile-sheet" role="dialog" aria-modal="true" aria-label="All BrightPath sections" hidden>'+ 
+  '<div class="bp-mobile-sheet-head"><div><b>✦ BrightPath menu</b><small>Find every daycare feature</small></div><button id="bp-mobile-close" type="button" aria-label="Close menu">✕</button></div><div class="bp-mobile-sheet-scroll">'+
+  (navGroups[role]||[]).map(([group,ids])=>'<section class="bp-mobile-menu-section"><h3>'+escapeHtml(group)+'</h3>'+ids.filter(id=>navMap.has(id)).map(id=>{
+   const [name,ico]=navMap.get(id);return '<button type="button" data-bp-mobile-menu="'+id+'"><span>'+(role==='owner'?ico:(playfulIcons[id]||ico))+'</span>'+escapeHtml(name)+'<span class="bp-mobile-menu-arrow">›</span></button>'
+  }).join('')+'</section>').join('')+'</div></div>';
  const navHtml=(navGroups[role]||[]).map(([title,ids],idx)=>'<section class="mw-nav-group"><button type="button" class="mw-nav-group-label" data-nav-toggle="'+idx+'" aria-expanded="true"><span>'+escapeHtml(title)+'</span><span class="mw-nav-chevron">⌄</span></button><div class="mw-nav-group-items" id="mw-nav-group-'+idx+'">'+ids.filter(id=>navMap.has(id)).map(id=>navEntry(id,...navMap.get(id))).join('')+'</div></section>').join('');
  document.getElementById('app').innerHTML='<div class="mw-app mw-role-'+role+'"><aside class="mw-sidebar">'+
   '<div class="mw-brandzone">'+logo+'<p>'+escapeHtml(role==='owner'?'Platform administration':role==='school_admin'?'Little learners. Big care.':role==='teacher'?'Care · Play · Grow':'Every little moment matters')+'</p><div class="bp-side-tiles" aria-hidden="true"><span>A</span><span>B</span><span>C</span><span>★</span></div></div>'+
@@ -110,7 +122,7 @@ export async function launchWorkspace({db,user,role,context,root,logout,photoDat
   '<div class="mw-main"><header class="mw-topbar"><div class="mw-location"><span class="mw-location-dot"></span> '+escapeHtml(roleTitle[role])+' workspace <span class="bp-top-doodle" aria-hidden="true">✦</span></div>'+
   '<div class="mw-top-actions">'+(role!=='owner'?'<button class="bp-top-notice" id="mw-open-notifications" aria-label="Open notifications" title="Notifications">🔔 <span id="mw-notification-count" hidden></span></button>':'')+schoolPicker+'<span class="mw-user-email">'+escapeHtml(user.email||'')+'</span><button id="mw-logout" class="mw-btn mw-btn-outline mw-logout">Sign out</button></div></header>'+
   '<main class="mw-content" id="workspace"><div id="panel-content"></div></main><footer class="mw-bottom"><span>© BrightPath</span><a href="'+root+'home/">Back to website</a></footer></div>'+
-  '<div id="mw-notice" class="mw-toast" hidden role="status" aria-live="polite"></div></div>';
+  mobileFooter+mobileMenu+'<div id="mw-notice" class="mw-toast" hidden role="status" aria-live="polite"></div></div>';
  const contextObj={
   db,user,role,root,context,photoData,
   get schoolId(){return school},
@@ -141,6 +153,7 @@ export async function launchWorkspace({db,user,role,context,root,logout,photoDat
   const q=new URLSearchParams(window.location.search);
   if(tab==='overview')q.delete('tab');else q.set('tab',tab);
   window.history.replaceState(null,'',window.location.pathname+(q.toString()?'?'+q:''));
+  document.querySelectorAll('[data-bp-mobile-tab]').forEach(el=>{const active=el.dataset.bpMobileTab===tab;el.classList.toggle('active',active);el.setAttribute('aria-current',active?'page':'false')});
   document.querySelectorAll('[data-mw-page]').forEach(el=>{
    const active=el.dataset.mwPage===tab;
    el.classList.toggle('mw-nav-active',active);
@@ -160,6 +173,19 @@ export async function launchWorkspace({db,user,role,context,root,logout,photoDat
    click('mw-retry',()=>show(tab));
   }
  }
+ const more=document.getElementById('bp-mobile-more'),sheet=document.getElementById('bp-mobile-sheet'),overlay=document.getElementById('bp-mobile-overlay');
+ let previousFocus=null;
+ function closeMobileMenu(){if(sheet.hidden)return;sheet.hidden=true;overlay.hidden=true;more.setAttribute('aria-expanded','false');document.body.classList.remove('bp-menu-open');if(previousFocus?.isConnected)previousFocus.focus();}
+ function openMobileMenu(){previousFocus=document.activeElement;sheet.hidden=false;overlay.hidden=false;more.setAttribute('aria-expanded','true');document.body.classList.add('bp-menu-open');document.getElementById('bp-mobile-close').focus();}
+ more.onclick=()=>sheet.hidden?openMobileMenu():closeMobileMenu();
+ document.getElementById('bp-mobile-close').onclick=closeMobileMenu;
+ overlay.onclick=closeMobileMenu;
+ sheet.addEventListener('keydown',event=>{if(event.key==='Escape'){event.preventDefault();closeMobileMenu()}if(event.key==='Tab'){
+  const els=[...sheet.querySelectorAll('button:not([disabled])')].filter(b=>b.offsetParent!==null);const first=els[0],last=els[els.length-1];
+  if(event.shiftKey&&document.activeElement===first){event.preventDefault();last.focus()}else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus()}
+ }});
+ document.querySelectorAll('[data-bp-mobile-tab]').forEach(el=>el.onclick=()=>show(el.dataset.bpMobileTab));
+ document.querySelectorAll('[data-bp-mobile-menu]').forEach(el=>el.onclick=()=>{closeMobileMenu();show(el.dataset.bpMobileMenu)});
  document.querySelectorAll('[data-mw-page]').forEach(el=>el.onclick=()=>show(el.dataset.mwPage));
  document.querySelectorAll('[data-nav-toggle]').forEach(el=>el.onclick=()=>{
   const items=document.getElementById('mw-nav-group-'+el.dataset.navToggle);

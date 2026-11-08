@@ -129,7 +129,7 @@ export async function renderMilestones(ctx){
 }
 
 export async function renderChildMessages(ctx){
- const {db,schoolId:sid,user,reload,role}=ctx;
+ const {db,schoolId:sid,user,reload,role,go}=ctx;
  const students=await childRoster(ctx),ids=new Set(students.map(s=>s.id));
  const records=await read(db,'bp_child_messages',q=>q.eq('school_id',sid).order('created_at',{ascending:true}).limit(350));
  const messages=records.filter(m=>ids.has(m.student_id));
@@ -143,7 +143,9 @@ export async function renderChildMessages(ctx){
     '<p>'+h(m.body)+'</p></div>').join('')+'</div>':
    empty('💌','Start a conversation','Send a message about your child’s day.');
  };
- const html=heading('FAMILY COMMUNICATION','Messages','A private conversation between families and the school team.')+
+ const html=heading('FAMILY COMMUNICATION',role==='parent'?'Classroom teacher messages':'Family messages',
+  'Talk with your child’s classroom team. These messages are visible to authorized school staff and linked guardians.')+
+ (role==='parent'?'<div class="bp-parent-office-banner"><span>💌</span><div><strong>Need to write directly to School Administration?</strong><p>Use your separate private school-office inbox for fees, formal concerns or confidential questions. Classroom teachers cannot read it.</p></div>'+button('Message School Admin','bp-open-admin-from-messages','outline')+'</div>':'')+
  '<div class="bp-chat-layout"><div class="bp-chat-children"><h2>Children</h2>'+
  (students.length?students.map(s=>'<button type="button" class="bp-chat-child '+(s.id===active?'active':'')+'" data-chat-child="'+h(s.id)+'"><span class="mw-round-icon">'+initial(s.full_name)+'</span><b>'+h(s.full_name)+'</b><small>↗</small></button>').join(''):
  empty('♡','No child linked','An approved child connection is required to message.'))+'</div>'+
@@ -153,6 +155,7 @@ export async function renderChildMessages(ctx){
  '<form id="bp-chat-form" class="bp-chat-composer"><label class="sr-only" for="bp-chat-body">Message</label><textarea id="bp-chat-body" placeholder="Write a message about your child…" maxlength="2000" required></textarea>'+
  button('Send ↗','bp-chat-send','primary','type="submit" '+(!students.length?'disabled':''))+'</form></section></div>';
  return{html,bind(){
+  if(role==='parent')click('bp-open-admin-from-messages',()=>go('admin_inbox'));
   let selected=active;
   document.querySelectorAll('[data-chat-child]').forEach(b=>b.onclick=()=>{
    selected=b.dataset.chatChild;

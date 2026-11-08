@@ -1,3 +1,4 @@
+import {renderSchoolCalendar} from './school-calendar.js';
 import {renderChildProfiles,renderIncidents} from './child-center.js';
 import {renderNotifications,renderQuickCare,renderDailySummary} from './activity-hub.js';
 import {welcomeArt} from './playful-art.js';
@@ -30,6 +31,7 @@ export async function renderTeacherPage(ctx,tab){
  const {db,schoolId:sid,user,go,reload,photoData}=ctx;
  if(!sid)throw Error('Teacher account has not been assigned to a school.');
  const {classes,students,activities}=await teacherData(db,sid);
+ if(tab==='events')return renderSchoolCalendar(ctx);
  if(tab==='notifications')return renderNotifications(ctx);
  if(tab==='profiles')return renderChildProfiles(ctx);
  if(tab==='incidents')return renderIncidents(ctx);
