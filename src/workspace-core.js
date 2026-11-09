@@ -6,6 +6,7 @@ import './operations-safety.css';
 import './signatures-feedback.css';
 import './quiet-classroom.css';
 import './care-relay.css';
+import './workspace-compact.css';
 import {renderOwnerPage} from './workspace-owner.js';
 import {renderSchoolPage} from './workspace-school.js';
 import {renderTeacherPage} from './workspace-teacher.js';

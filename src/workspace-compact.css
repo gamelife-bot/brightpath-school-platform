@@ -1,0 +1,326 @@
+/*
+ * BrightPath workspace density pass — all roles and all portal phases.
+ * Imported after the role, operations and Care Relay styles.
+ * Keeps controls readable/touch accessible while removing unused space.
+ * Scoped to .mw-app so marketing pages retain their own design.
+ */
+.mw-app {
+  --bp-compact-gap: 12px;
+  --bp-compact-inline: 17px;
+  --bp-compact-block: 14px;
+}
+.mw-app .mw-content {
+  width: 100%;
+  max-width: none;
+  padding: 18px 22px 28px;
+  flex: 1 0 auto;
+}
+.mw-app .mw-topbar {
+  min-height: 59px;
+  gap: 10px;
+  padding: 9px 21px;
+}
+.mw-app .mw-bottom { padding: 9px 21px; gap: 10px; }
+.mw-app .mw-brandzone {
+  min-height: 0;
+  padding: 16px 17px 13px;
+}
+.mw-app .bp-side-tiles { margin-top: 7px; }
+.mw-app .mw-side-caption { margin: 12px 14px 7px; }
+.mw-app .mw-navigation { padding: 0 8px 11px; gap: 3px; }
+.mw-app .mw-nav-group { gap: 2px; margin: 1px 0 7px; }
+.mw-app .mw-nav-group-label { padding: 5px 9px 4px; }
+.mw-app .mw-nav-group-items { gap: 2px; }
+.mw-app .mw-navitem {
+  min-height: 35px;
+  padding: 7px 10px;
+  gap: 9px;
+  border-radius: 9px;
+  font-size: 12px;
+}
+.mw-app .mw-navico { width: 19px; height: 19px; font-size: 15px; }
+.mw-app .mw-side-footer { padding: 10px; margin: auto 8px 8px; }
+.mw-app .mw-page-head {
+  min-height: 0;
+  padding: 15px 19px;
+  gap: 12px;
+  margin-bottom: 12px;
+  border-radius: 15px;
+}
+.mw-app .mw-role-owner .mw-page-head { padding: 0; }
+.mw-app.mw-role-owner .mw-page-head {
+  padding: 0;
+  min-height: 0;
+  margin-bottom: 11px;
+}
+.mw-app .mw-page-head h1 {
+  margin: 0 0 3px;
+  font-size: clamp(23px, 2.5vw, 30px);
+}
+.mw-app .mw-eyebrow { margin: 0 0 3px; letter-spacing: 1.2px; }
+.mw-app .mw-page-sub { line-height: 1.45; }
+.mw-app .bp-heading-deco { transform: scale(.72); transform-origin: top right; }
+.mw-app .mw-metrics {
+  gap: 9px;
+  margin-bottom: 12px;
+  align-items: start;
+}
+.mw-app .mw-stat,
+.mw-app.mw-role-owner .mw-stat {
+  min-height: 0;
+  padding: 13px 15px;
+  border-radius: 14px;
+}
+.mw-app .mw-stat-top { margin-bottom: 4px; gap: 7px; }
+.mw-app .mw-stat-icon { width: 33px; height: 33px; flex-basis: 33px; font-size: 19px; }
+.mw-app .mw-stat > strong { font-size: 27px; line-height: 1.12; }
+.mw-app .mw-stat > small { margin-top: 3px; }
+.mw-app .mw-welcome {
+  min-height: 0;
+  grid-template-columns: minmax(0,1fr) minmax(115px,195px);
+  gap: 14px;
+  padding: 16px 21px;
+  margin-bottom: 13px;
+  border-radius: 18px;
+}
+.mw-app .mw-welcome h2 { margin: 5px 0 4px; font-size: 24px; }
+.mw-app .mw-welcome p { margin: 0 0 10px; line-height: 1.48; }
+.mw-app .mw-welcome-art { max-width: 190px; }
+.mw-app .mw-welcome-art svg { max-height: 145px; }
+.mw-app .mw-section-title { margin: 13px 0 9px; gap: 8px; }
+.mw-app .mw-section-title h2 { font-size: 16px; }
+.mw-app .mw-actions-grid,
+.mw-app .mw-class-grid {
+  gap: 10px;
+  margin-bottom: 12px;
+  align-items: start;
+}
+.mw-app .mw-action,
+.mw-app.mw-role-owner .mw-action {
+  min-height: 0;
+  padding: 12px 13px;
+  gap: 5px;
+  border-radius: 13px;
+}
+.mw-app .mw-action > span { width: 41px; height: 41px; font-size: 23px; border-radius: 12px; }
+.mw-app .mw-action i { top: 12px; right: 11px; }
+.mw-app .mw-action > small { line-height: 1.35; }
+.mw-app .mw-class-card { padding: 15px; border-radius: 14px; }
+.mw-app .mw-class-card p { margin: 10px 0 5px; letter-spacing: 1.1px; }
+.mw-app .mw-class-card h2 { margin-bottom: 7px; font-size: 17px; }
+.mw-app .mw-class-card .mw-btn { margin-top: 11px; }
+.mw-app .mw-two, .mw-app .mw-two-side {
+  gap: 11px;
+  align-items: start;
+  margin-bottom: 12px;
+}
+.mw-app .mw-two > .mw-card { margin: 0; }
+.mw-app .mw-card {
+  padding: var(--bp-compact-block) var(--bp-compact-inline);
+  margin-bottom: 12px;
+  border-radius: 14px;
+}
+.mw-app .mw-card-head { margin-bottom: 10px; gap: 8px; }
+.mw-app .mw-card-head h2 { font-size: 15px; }
+.mw-app .mw-card .mw-card { padding: 12px 13px; margin-bottom: 9px; }
+.mw-app .mw-empty {
+  padding: 12px 13px;
+  border-radius: 13px;
+}
+.mw-app .bp-empty-scene { height: 58px; margin-bottom: 7px; }
+.mw-app .mw-empty-icon { width: 45px; height: 45px; font-size: 25px; border-radius: 15px; }
+.mw-app .bp-empty-cloud { font-size: 25px; }
+.mw-app .bp-empty-star { font-size: 22px; }
+.mw-app .bp-empty-flower { font-size: 19px; }
+.mw-app .mw-empty h3 { margin-bottom: 4px; }
+.mw-app .mw-empty p { margin-bottom: 9px; max-width: 420px; line-height: 1.45; }
+.mw-app .mw-empty .mw-btn { margin-top: 1px; }
+.mw-app .mw-checklist, .mw-app .mw-steps, .mw-app .mw-guidance { gap: 9px; }
+.mw-app .mw-check { gap: 10px; }
+.mw-app .mw-steps > div, .mw-app .mw-guidance > div { gap: 10px; }
+.mw-app .mw-inline { padding: 9px 11px; margin-bottom: 10px; line-height: 1.45; }
+.mw-app .mw-form { gap: 9px; }
+.mw-app .mw-field { gap: 5px; }
+.mw-app .mw-form-actions { gap: 7px; margin-top: 2px; }
+.mw-app .mw-form-tip { margin: 5px 0; padding: 8px 10px; }
+.mw-app .mw-fine { margin: 5px 0; line-height: 1.45; }
+.mw-app .mw-check-label { margin: 3px 0; line-height: 1.45; }
+.mw-app .mw-field input:not([type=checkbox]),
+.mw-app .mw-field select,
+.mw-app .mw-field textarea,
+.mw-app .mw-filter-row input,
+.mw-app .mw-filter-row select { padding: 9px 11px; }
+.mw-app .mw-field textarea, .mw-app .mw-form textarea { min-height: 72px; line-height: 1.5; }
+.mw-app .mw-btn { padding: 9px 12px; }
+.mw-app .mw-filter-row { gap: 9px; margin-bottom: 11px; }
+.mw-app .mw-table th { padding: 9px 10px; }
+.mw-app .mw-table td { padding: 10px; }
+.mw-app .mw-round-icon { width: 34px; height: 34px; flex-basis: 34px; font-size: 18px; }
+.mw-app .mw-identity { gap: 8px; }
+.mw-app .mw-daily > div { padding: 12px 7px; }
+.mw-app .mw-daily strong { font-size: 23px; }
+.mw-app .mw-split-stats { gap: 8px; }
+.mw-app .mw-split-stats > div { padding: 11px; }
+.mw-app .mw-split-stats strong { font-size: 25px; }
+.mw-app .mw-recent > div { padding: 9px 0; }
+.mw-app .mw-class-mini > div { padding: 10px; }
+.mw-app .mw-setting-lines { margin-top: 11px; gap: 7px; }
+.mw-app .mw-ticket-list { gap: 9px; }
+.mw-app .mw-notice-entry { padding: 12px; }
+.mw-app .mw-notice-entry p { line-height: 1.5; }
+.mw-app .mw-reply { margin-top: 8px; padding: 9px 11px; }
+.mw-app .mw-children-mini { gap: 8px; }
+.mw-app .mw-child-metrics { margin-top: 12px; padding-top: 10px; gap: 12px; }
+.mw-app .mw-child-avatar { width: 55px; height: 55px; font-size: 27px; border-radius: 18px; }
+.mw-app .mw-journal-list, .mw-app .mw-subject-chart { gap: 9px; }
+.mw-app .mw-journal-entry { padding: 12px; }
+.mw-app .mw-journal-entry p { line-height: 1.5; }
+.mw-app .mw-subject-label { margin-top: 7px; }
+.mw-app .mw-progress { margin-top: 7px; }
+
+/* All admin, toddler-care and parent-office phases */
+.mw-app .bp-profile-layout { gap: 10px; margin-bottom: 12px; align-items: start; }
+.mw-app .bp-profile-list { gap: 6px; padding: 11px; }
+.mw-app .bp-profile-list-title { padding: 6px; }
+.mw-app .bp-care-feed { gap: 9px; padding: 0; }
+.mw-app .bp-care-item { padding: 11px 12px; gap: 11px; }
+.mw-app .bp-care-body p { margin: 7px 0 3px; line-height: 1.5; }
+.mw-app .bp-care-child { margin: 3px 0 6px; }
+.mw-app .bp-info-row { padding: 10px 2px; gap: 9px; }
+.mw-app .bp-skill-grid, .mw-app .bp-milestone-grid { gap: 9px; }
+.mw-app .bp-milestone-card { padding: 12px 13px; }
+.mw-app .bp-milestone-card p:not(.bp-overline) { line-height: 1.5; margin: 6px 0; }
+.mw-app .bp-overline { margin: 8px 0 5px !important; }
+.mw-app .bp-chat-layout { gap: 10px; min-height: 0; align-items: start; }
+.mw-app .bp-chat-children { padding: 10px; }
+.mw-app .bp-chat-children h2 { margin: 5px 7px 10px; }
+.mw-app .bp-chat-child { padding: 9px; gap: 8px; }
+.mw-app .bp-chat-panel { min-height: 340px; }
+.mw-app .bp-chat-panel-head { padding: 11px 13px; }
+.mw-app #bp-thread { padding: 12px; max-height: 360px; }
+.mw-app .bp-chat-messages { gap: 9px; }
+.mw-app .bp-chat-bubble { padding: 10px 12px; }
+.mw-app .bp-office-layout { gap: 10px; align-items: start; }
+.mw-app .bp-office-sidebar { padding: 8px; }
+.mw-app .bp-office-listhead { padding: 8px; }
+.mw-app .bp-office-thread { padding: 9px 8px; margin-bottom: 4px; }
+.mw-app .bp-office-conversation { min-height: 310px; }
+.mw-app .bp-office-conversation-head { padding: 12px 15px; }
+.mw-app .bp-office-conversation-note { padding: 8px 13px; line-height: 1.5; }
+.mw-app .bp-office-message-feed { min-height: 115px; padding: 12px; gap: 8px; }
+.mw-app .bp-office-reply { padding: 11px; }
+.mw-app .bp-parent-office-banner { margin-bottom: 12px; padding: 12px; gap: 10px; }
+.mw-app .bp-teacher-callout { margin-bottom: 12px; padding: 11px 13px; gap: 10px; }
+.mw-app .bp-admin-communication { gap: 9px; margin-bottom: 12px; }
+.mw-app .bp-admin-communication > div { padding: 12px; gap: 10px; }
+.mw-app .bp-calendar-event { padding: 11px; gap: 9px; }
+.mw-app .bp-staff-notice,
+.mw-app .bp-privacy-promise,
+.mw-app .bp-med-warning { padding: 11px 13px; margin-bottom: 11px; gap: 9px; line-height: 1.5; }
+.mw-app .bp-staff-filter { padding: 10px; margin-bottom: 10px; gap: 9px; }
+.mw-app .bp-staff-room-grid { gap: 9px; align-items: start; }
+.mw-app .bp-staff-room { padding: 11px; }
+.mw-app .bp-staff-room-counts { margin: 9px 0; }
+.mw-app .bp-guard-request,
+.mw-app .bp-med-plan,
+.mw-app .bp-privacy-item { padding: 12px; }
+.mw-app .bp-unlink-verify { margin-top: 9px; padding: 12px; }
+
+/* Signatures, surveys, Relay and Quiet Classroom keep the same compact rhythm. */
+.mw-app .cr-hero { min-height: 0; padding: 17px 18px; gap: 12px; margin-bottom: 11px; }
+.mw-app .cr-hero h2 { margin: 9px 0 7px; font-size: clamp(25px,3vw,38px); }
+.mw-app .cr-hero p { line-height: 1.5; }
+.mw-app .cr-hero-chips { margin-top: 10px; }
+.mw-app .cr-journey { gap: 6px; margin: 8px 0 11px; }
+.mw-app .cr-journey-step { padding: 9px; }
+.mw-app .cr-child-picker { padding: 11px 13px; margin: 11px 0; }
+.mw-app .cr-two-columns { gap: 10px; align-items: start; }
+.mw-app .cr-stack { gap: 10px; align-content: start; }
+.mw-app .cr-field-intro { margin: 5px 0 9px; line-height: 1.5; }
+.mw-app .cr-handover-form { gap: 9px; }
+.mw-app .cr-note { padding: 11px; margin-bottom: 8px; }
+.mw-app .cr-note-facts { margin: 8px 0; }
+.mw-app .cr-note-copy { line-height: 1.55; padding: 8px 10px; }
+.mw-app .cr-pickup-remark { margin-top: 6px; padding: 9px; }
+.mw-app .cr-summary-card { padding: 11px; }
+.mw-app .cr-summary-facts { gap: 6px; margin: 10px 0; }
+.mw-app .cr-summary-facts > p { padding: 8px 10px; line-height: 1.5; }
+.mw-app .cr-care-promise { gap: 9px; margin: 11px 0; }
+.mw-app .cr-care-promise > div { padding: 11px; }
+.mw-app .cr-evening-intro { padding: 11px; margin-bottom: 10px; }
+.mw-app .cr-evening-review { margin: 9px 0; gap: 6px; }
+.mw-app .cr-verify-child { padding: 9px; }
+.mw-app .cr-review-form { padding: 11px; margin-top: 9px; }
+.mw-app .cr-relay-small-art { margin-top: 10px; }
+.mw-app .qc-banner { min-height: 0; padding: 18px; margin-bottom: 12px; gap: 12px; }
+.mw-app .qc-banner-text h2 { margin: 8px 0 6px; font-size: clamp(24px,3vw,32px); }
+.mw-app .qc-banner-text > p { line-height: 1.5; }
+.mw-app .qc-banner-actions { margin-top: 11px; }
+.mw-app .qc-grid { gap: 10px; margin-bottom: 12px; align-items: start; }
+.mw-app .qc-panel { padding: 13px; }
+.mw-app .qc-understated { margin: 8px 0; line-height: 1.5; }
+.mw-app .qc-task { padding: 10px 0; }
+.mw-app .qc-answer { min-height: 0; padding: 11px; }
+.mw-app .qc-assist-chips { margin: 12px 0 9px; gap: 6px; }
+.mw-app .qc-preview-text { min-height: 0; padding: 11px; line-height: 1.5; }
+.mw-app .qc-evidence { padding: 12px; }
+.mw-app .qc-principles { gap: 9px; margin: 11px 0; }
+.mw-app .qc-principles article { padding: 11px; }
+.mw-app .mw-loader { padding: 50px 16px; gap: 9px; }
+
+/* Do not compact away essential mobile touch areas or readable text. */
+@media (min-width: 1600px) {
+  .mw-app .mw-content { padding: 20px 26px 32px; }
+}
+@media (max-width: 1120px) {
+  .mw-app .mw-content { padding: 16px 17px 24px; }
+}
+@media (max-width: 850px) {
+  .mw-app { display: flex; flex-direction: column; min-height: 100dvh; }
+  .mw-app .mw-sidebar { flex: 0 0 auto; height: auto; }
+  .mw-app .mw-main { flex: 1 1 auto; }
+  .mw-app .mw-bottom { margin-top: auto; }
+  .mw-app .mw-brandzone { padding: 9px 13px !important; }
+  .mw-app .mw-navigation { padding: 8px; }
+  .mw-app .mw-content { padding: 13px 13px 24px; }
+  .mw-app .mw-topbar { min-height: 49px; padding: 8px 13px; }
+  .mw-app .mw-page-head { padding: 12px 13px; margin-bottom: 9px; }
+  .mw-app .mw-welcome { padding: 13px; margin-bottom: 9px; }
+  .mw-app .mw-stat { padding: 10px 11px; }
+  .mw-app .mw-metrics { gap: 8px; margin-bottom: 9px; }
+  .mw-app .mw-actions-grid, .mw-app .mw-class-grid { gap: 8px; margin-bottom: 9px; }
+  .mw-app .mw-card { padding: 11px 12px; margin-bottom: 9px; }
+  .mw-app .mw-page-head h1 { font-size: 23px; }
+  .mw-app .mw-section-title { margin: 10px 0 7px; }
+}
+@media (max-width: 650px) {
+  .mw-app .mw-content { padding: 11px 11px calc(14px + env(safe-area-inset-bottom,0px)); }
+  .mw-app .mw-welcome { min-height: 0; grid-template-columns:minmax(0,1fr) 77px; gap: 5px; padding: 12px; }
+  .mw-app .mw-welcome-art { width: 96px; max-width: 96px; margin-left: -9px; }
+  .mw-app .mw-welcome-art svg { max-height: 104px; }
+  .mw-app .mw-welcome h2 { font-size: 19px; margin: 4px 0; }
+  .mw-app .mw-welcome p { font-size: 11px; line-height: 1.4; margin-bottom: 8px; }
+  .mw-app .mw-stat { min-height: 0; padding: 10px; }
+  .mw-app .mw-stat > strong { font-size: 24px; }
+  .mw-app .mw-stat-icon { width: 28px; height: 28px; flex-basis:28px; font-size:16px; }
+  .mw-app .mw-action { min-height: 0; padding: 10px; }
+  .mw-app .mw-action > span { width:35px; height:35px; font-size:20px; }
+  .mw-app .mw-empty { padding: 10px; }
+  .mw-app .bp-empty-scene { height: 50px; }
+  .mw-app .mw-empty-icon { width: 40px; height: 40px; }
+  .mw-app .mw-table td { padding: 8px; }
+  .mw-app .mw-table th { padding: 8px; }
+  .mw-app .mw-bottom { padding: 8px 12px; }
+  .mw-app .bp-chat-panel { min-height: 260px; }
+  .mw-app .bp-office-conversation { min-height: 260px; }
+  .mw-app .bp-office-message-feed { min-height: 90px; }
+  .mw-app .qc-mascot { width: 45px; height: 45px; flex-basis: 45px; }
+  .mw-app .qc-banner-stickers { display:none; }
+  .mw-app .cr-hero { padding: 11px; }
+  .mw-app .cr-hero h2 { font-size:26px; }
+  .mw-app .cr-journey { gap: 6px; }
+  .mw-app .cr-journey-step { min-height: 0; }
+}
+@media print {
+  .mw-app .mw-content { padding: 0; }
+}
