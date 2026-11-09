@@ -3,6 +3,7 @@ import {careRelayArt} from './care-relay-art.js';
 import {welcomeArt,momentArt} from './playful-art.js';
 import './landing-reimagined.css';
 import './preschool-landing.css';
+import './preschool-compact.css';
 
 const features=[
  {icon:'🌤️',tone:'mint',label:'A calmer teacher day',title:'A classroom assistant that stays out of the way.',body:'See the next useful action, select children marked present, and turn existing records into factual, reviewable daily drafts.'},
@@ -80,7 +81,7 @@ export function renderLanding(app,root){
  '<div class="ql-feature-grid">'+features.map(x=>'<article class="ql-feature ql-f-'+x.tone+'"><div class="ql-feature-top"><span>'+x.icon+'</span><small>'+x.label+'</small></div><h3>'+x.title+'</h3><p>'+x.body+'</p><span aria-hidden="true" class="ql-feature-decoration">✦</span></article>').join('')+'</div></section>';
  const preview='<section class="ql-section ql-experience" id="experience"><div class="ql-section-head"><span class="ql-kicker">STEP INSIDE BRIGHTPATH</span><h2>A special place for<br><em>everyone who cares.</em></h2><p>Choose a role to preview what BrightPath is designed to help them do. The examples below are illustrations, not live customer records.</p></div>'+
  '<div class="ql-role-tabs" role="tablist" aria-label="Choose a BrightPath role"><button type="button" role="tab" id="ql-tab-teacher" aria-selected="true" aria-controls="ql-role-output" data-role="teacher">🍎 Teacher</button><button type="button" role="tab" id="ql-tab-parent" aria-selected="false" aria-controls="ql-role-output" data-role="parent">💛 Parent</button><button type="button" role="tab" id="ql-tab-school" aria-selected="false" aria-controls="ql-role-output" data-role="school">🏫 School team</button></div>'+
- '<div class="ql-role-content" id="ql-role-output" role="tabpanel" aria-labelledby="ql-tab-teacher"><div class="ql-role-art"><div class="ql-role-scene" id="ql-role-scene"><div class="ql-role-kids-art" id="ql-role-kids-art">'+welcomeArt('teacher')+'<div class="ql-role-scene-paper"><span>✓ Attendance</span><span>☀️ Group updates</span><span>📔 Factual recaps</span></div></div></div>'+
+ '<div class="ql-role-content" id="ql-role-output" role="tabpanel" aria-labelledby="ql-tab-teacher"><div class="ql-role-art"><div class="ql-role-scene" id="ql-role-scene"><div class="ql-role-kids-art" id="ql-role-kids-art">'+welcomeArt('teacher')+'</div><div class="ql-role-scene-paper"><span>✓ Attendance</span><span>☀️ Group updates</span><span>📔 Factual recaps</span></div></div></div>'+
  '<div class="ql-role-copy"><span id="ql-role-tag">TEACHER VIEW</span><h3 id="ql-role-title">The children come first.</h3><p id="ql-role-desc">One small group update can support daily family records. Quiet Classroom shows what’s missing without making optional moments mandatory.</p>'+
  '<div id="ql-role-points" class="ql-role-points"><span>✓ Real classroom facts</span><span>✓ No repetitive daily essays</span><span>✓ Fast mobile actions</span></div>'+
  '<a class="ql-btn ql-btn-dark" id="ql-role-link" href="'+go('teacher')+'">Explore teacher space <span>↗</span></a></div></div></section>';

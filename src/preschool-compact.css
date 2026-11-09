@@ -1,0 +1,186 @@
+/* BrightPath compact landing page — intentional density without losing readability.
+   Applies only to marketing home, not authenticated school portals. */
+
+.ql-page .ql-kinder-hero {
+  min-height: 0;
+  gap: 1.5%;
+  padding-top: 35px;
+  padding-bottom: 48px;
+}
+.ql-page .ql-kinder-hero h1 { margin-top: 16px; margin-bottom: 13px; }
+.ql-page .ql-kinder-hero .ql-hero-content>p { line-height: 1.65; }
+.ql-page .ql-kinder-hero .ql-hero-actions { margin-top: 20px; }
+.ql-page .ql-kinder-hero .ql-hero-proof { margin-top: 18px; }
+.ql-page .ql-kids-hero-visual { min-height: 0; }
+.ql-page .ql-brightbar { padding-block: 13px; }
+
+.ql-page .ql-section { padding-top: 49px; padding-bottom: 50px; }
+.ql-page .ql-section-head { margin-bottom: 23px; }
+.ql-page .ql-section-head h2 { margin-top: 11px; margin-bottom: 8px; }
+.ql-page .ql-section-head > p { line-height: 1.55; }
+.ql-page .ql-kicker { padding-block: 8px; }
+
+.ql-page .ql-tiny-world { padding-top: 43px; padding-bottom: 45px; }
+.ql-page .ql-tiny-world-top { margin-bottom: 18px; gap: 3%; }
+.ql-page .ql-tiny-world-top h2 { margin-top: 10px; margin-bottom: 3px; }
+.ql-page .ql-tiny-world-top > p { line-height: 1.6; }
+.ql-page .ql-tiny-moment-grid { gap: 11px; }
+.ql-page .ql-tiny-moment { padding-bottom: 13px; }
+.ql-page .ql-tiny-moment-copy { padding-top: 11px; }
+.ql-page .ql-tiny-moment-copy h3 { margin-top: 5px; margin-bottom: 5px; }
+.ql-page .ql-tiny-world-legend { margin-top: 17px; gap: 9px; }
+
+.ql-page .ql-how { padding-top: 47px; padding-bottom: 50px; }
+.ql-page .ql-outcomes { gap: 9px; }
+.ql-page .ql-outcomes article { min-height: 0; padding: 20px; }
+.ql-page .ql-outcome-icon { width: 60px; height: 60px; font-size: 34px; border-radius: 18px; }
+.ql-page .ql-outcomes h3 { font-size: 19px; margin-top: 12px; margin-bottom: 7px; }
+.ql-page .ql-outcomes p { font-size: 12px; line-height: 1.6; margin-top: 5px; }
+.ql-page .ql-outcome-bottom { margin-top: 11px; font-size: 9px; }
+
+.ql-page .ql-relay { padding-top: 52px; padding-bottom: 52px; }
+.ql-page .ql-relay-wrapper { gap: 4%; }
+.ql-page .ql-relay-left h2 { margin-top: 13px; margin-bottom: 11px; }
+.ql-page .ql-relay-left > p { line-height: 1.65; }
+.ql-page .ql-relay-controls { margin-top: 16px; margin-bottom: 10px; }
+.ql-page .ql-relay-story { min-height: 0; padding: 13px 15px; }
+.ql-page .ql-relay-actions { margin-top: 15px; }
+.ql-page .ql-relay-art-frame { box-shadow: 10px 12px 0 #d9eede, 0 12px 34px #3f71521a; }
+
+.ql-page .ql-quiet { padding-top: 54px; padding-bottom: 54px; }
+.ql-page .ql-quiet-inner { gap: 5%; }
+.ql-page .ql-quiet-illustration { min-height: 340px; }
+.ql-page .ql-quiet-board { padding: 18px; }
+.ql-page .ql-quiet-board h3 { margin-top: 11px; margin-bottom: 12px; }
+.ql-page .ql-quiet-board > div:not(.ql-quiet-note) { padding: 10px; margin-bottom: 7px; }
+.ql-page .ql-quiet-note { margin-top: 11px; }
+.ql-page .ql-quiet-copy h2 { margin-top: 13px; margin-bottom: 13px; }
+.ql-page .ql-quiet-copy > p { line-height: 1.65; margin-bottom: 13px; }
+.ql-page .ql-quiet-checks { margin-top: 10px; margin-bottom: 15px; gap: 3px; }
+.ql-page .ql-quiet-checks p { margin: 3px 0; line-height: 1.55; }
+.ql-page .ql-quiet-copy > small { margin-top: 12px; }
+
+.ql-page .ql-features { padding-bottom: 48px; }
+.ql-page .ql-feature-grid { gap: 12px; }
+.ql-page .ql-feature { min-height: 0; padding: 20px 22px; }
+.ql-page .ql-feature .ql-feature-top > span { width: 54px; height: 54px; font-size: 28px; border-radius: 17px; }
+.ql-page .ql-feature h3 { font-size: 21px; margin-top: 12px; margin-bottom: 6px; }
+.ql-page .ql-feature p { line-height: 1.58; font-size: 12px; }
+
+.ql-page .ql-experience { padding-top: 50px; padding-bottom: 52px; }
+.ql-page .ql-role-tabs { margin-bottom: 14px; }
+.ql-page .ql-role-content { padding: 16px; gap: 3%; }
+.ql-page .ql-role-art { min-height: 240px; }
+.ql-page .ql-role-scene { padding: 12px; gap: 0; }
+.ql-page .ql-role-kids-art { max-width: 345px; }
+.ql-page .ql-role-scene-paper { padding: 10px; }
+.ql-page .ql-role-copy { padding: 15px; }
+.ql-page .ql-role-copy h3 { font-size: 33px; margin-top: 11px; margin-bottom: 9px; }
+.ql-page .ql-role-copy p { line-height: 1.58; margin-bottom: 10px; }
+.ql-page .ql-role-points { margin-top: 10px; margin-bottom: 17px; gap: 5px; }
+
+.ql-page .ql-time { padding-top: 49px; padding-bottom: 49px; }
+.ql-page .ql-time h2 { margin-top: 12px; margin-bottom: 10px; }
+.ql-page .ql-time-copy > label { margin-top: 15px; }
+.ql-page .ql-time-result { padding: 23px; }
+.ql-page .ql-time-big { margin-top: 9px; margin-bottom: 9px; }
+.ql-page .ql-time-bar { margin-top: 12px; margin-bottom: 12px; }
+.ql-page .ql-assumptions { margin-top: 8px; }
+
+.ql-page .ql-trust { gap: 4%; }
+.ql-page .ql-trust-copy h2 { margin-top: 11px; margin-bottom: 10px; }
+.ql-page .ql-trust-tiles { gap: 9px; }
+.ql-page .ql-trust-tiles > div { padding: 15px; }
+.ql-page .ql-trust-tiles b { margin-top: 8px; margin-bottom: 5px; }
+
+.ql-page .ql-faq-list { gap: 7px; }
+.ql-page .ql-faq-list summary { padding-top: 14px; padding-bottom: 14px; }
+.ql-page .ql-faq-list details p { padding-bottom: 13px; }
+
+.ql-page .ql-last { padding-top: 20px; padding-bottom: 40px; }
+.ql-page .ql-last-inner { padding: 26px 20px; }
+.ql-page .ql-last-inner .ql-last-friends { max-width: 205px; margin-bottom: 0; }
+.ql-page .ql-last-inner h2 { margin-top: 0; margin-bottom: 9px; }
+.ql-page .ql-last-inner > p { margin-bottom: 15px; }
+.ql-page .ql-last-inner > small { margin-top: 13px; }
+.ql-page .ql-footer { padding-top: 35px; padding-bottom: 18px; }
+.ql-page .ql-footer-top { gap: 18px; }
+.ql-page .ql-footer-bottom { margin-top: 24px; padding-top: 17px; }
+
+@media (max-width: 1000px) {
+  .ql-page .ql-kinder-hero { padding-top: 30px; padding-bottom: 40px; }
+  .ql-page .ql-kids-hero-visual { margin-top: 6px; }
+  .ql-page .ql-quiet-inner { gap: 22px; }
+  .ql-page .ql-quiet-illustration { min-height: 275px; }
+  .ql-page .ql-relay-wrapper { gap: 18px; }
+}
+
+@media (max-width: 720px) {
+  .ql-page .ql-kinder-hero { padding-top: 25px; padding-bottom: 30px; gap: 0; }
+  .ql-page .ql-kinder-hero h1 { font-size: clamp(36px, 9.2vw, 49px); margin-top: 12px; margin-bottom: 10px; line-height: 1.06; }
+  .ql-page .ql-kinder-hero .ql-hero-content > p { line-height: 1.55; font-size: 13px; }
+  .ql-page .ql-kinder-hero .ql-hero-actions { margin-top: 15px; gap: 8px; }
+  .ql-page .ql-kinder-hero .ql-hero-proof { margin-top: 13px; gap: 4px 10px; }
+  .ql-page .ql-kids-hero-visual { margin-top: 4px; margin-bottom: 0; }
+  .ql-page .ql-kids-sun-sticker, .ql-page .ql-kids-rainbow-sticker { font-size: 26px; }
+  .ql-page .ql-brightbar { padding: 11px 4%; gap: 8px 10px; }
+  .ql-page .ql-section { padding-top: 31px; padding-bottom: 32px; }
+  .ql-page .ql-section-head { margin-bottom: 17px; }
+  .ql-page .ql-section-head h2 { margin-top: 8px; margin-bottom: 6px; font-size: clamp(30px, 8.5vw, 41px); }
+  .ql-page .ql-section-head > p { font-size: 12px; line-height: 1.5; }
+  .ql-page .ql-tiny-world { padding-top: 30px; padding-bottom: 31px; }
+  .ql-page .ql-tiny-world-top { margin-bottom: 12px; }
+  .ql-page .ql-tiny-world-top h2 { font-size: 32px; margin-top: 8px; }
+  .ql-page .ql-tiny-world-top > p { line-height: 1.5; }
+  .ql-page .ql-tiny-moment-grid { gap: 7px; }
+  .ql-page .ql-tiny-moment-copy h3 { font-size: 16px; margin-top: 4px; }
+  .ql-page .ql-tiny-world-legend { margin-top: 12px; gap: 5px; }
+  .ql-page .ql-tiny-world-legend span { padding: 6px 10px; }
+  .ql-page .ql-how { padding-top: 32px; padding-bottom: 32px; }
+  .ql-page .ql-outcomes { gap: 4px; }
+  .ql-page .ql-outcomes article { min-height: 0; padding: 17px; }
+  .ql-page .ql-outcomes h3 { font-size: 19px; margin-top: 10px; }
+  .ql-page .ql-outcomes p { margin-bottom: 6px; }
+  .ql-page .ql-outcome-arrow { font-size: 22px; }
+  .ql-page .ql-relay { padding-top: 32px; padding-bottom: 32px; }
+  .ql-page .ql-relay-wrapper { gap: 17px; }
+  .ql-page .ql-relay-left h2 { font-size: 35px; margin-top: 8px; margin-bottom: 7px; }
+  .ql-page .ql-relay-left > p { line-height: 1.55; font-size: 12px; }
+  .ql-page .ql-relay-controls { margin-top: 12px; margin-bottom: 7px; }
+  .ql-page .ql-relay-controls button { padding: 9px 7px; }
+  .ql-page .ql-relay-story { padding: 11px; }
+  .ql-page .ql-relay-actions { margin-top: 11px; }
+  .ql-page .ql-quiet { padding-top: 32px; padding-bottom: 32px; }
+  .ql-page .ql-quiet-inner { gap: 12px; }
+  .ql-page .ql-quiet-copy h2 { font-size: 33px; margin-top: 10px; margin-bottom: 8px; }
+  .ql-page .ql-quiet-copy > p { font-size: 12px; line-height: 1.55; }
+  .ql-page .ql-quiet-illustration { min-height: 0; padding: 10px 0 16px; }
+  .ql-page .ql-quiet-board { transform: rotate(-1deg); }
+  .ql-page .ql-features { padding-top: 32px; padding-bottom: 32px; }
+  .ql-page .ql-feature-grid { gap: 9px; }
+  .ql-page .ql-feature { padding: 17px; min-height: 0; }
+  .ql-page .ql-feature h3 { font-size: 19px; }
+  .ql-page .ql-experience { padding-top: 32px; padding-bottom: 32px; }
+  .ql-page .ql-role-tabs { margin-bottom: 9px; }
+  .ql-page .ql-role-content { padding: 10px; gap: 4px; }
+  .ql-page .ql-role-art { min-height: 0; }
+  .ql-page .ql-role-scene { padding: 9px; }
+  .ql-page .ql-role-kids-art { max-width: 290px; }
+  .ql-page .ql-role-scene-paper { padding: 7px; }
+  .ql-page .ql-role-copy { padding: 12px; }
+  .ql-page .ql-role-copy h3 { font-size: 28px; margin: 7px 0; }
+  .ql-page .ql-role-points { margin-top: 8px; margin-bottom: 12px; }
+  .ql-page .ql-time { padding-top: 32px; padding-bottom: 32px; }
+  .ql-page .ql-time h2 { font-size: 33px; margin-top: 7px; margin-bottom: 7px; }
+  .ql-page .ql-time-result { padding: 17px; }
+  .ql-page .ql-trust { gap: 12px; }
+  .ql-page .ql-trust-tiles { gap: 7px; }
+  .ql-page .ql-trust-tiles > div { padding: 12px; }
+  .ql-page .ql-last { padding-top: 12px; padding-bottom: 24px; }
+  .ql-page .ql-last-inner { padding: 22px 15px; }
+  .ql-page .ql-last-inner .ql-last-friends { max-width: 160px; }
+  .ql-page .ql-last-inner h2 { font-size: 35px; }
+  .ql-page .ql-footer { padding-top: 25px; }
+  .ql-page .ql-footer-top { gap: 14px; }
+  .ql-page .ql-footer-bottom { margin-top: 18px; }
+}
