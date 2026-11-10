@@ -231,6 +231,10 @@ try{
   await p.goto(base+'qa-home.html',{waitUntil:'networkidle'});
   assert.equal(await p.locator('.ql-kids-main-svg').count(),1);
   assert.equal(await p.locator('.ql-tiny-moment').count(),4);
+  for(const [route,role] of [['parent','Parent Portal'],['teacher','Teacher Portal'],['school-admin','School Administration']]){
+   assert.equal(await p.getByRole('link',{name:'Sign in to '+role,exact:true}).evaluate(link=>link.href),base+route+'/');
+   assert.equal(await p.getByRole('link',{name:'Sign up for '+role,exact:true}).evaluate(link=>link.href),base+route+'/?auth=signup');
+  }
   await p.getByRole('tab',{name:'Pickup'}).click();
   assert((await p.locator('#ql-relay-story-title').innerText()).includes('verified hand'));
   const sizes=await p.evaluate(()=>({w:innerWidth,scroll:document.documentElement.scrollWidth}));

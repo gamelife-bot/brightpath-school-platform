@@ -101,10 +101,23 @@
 .ql-page .ql-last-inner { padding: 26px 20px; }
 .ql-page .ql-last-inner .ql-last-friends { max-width: 205px; margin-bottom: 0; }
 .ql-page .ql-last-inner h2 { margin-top: 0; margin-bottom: 9px; }
-.ql-page .ql-portal-mode { margin: 0 0 12px; }
-.ql-page .ql-portal-mode .ql-btn { width: auto; }
-.ql-page .ql-portal-mode .ql-btn[aria-pressed="true"] { background: #d8efe2; border-color: #2a7663; }
-
+.ql-page .ql-last-inner .ql-portal-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+  gap: 10px;
+  max-width: 780px;
+  margin: 16px auto 0;
+}
+.ql-page .ql-portal-card {
+  min-width: 0;
+  padding: 13px 10px;
+  border: 1px solid #e2d6b8;
+  border-radius: 16px;
+  background: #fffdf4;
+}
+.ql-page .ql-portal-card h3 { margin: 0 0 8px; color: #2e6055; font-size: 15px; }
+.ql-page .ql-portal-actions { display: flex; justify-content: center; gap: 8px; }
+.ql-page .ql-last-inner .ql-portal-actions .ql-btn { width: auto; padding: 10px 13px; }
 .ql-page .ql-last-inner > p { margin-bottom: 15px; }
 .ql-page .ql-last-inner > small { margin-top: 13px; }
 .ql-page .ql-footer { padding-top: 35px; padding-bottom: 18px; }
