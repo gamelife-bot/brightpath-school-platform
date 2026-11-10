@@ -122,6 +122,50 @@ try{
  console.log('PASS interactive synthetic flow',passed,'checks');
  await page.close();
 
+ // School-by-school region: changing country and timezone changes every connected role's clock.
+ const region=await browser.newPage({viewport:{width:1280,height:900},timezoneId:'America/Los_Angeles'}),regionErrors=[];
+ region.on('pageerror',e=>regionErrors.push(e.message));
+ await region.goto(base+'qa-activity.html?role=school_admin',{waitUntil:'networkidle'});
+ await inTab(region,'settings');
+ assert.equal(await region.locator('#mw-school-country option').count(),54);
+ assert.equal(await region.locator('#mw-school-country').inputValue(),'KE');
+ assert.equal(await region.locator('#mw-school-timezone').inputValue(),'Africa/Nairobi');
+ await region.locator('#mw-school-country').selectOption('NG');
+ assert.equal(await region.locator('#mw-school-timezone').inputValue(),'Africa/Lagos');
+ assert((await region.locator('#mw-local-clock-preview').innerText()).includes('Africa/Lagos'));
+ await region.locator('#mw-settings-submit').click();
+ await region.waitForFunction(()=>window.qa.tables.bp_school_settings.find(x=>x.time_zone==='Africa/Lagos'));
+ assert((await region.locator('#mw-region-clock').innerText()).includes('Africa/Lagos'));
+ await inTab(region,'events');
+ await region.locator('#bp-event-title').fill('Regional time integration event');
+ await region.locator('#bp-event-start').fill('2026-11-09T23:30');
+ await region.locator('#bp-event-end').fill('2026-11-10T00:30');
+ await region.locator('#bp-event-save').click();
+ await region.waitForFunction(()=>window.qa.tables.bp_school_events?.some(x=>x.title==='Regional time integration event'));
+ assert.equal(await region.evaluate(()=>window.qa.tables.bp_school_events.find(x=>x.title==='Regional time integration event').starts_at),'2026-11-09T22:30:00.000Z');
+ passed++;console.log('PASS Nigerian school calendar time converted to UTC regardless of laptop timezone');
+ await inTab(region,'care');
+ await region.locator('#bp-care-child').selectOption(await region.evaluate(()=>window.qa.I.childA));
+ await region.locator('#bp-care-description').fill('Fictional local-time care note');
+ await region.locator('#bp-care-when').fill('2026-11-09T23:30');
+ await region.locator('#bp-care-save').click();
+ await region.waitForFunction(()=>window.qa.tables.bp_care_logs.some(x=>x.details==='Fictional local-time care note'));
+ assert.equal(await region.evaluate(()=>window.qa.tables.bp_care_logs.find(x=>x.details==='Fictional local-time care note').occurred_at),'2026-11-09T22:30:00.000Z');
+ passed++;console.log('PASS Nigerian school care diary time converted independently of laptop timezone');
+ await onRole(region,'parent');
+ assert((await region.locator('#mw-region-clock').innerText()).includes('Africa/Lagos'));
+ const dates=await region.evaluate(async()=>{
+  const m=await import('./src/school-day.js');
+  return {nigeria:m.schoolDay('2026-11-09T22:30:00Z'),kenya:m.schoolDay('2026-11-09T22:30:00Z','Africa/Nairobi')};
+ });
+ assert.deepEqual(dates,{nigeria:'2026-11-09',kenya:'2026-11-10'});
+ await onRole(region,'school_admin');await inTab(region,'settings');
+ await region.locator('#mw-school-country').selectOption('KE');
+ await region.locator('#mw-settings-submit').click();
+ await region.waitForFunction(()=>window.qa.tables.bp_school_settings.find(x=>x.time_zone==='Africa/Nairobi'));
+ assert.deepEqual(regionErrors,[]);await region.close();
+ passed+=7;console.log('PASS per-school timezone settings, country mapping and cross-role visibility');
+
  const roles=['owner','school_admin','teacher','parent'];
  for(const role of roles){
   for(const width of [390,1280]){

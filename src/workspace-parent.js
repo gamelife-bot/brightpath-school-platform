@@ -1,3 +1,4 @@
+import {schoolDay} from './school-day.js';
 import {renderCareRelay} from './care-relay.js';
 import {renderSignatures} from './signature-center.js';
 import {renderFamilyFeedback} from './family-feedback.js';
@@ -69,7 +70,7 @@ export async function renderParentPage(ctx,tab){
  if(tab==='overview'){
   const [careRecords,growthRecords,pickupRecords]=await Promise.all([read(db,'bp_care_logs',q=>q.eq('school_id',sid).order('occurred_at',{ascending:false}).limit(80)),read(db,'bp_milestones',q=>q.eq('school_id',sid).order('observed_at',{ascending:false}).limit(80)),read(db,'bp_pickup_events',q=>q.eq('school_id',sid).order('occurred_at',{ascending:false}).limit(30))]);
   const ids=new Set(children.map(c=>c.id));const care=careRecords.filter(x=>ids.has(x.student_id)),growth=growthRecords.filter(x=>ids.has(x.student_id)),pickup=pickupRecords.filter(x=>ids.has(x.student_id));
-  const todayCare=care.filter(x=>new Date(x.occurred_at).toDateString()===new Date().toDateString());
+  const todayCare=care.filter(x=>schoolDay(x.occurred_at)===schoolDay());
   const latestGrowth=growth.slice(0,5);
   const html=heading('YOUR LITTLE ONE’S DAY','Welcome home','A calm, happy window into the little moments your child’s teachers are sharing.')+
    '<div class="mw-metrics">'+stat('My children',children.length,'💛','teal')+

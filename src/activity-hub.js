@@ -1,9 +1,9 @@
-import {schoolDay} from './school-day.js';
+import {schoolDay,schoolDateTime,schoolTime} from './school-day.js';
 import {escapeHtml as e,dateLabel,stat,box,empty,pill,field,input,select,textarea,button,heading,table,tr,option,read,rpc,form,notice,v} from './workspace-core.js';
 import {visibleChildren} from './child-center.js';
 
 const icon={care:'☀️',milestone:'🌱',photo:'📷',video:'🎥',message:'💌',pickup:'🎒',incident:'🩹',school_request:'🔔'};
-const prettyDate=x=>new Date(x).toLocaleString('en-KE',{dateStyle:'medium',timeStyle:'short'});
+const prettyDate=x=>schoolDateTime(x);
 const dayKey=x=>schoolDay(x);
 const emptyAction=description=>empty('🧸','Nothing shared yet',description);
 export async function renderNotifications(ctx){
@@ -171,12 +171,12 @@ export async function renderDailySummary(ctx){
    '<div class="bp-summary-stats">'+[['Attendance',att?.status||'Not recorded'],['Photos / videos',videos.length+' shared'],['New milestones',mill.length+' recorded']].map(([k,v])=>
     '<div><small>'+k+'</small><strong>'+e(v)+'</strong></div>').join('')+'</div>'+
    sections.map(({title,items})=>'<section class="bp-summary-section"><h3>'+title+'</h3>'+
-    (items.length?items.map(x=>'<div class="bp-summary-line"><strong>'+new Date(x.occurred_at).toLocaleTimeString('en-KE',{hour:'2-digit',minute:'2-digit'})+'</strong><span>'+
+    (items.length?items.map(x=>'<div class="bp-summary-line"><strong>'+schoolTime(x.occurred_at)+'</strong><span>'+
      e(x.details)+(x.event_value?' · '+e(x.event_value):'')+'</span></div>').join(''):'<p>No updates recorded for this part of the day.</p>')+'</section>').join('')+
    '<section class="bp-summary-section"><h3>🌱 Learning moments</h3>'+
     (mill.length?mill.map(x=>'<p><b>'+e(x.title)+'</b> — '+e(x.observation)+'</p>').join(''):'<p>No milestones recorded today.</p>')+'</section>'+
    '<section class="bp-summary-section"><h3>🎒 Arrival & pickup</h3>'+
-    (events.length?events.map(x=>'<p>'+e(x.event_type==='check_in'?'Arrived':'Picked up')+' · '+new Date(x.occurred_at).toLocaleTimeString('en-KE',{hour:'2-digit',minute:'2-digit'})+'</p>').join(''):'<p>No arrival or pickup record for this date.</p>')+'</section>'+
+    (events.length?events.map(x=>'<p>'+e(x.event_type==='check_in'?'Arrived':'Picked up')+' · '+schoolTime(x.occurred_at)+'</p>').join(''):'<p>No arrival or pickup record for this date.</p>')+'</section>'+
    (incident.length?'<div class="bp-summary-alert">🩹 An incident report exists for this day. Review the private Health & incidents page for details.</div>':'')+
    '<div class="bp-summary-foot">Prepared from school-recorded updates. Missing entries mean no update was recorded, not that care did not occur.</div></div>';
  };

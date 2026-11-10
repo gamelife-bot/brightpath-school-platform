@@ -1,3 +1,4 @@
+import {schoolDay,getSchoolTimeZone} from './school-day.js';
 import {escapeHtml as e,stat,box,empty,heading,pill,read,button,notice,dateLabel} from './workspace-core.js';
 
 /**
@@ -5,8 +6,8 @@ import {escapeHtml as e,stat,box,empty,heading,pill,read,button,notice,dateLabel
  * It never sends, creates or amends a child record on its own.
  * Family-ready recaps are assembled only from recorded school events.
  */
-const localDay=(value)=>{const date=new Date(value);return Number.isNaN(date.getTime())?'':new Intl.DateTimeFormat('en-CA',{timeZone:'Africa/Nairobi',year:'numeric',month:'2-digit',day:'2-digit'}).format(date)};
-const clock=(value)=>new Intl.DateTimeFormat('en-KE',{timeZone:'Africa/Nairobi',hour:'2-digit',minute:'2-digit'}).format(new Date(value));
+const localDay=(value)=>{try{return schoolDay(value)}catch{return ''}};
+const clock=(value)=>new Intl.DateTimeFormat('en-KE',{timeZone:getSchoolTimeZone(),hour:'2-digit',minute:'2-digit'}).format(new Date(value));
 const eventNames={meal:'Meal / snack',nap:'Rest / nap',diaper:'Nappy care',toilet:'Toilet care',mood:'Mood',play:'Play',other:'Care'};
 const cap=(str,max)=>String(str||'').slice(0,max);
 const onlyLinked=(items,ids)=>items.filter(item=>ids.has(item.student_id));

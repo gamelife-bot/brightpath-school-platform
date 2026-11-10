@@ -41,7 +41,17 @@ export async function renderOwnerPage(ctx,tab){
       [members.some(m=>m.role==='school_admin'&&m.active),'Approve school administrator','Assign leadership'],
       [members.some(m=>m.role==='teacher'&&m.active),'Bring on teaching staff','Schools approve teacher accounts'],
       [activities.length>0,'First classroom update','Teachers publish real learning records']
-    ].map(([yes,title,desc])=>'<div class="mw-check"><span class="'+(yes?'mw-checked':'')+'">'+(yes?'✓':'○')+'</span><div><b>'+title+'</b><small>'+desc+'</small></div></div>').join('')+'</div>')+'</div>';
+    ].map(([yes,title,desc])=>'<div class="mw-check"><span class="'+(yes?'mw-checked':'')+'">'+(yes?'✓':'○')+'</span><div><b>'+title+'</b><small>'+desc+'</small></div></div>').join('')+'</div>')+'</div>'+
+  box('Go-live readiness · owner checklist',
+   '<div class="mw-checklist">'+[
+    ['🌍','School regions','Each school administrator confirms country, city and IANA timezone before real attendance.'],
+    ['🏢','Register the operating company','Company registration, tax identity and a verified business support contact are owner-managed external steps.'],
+    ['🛡️','Data protection registration','For Kenya, verify the appropriate ODPC data-controller / processor registration and publish legal contact and child-data terms before inviting families.'],
+    ['🔐','Real multi-account privacy test','Before enrolling children, sign in as a real administrator, an assigned teacher and two separately linked parents and verify that records never cross families.'],
+    ['🌐','Attach your own domain','After buying and verifying a domain, switch the public root build, configure GitHub Pages and DNS/HTTPS. The current GitHub Pages URL remains active.'],
+    ['💳','Payments and country pricing','Payment collection, automated subscription enforcement and non-Kenyan prices are not live. Do not collect production subscriptions yet.']
+   ].map(([icon,title,detail])=>'<div class="mw-check"><span>'+icon+'</span><div><b>'+title+'</b><small>'+detail+'</small></div></div>').join('')+'</div>'+
+   '<p class="mw-fine">Technical tests are not government approvals or proof of a completed live family pilot. Confirm each requirement before onboarding real children.</p>');
   return {html,bind(){bindQuick(go);click('mw-add-school',()=>go('schools'));click('mw-add-school2',()=>go('schools'))}};
  }
  if(tab==='schools'){

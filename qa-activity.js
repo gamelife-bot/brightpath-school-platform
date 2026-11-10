@@ -76,7 +76,14 @@ const db={
    select(){return api},eq(k,v){filters.push([k,v]);return api},in(k,items){filters.push([k,items]);return api},order(k,opts={}){orderBy=k;descending=opts.ascending===false;return api},
    limit(k){limit=k;return api},update(data){mut='update';patch=data;return api},
    insert(data){const list=Array.isArray(data)?data:[data];if(name==='bp_pickup_events'&&list.some(x=>x.event_type==='check_out'))return Promise.resolve({error:{message:'Direct checkout insert blocked'}});const rows=list.map(x=>({id:crypto.randomUUID(),created_at:fresh(),occurred_at:fresh(),...x}));(tables[name]||(tables[name]=[])).push(...rows);calls.push({type:'insert',name,data:list});return Promise.resolve({data:rows})},
-   upsert(data){return Promise.resolve({data:[data]})},
+   upsert(data){
+    if(name==='bp_school_settings'){
+     const existing=tables.bp_school_settings.find(x=>x.school_id===data.school_id);
+     if(existing)Object.assign(existing,data);else tables.bp_school_settings.push({...data});
+     calls.push({type:'upsert',name,data});
+    }
+    return Promise.resolve({data:[data]});
+   },
    then(resolve,reject){let rows=(tables[name]||[]).filter(r=>filters.every(([k,v])=>Array.isArray(v)?v.includes(r[k]):r[k]===v)&&visible(name,r));
     if(orderBy)rows=rows.slice().sort((a,b)=>descending?String(b[orderBy]??'').localeCompare(String(a[orderBy]??'')):String(a[orderBy]??'').localeCompare(String(b[orderBy]??'')));
     rows=rows.slice(0,limit);

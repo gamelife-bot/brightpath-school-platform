@@ -44,6 +44,11 @@ export async function renderSchoolSetup(ctx){
   {id:14,label:'Send the parent handbook for signature',desc:'Ask a verified guardian to review and sign an individual school document.',done:false,tab:'signatures',cta:'Signature requests',icon:'✍️'},
   {id:15,label:'Ask families for feedback',desc:'Publish a three-question parent survey to learn what families need.',done:false,tab:'feedback',cta:'Parent surveys',icon:'💛'}
  ];
+ const settings=await read(db,'bp_school_settings',q=>q.eq('school_id',sid));
+ const region=settings[0];
+ checks.push({id:16,label:'Confirm country and school-local timezone',
+  desc:'Your region determines attendance dates, pickup safety checks and evening reports. Set it before inviting families.',
+  done:Boolean(region?.country_code&&region?.time_zone),tab:'settings',cta:'School region & clock',icon:'🌍'});
  const [signatures,surveys]=await Promise.all([read(db,'bp_signature_requests',q=>q.eq('school_id',sid).limit(1)),read(db,'bp_family_surveys',q=>q.eq('school_id',sid).limit(1))]);
  checks[13].done=signatures.length>0;checks[14].done=surveys.length>0;
  const details=await read(db,'bp_child_details',q=>q.eq('school_id',sid));
@@ -58,6 +63,7 @@ export async function renderSchoolSetup(ctx){
  '<div>☎️ <b>Complete emergency information</b><p>Ensure contact details and care instructions have been confirmed by the family.</p></div>'+
  '<div>🧪 <b>Test actual workflows</b><p>Run a real parent–teacher–admin test before adding children’s sensitive information. Payments and email/SMS delivery are not active.</p></div>'+
  '<div>💊 <b>Medication plans when needed</b><p>Families authorize plans in writing; an administrator verifies each plan before trained staff record administration.</p><button type="button" data-setup-go="medications" class="mw-btn mw-btn-outline">Medication safety ↗</button></div>'+
- '<div>🔐 <b>Family privacy</b><p>Review requests for access, correction and retention with documented safeguards.</p><button type="button" data-setup-go="privacy" class="mw-btn mw-btn-outline">Privacy center ↗</button></div></div>');
+ '<div>🔐 <b>Family privacy</b><p>Review requests for access, correction and retention with documented safeguards.</p><button type="button" data-setup-go="privacy" class="mw-btn mw-btn-outline">Privacy center ↗</button></div>'+
+ '<div>🌍 <b>Country-specific obligations</b><p>Before enrolling real children, confirm school licensing, business registration, lawful child-data processing, retention and incident-reporting requirements for the school’s own country.</p><button type="button" data-setup-go="settings" class="mw-btn mw-btn-outline">Check school region ↗</button></div></div>');
  return{html,bind(){document.querySelectorAll('[data-setup-go]').forEach(b=>b.onclick=()=>go(b.dataset.setupGo))}};
 }

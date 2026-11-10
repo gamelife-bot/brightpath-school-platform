@@ -1,8 +1,9 @@
-import {schoolDay} from './school-day.js';
+import {schoolDateTimeInput,schoolLocalToUtc} from './school-clock-input.js';
+import {schoolDay,schoolDateTime} from './school-day.js';
 import {escapeHtml as e,dateLabel,initial,stat,box,empty,pill,field,input,select,textarea,button,heading,table,tr,option,read,write,update,form,notice,v,checked} from './workspace-core.js';
 
-const DISPLAY_DATE=x=>x?new Date(x).toLocaleString('en-KE',{dateStyle:'medium',timeStyle:'short'}):'—';
-const TODAY=()=>new Date(Date.now()-new Date().getTimezoneOffset()*60000).toISOString().slice(0,16);
+const DISPLAY_DATE=x=>x?schoolDateTime(x):'—';
+const TODAY=()=>schoolDateTimeInput();
 const TYPES={injury:'🩹 Injury',illness:'🌡️ Illness',behavior:'💛 Wellbeing / behaviour',safety:'🛟 Safety concern',other:'📋 Other'};
 const SEVERITY={minor:'Minor',moderate:'Needs attention',urgent:'Urgent'};
 function age(dob){
@@ -162,7 +163,7 @@ export async function renderIncidents(ctx){
  return {html,bind(){
   if(isStaff)form('bp-incident-create',async()=>{
    const child=v('bp-incident-child');if(!allow.has(child))throw Error('Select a child in your care');
-   const when=new Date(v('bp-incident-time'));if(Number.isNaN(when.getTime())||when>Date.now()+5*60000)throw Error('Choose a valid incident date');
+   const when=schoolLocalToUtc(v('bp-incident-time'));if(Number.isNaN(when.getTime())||when>Date.now()+5*60000)throw Error('Choose a valid incident date');
    await write(db,'bp_incident_reports',{school_id:sid,student_id:child,category:v('bp-incident-type'),
     severity:v('bp-incident-severity'),happened_at:when.toISOString(),description:v('bp-incident-details'),
     action_taken:v('bp-incident-actions'),parent_contacted:checked('bp-incident-contacted'),reported_by:user.id,status:'open'});

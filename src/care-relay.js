@@ -1,8 +1,8 @@
-import {schoolDay,SCHOOL_TIME_ZONE} from './school-day.js';
+import {schoolDay,getSchoolTimeZone} from './school-day.js';
 import {escapeHtml as e,dateLabel,stat,box,empty,pill,field,select,textarea,button,heading,option,read,rpc,form,notice,v,checked} from './workspace-core.js';
 import {careRelayArt} from './care-relay-art.js';
 const localDay=schoolDay;
-const time=(input)=>input?new Date(input).toLocaleTimeString('en-KE',{hour:'2-digit',minute:'2-digit',timeZone:SCHOOL_TIME_ZONE}):'—';
+const time=(input)=>input?new Date(input).toLocaleTimeString('en-KE',{hour:'2-digit',minute:'2-digit',timeZone:getSchoolTimeZone()}):'—';
 const mood={not_shared:'No mood shared',settled:'Feeling settled',tired:'A little tired',needs_comfort:'May need extra comfort'};
 const sleep={not_shared:'Not shared',usual:'Slept as usual',less:'Less sleep than usual',restless:'Restless night'};
 const icons={meal:'🥣',nap:'😴',mood:'😊',play:'🧸',diaper:'🧷',toilet:'🚽',other:'✨'};

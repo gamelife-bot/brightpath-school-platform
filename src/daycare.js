@@ -1,13 +1,15 @@
+import {schoolDay,schoolTime,schoolDateTime,getSchoolTimeZone} from './school-day.js';
+import {schoolDateTimeInput,schoolLocalToUtc} from './school-clock-input.js';
 import {escapeHtml as h,numberLabel as n,dateLabel,initial,stat,box,empty,pill,status,field,input,select,textarea,button,heading,table,tr,option,bar,read,write,update,rpc,result,form,click,notice,v,checked} from './workspace-core.js';
 
 const icons={meal:'🥣',nap:'😴',diaper:'🧷',toilet:'🚽',mood:'😊',play:'🧸',other:'🌻'};
 const eventLabel={meal:'Meal',nap:'Nap',diaper:'Diaper change',toilet:'Toilet visit',mood:'Mood check',play:'Playtime',other:'Other care'};
 const progressLabel={emerging:'Starting to explore',developing:'Developing',achieved:'Achieved'};
 const areas={communication:['💬','Communication & speech'],social:['🤝','Friendship & social skills'],physical:['🏃','Movement & coordination'],thinking:['🧩','Thinking & problem-solving'],self_care:['🌱','Independence & self-care'],creativity:['🎨','Creativity & imagination']};
-const dateTime=v=>new Date(v).toLocaleString('en-KE',{dateStyle:'medium',timeStyle:'short'});
-const time=v=>new Date(v).toLocaleTimeString('en-KE',{hour:'2-digit',minute:'2-digit'});
-const isToday=iso=>new Date(iso).toDateString()===new Date().toDateString();
-const safeDate=iso=>iso?.replace('T',' ').slice(0,16)||'';
+const dateTime=v=>schoolDateTime(v);
+const time=v=>schoolTime(v);
+const isToday=iso=>schoolDay(iso)===schoolDay();
+const safeDate=iso=>iso?schoolDateTimeInput(iso):'';
 const careValue={meal:['All eaten','Most eaten','Half eaten','A little','Did not eat'],nap:['Rested well','Short nap','Woke early'],diaper:['Wet','Soiled','Dry'],toilet:['Used toilet','Needs help','Accident'],mood:['Happy','Calm','Tired','Upset','Energetic'],play:['Indoor','Outdoor','Group play','Individual'],other:['Update']};
 function childDropdown(students){return '<option value="">Choose a child</option>'+students.map(s=>option(s.id,s.full_name)).join('')}
 function prettyName(students,id){return students.find(s=>s.id===id)?.full_name||'Child'}
@@ -56,7 +58,7 @@ export async function renderCareDiary(ctx){
  field('Care activity',select('bp-care-type',Object.entries(eventLabel).map(([id,label])=>option(id,icons[id]+' '+label)).join('')))+
  field('What happened?',textarea('bp-care-description','Describe how the child is doing…','required minlength="2" maxlength="1200"'))+
  field('Observation',select('bp-care-value',careValue.meal.map(s=>option(s,s)).join('')))+
- field('Time','<input id="bp-care-when" type="datetime-local" value="'+new Date(Date.now()-new Date().getTimezoneOffset()*60000).toISOString().slice(0,16)+'" required>')+
+ field('Time','<input id="bp-care-when" type="datetime-local" value="'+schoolDateTimeInput()+'" required>')+
  '<label id="bp-nap-end-container" class="mw-field" hidden><span>Nap finished (optional)</span><input id="bp-nap-end" type="datetime-local"></label>'+
  formActions(button('Save care update','bp-care-save','primary','type="submit" '+(!students.length?'disabled':'')))+'</form>')+
  box('A caring daily rhythm',
@@ -77,9 +79,9 @@ export async function renderCareDiary(ctx){
    form('bp-care-form',async()=>{
     const child=v('bp-care-child');
     if(!students.some(s=>s.id===child))throw Error('Select a child from your class');
-    const start=new Date(v('bp-care-when'));
+    const start=schoolLocalToUtc(v('bp-care-when'));
     if(Number.isNaN(start.getTime()))throw Error('Choose a valid date and time');
-    const finish=v('bp-nap-end')&&careType.value==='nap'?new Date(v('bp-nap-end')).toISOString():null;
+    const finish=v('bp-nap-end')&&careType.value==='nap'?schoolLocalToUtc(v('bp-nap-end')).toISOString():null;
     if(finish&&new Date(finish)<start)throw Error('Nap finish must be after nap start');
     await write(db,'bp_care_logs',{school_id:sid,student_id:child,event_type:careType.value,details:v('bp-care-description'),event_value:value.value,occurred_at:start.toISOString(),ended_at:finish,created_by:user.id});
     await reload();

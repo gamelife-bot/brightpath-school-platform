@@ -1,3 +1,4 @@
+import {setSchoolTimeZone,getSchoolTimeZone} from './school-day.js';
 import './workspace.css';
 import './playful-workspace.css';
 import './modern-v2.css';
@@ -15,7 +16,7 @@ import {renderParentPage} from './workspace-parent.js';
 
 export const escapeHtml = (input) => String(input ?? '').replace(/[&<>"']/g,(c)=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'}[c]));
 export const dollar = (v) => 'KSh '+(Number(v||0)/100).toLocaleString('en-KE',{maximumFractionDigits:2});
-export const dateLabel = (d) => d ? new Date(/^\d{4}-\d{2}-\d{2}$/.test(String(d))?String(d)+'T12:00:00':d).toLocaleDateString('en-KE',{day:'numeric',month:'short',year:'numeric'}) : '—';
+export const dateLabel = (d) => d ? new Date(/^\d{4}-\d{2}-\d{2}$/.test(String(d))?String(d)+'T12:00:00Z':d).toLocaleDateString('en-KE',{day:'numeric',month:'short',year:'numeric',timeZone:getSchoolTimeZone()}) : '—';
 export const numberLabel = (v) => Number(v||0).toLocaleString('en-KE');
 export const initial = (s) => (String(s||'U').trim()[0]||'U').toUpperCase();
 export const option = (value,label) => '<option value="'+escapeHtml(value)+'">'+escapeHtml(label)+'</option>';
@@ -103,6 +104,14 @@ export async function launchWorkspace({db,user,role,context,root,logout,photoDat
  let current=new URLSearchParams(window.location.search).get('tab')||'overview';
  if(!nav.some(([id])=>id===current))current='overview';
  let request=0,previousUnread=null;
+ async function loadSchoolTimeZone(){
+  setSchoolTimeZone(null);
+  if(!school)return;
+  const settings=await read(db,'bp_school_settings',q=>q.eq('school_id',school));
+  setSchoolTimeZone(settings[0]?.time_zone);
+  const indicator=document.getElementById('mw-region-clock');
+  if(indicator)indicator.textContent='🕒 '+getSchoolTimeZone().replace(/_/g,' ');
+ }
  const memberships=(context?.memberships||[]).filter(m=>m.role===role&&m.active);
  const schoolPicker=memberships.length>1?'<select id="mw-school" aria-label="Select school">'+memberships.map(m=>option(m.school_id,m.school_name)).join('')+'</select>':(memberships[0]?'<span class="mw-school-name">'+escapeHtml(memberships[0].school_name)+'</span>':'');
  const logo='<a class="logo brand-home mw-brand" href="'+root+'home/" aria-label="BrightPath homepage">✦ <strong>brightpath<span>.</span></strong></a>';
@@ -132,7 +141,7 @@ export async function launchWorkspace({db,user,role,context,root,logout,photoDat
   '<div class="mw-side-caption">WORKSPACE</div>'+desktopFind+'<nav class="mw-navigation" id="mw-navigation-list" aria-label="Workspace sections">'+navHtml+'</nav>'+
   '<div class="mw-side-footer"><div class="mw-avatar">'+initial(user.name||user.email)+'</div><div><b>'+escapeHtml(user.name||'My account')+'</b><span>'+escapeHtml(roleTitle[role])+'</span></div></div></aside>'+
   '<div class="mw-main"><header class="mw-topbar"><div class="mw-location"><span class="mw-location-dot"></span> '+escapeHtml(roleTitle[role])+' workspace <span class="bp-top-doodle" aria-hidden="true">✦</span></div>'+
-  '<div class="mw-top-actions">'+(role!=='owner'?'<button class="bp-top-notice" id="mw-open-notifications" aria-label="Open notifications" title="Notifications">🔔 <span id="mw-notification-count" hidden></span></button>':'')+schoolPicker+'<span class="mw-user-email">'+escapeHtml(user.email||'')+'</span><button id="mw-logout" class="mw-btn mw-btn-outline mw-logout">Sign out</button></div></header>'+
+  '<div class="mw-top-actions">'+(role!=='owner'?'<button class="bp-top-notice" id="mw-open-notifications" aria-label="Open notifications" title="Notifications">🔔 <span id="mw-notification-count" hidden></span></button>':'')+schoolPicker+'<span class="mw-region-clock" id="mw-region-clock" aria-label="School timezone"></span><span class="mw-user-email">'+escapeHtml(user.email||'')+'</span><button id="mw-logout" class="mw-btn mw-btn-outline mw-logout">Sign out</button></div></header>'+
   '<main class="mw-content" id="workspace"><div id="panel-content"></div></main><footer class="mw-bottom"><span>© BrightPath</span><a href="'+root+'home/">Back to website</a></footer></div>'+
   mobileFooter+mobileMenu+'<div id="mw-notice" class="mw-toast" hidden role="status" aria-live="polite"></div></div>';
  const contextObj={
@@ -140,6 +149,8 @@ export async function launchWorkspace({db,user,role,context,root,logout,photoDat
   get schoolId(){return school},
   get memberships(){return memberships},
   get tab(){return current},
+  get timeZone(){return getSchoolTimeZone()},
+  setTimeZone:(zone)=>{setSchoolTimeZone(zone);const indicator=document.getElementById('mw-region-clock');if(indicator)indicator.textContent='🕒 '+getSchoolTimeZone().replace(/_/g,' ');},
   reload:()=>show(current),
   go:(tab)=>show(tab),
   refreshNotifications:()=>refreshNotificationCount()
@@ -312,6 +323,10 @@ export async function launchWorkspace({db,user,role,context,root,logout,photoDat
  if(window.__bpNoticeTimer)window.clearInterval(window.__bpNoticeTimer);
  if(role!=='owner')window.__bpNoticeTimer=window.setInterval(()=>void refreshNotificationCount(),45000);
  const picker=document.getElementById('mw-school');
- if(picker){picker.value=school;picker.onchange=()=>{school=picker.value;show(current)}}
+ if(picker){picker.value=school;picker.onchange=async()=>{
+  school=picker.value;
+  try{await loadSchoolTimeZone();await show(current)}catch(err){notice('School timezone could not be loaded: '+err.message,'error')}
+ }}
+ await loadSchoolTimeZone();
  await show(current);
 }

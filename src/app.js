@@ -4,7 +4,7 @@ import { enableBrandShortcut } from './logo-shortcut.js';
 import {renderAccessPending} from './access-request.js';
 import { createClient, BetterAuthVanillaAdapter } from '@neondatabase/neon-js';
 
-const ROOT='/brightpath-school-platform/';
+const ROOT=import.meta.env.BASE_URL;
 enableBrandShortcut({homeUrl:ROOT+'home/',ownerUrl:ROOT+'owner/'});
 const AUTH_URL='https://ep-falling-frog-bao493od.neonauth.c-8.eu-central-1.aws.neon.tech/neondb/auth';
 const DATA_URL='https://ep-falling-frog-bao493od.apirest.c-8.eu-central-1.aws.neon.tech/neondb/rest/v1';

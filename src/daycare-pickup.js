@@ -1,8 +1,8 @@
-import {schoolDay,SCHOOL_TIME_ZONE} from './school-day.js';
+import {schoolDay,getSchoolTimeZone} from './school-day.js';
 import {escapeHtml as h,dateLabel,stat,box,empty,pill,field,input,select,textarea,button,heading,table,tr,option,read,write,update,rpc,form,click,notice,v,checked} from './workspace-core.js';
 
 const label={check_in:'Checked in',check_out:'Picked up'};
-const time=iso=>new Date(iso).toLocaleString('en-KE',{dateStyle:'medium',timeStyle:'short',timeZone:SCHOOL_TIME_ZONE});
+const time=iso=>new Date(iso).toLocaleString('en-KE',{dateStyle:'medium',timeStyle:'short',timeZone:getSchoolTimeZone()});
 const childOpts=kids=>'<option value="">Choose a child</option>'+kids.map(c=>option(c.id,c.full_name)).join('');
 export async function renderPickupDesk(ctx){
  const {db,schoolId:sid,user,role,reload}=ctx;

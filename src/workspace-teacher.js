@@ -55,7 +55,7 @@ export async function renderTeacherPage(ctx,tab){
  if(tab==='overview'){
   const attendance=await read(db,'bp_attendance',q=>q.eq('school_id',sid).eq('attendance_date',today()));
   const [careLogs,milestones]=await Promise.all([read(db,'bp_care_logs',q=>q.eq('school_id',sid).order('occurred_at',{ascending:false}).limit(80)),read(db,'bp_milestones',q=>q.eq('school_id',sid).order('observed_at',{ascending:false}).limit(80))]);
-  const childIds=new Set(students.map(s=>s.id));const careToday=careLogs.filter(x=>childIds.has(x.student_id)&&new Date(x.occurred_at).toDateString()===new Date().toDateString());const recentMilestones=milestones.filter(x=>childIds.has(x.student_id));
+  const childIds=new Set(students.map(s=>s.id));const careToday=careLogs.filter(x=>childIds.has(x.student_id)&&schoolDay(x.occurred_at)===today());const recentMilestones=milestones.filter(x=>childIds.has(x.student_id));
   const recorded=attendance.filter(a=>students.some(s=>s.id===a.student_id));
   const html=heading('WELCOME TO YOUR CLASSROOM','Good morning, '+(user.name?.split(' ')[0]||'Teacher'),'Everything you need for a caring, happy day with your little learners.')+
    '<div class="mw-metrics">'+stat('My classes',classes.length,'📚','teal')+stat('My students',students.length,'🎒','blue')+

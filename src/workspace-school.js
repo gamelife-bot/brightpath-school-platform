@@ -1,4 +1,4 @@
-import {schoolDay} from './school-day.js';
+import {schoolDay,isValidTimeZone,AFRICAN_COUNTRIES,AFRICAN_TIME_ZONES,DEFAULT_SCHOOL_TIME_ZONE} from './school-day.js';
 import {renderCareRelay} from './care-relay.js';
 import {renderSignatures} from './signature-center.js';
 import {renderFamilyFeedback} from './family-feedback.js';
@@ -68,7 +68,7 @@ export async function renderSchoolPage(ctx,tab){
   const {school,classes,students,members,activities}=await schoolData(db,sid);
   const attended=await read(db,'bp_attendance',q=>q.eq('school_id',sid).eq('attendance_date',today()));
   const careToday=await read(db,'bp_care_logs',q=>q.eq('school_id',sid).order('occurred_at',{ascending:false}).limit(100));
-  const careCount=careToday.filter(x=>new Date(x.occurred_at).toDateString()===new Date().toDateString()).length;
+  const careCount=careToday.filter(x=>schoolDay(x.occurred_at)===today()).length;
   let approvalQueueError=null;
   const pendingRequests=await Promise.all(['teacher','parent'].map(role=>rpc(db,'bp_school_request_queue',{p_school:sid,p_role:role}).catch(async()=>{
    try{return await read(db,'bp_access_requests',q=>q.eq('school_id',sid).eq('requested_role',role))}
@@ -331,18 +331,40 @@ export async function renderSchoolPage(ctx,tab){
   const {school}=await schoolData(db,sid);
   const records=await read(db,'bp_school_settings',q=>q.eq('school_id',sid));
   const settings=records[0]||{};
-  const html=heading('SCHOOL PROFILE','School settings','Keep your school contact details and academic term up to date.')+
+  const country=settings.country_code||'KE',zone=settings.time_zone||DEFAULT_SCHOOL_TIME_ZONE;
+  const countryOptions=AFRICAN_COUNTRIES.map(([code,name])=>'<option value="'+code+'" '+(code===country?'selected':'')+'>'+e(name)+'</option>').join('');
+  const zoneOptions=AFRICAN_TIME_ZONES.map(z=>'<option value="'+e(z)+'" '+(z===zone?'selected':'')+'>'+e(z.replace(/_/g,' '))+'</option>').join('');
+  const html=heading('SCHOOL PROFILE','School settings','School profile, academic term and the local clock for this school.')+
    '<div class="mw-two mw-two-side">'+box('School information','<div class="mw-setting-name">🏫 '+e(school?.name||'School')+'</div><div class="mw-setting-lines"><div>School status '+status(school?.status)+'</div><div>Created '+dateLabel(school?.created_at)+'</div></div>')+
    box('Contact and academic details','<form id="mw-settings-form" class="mw-form">'+
     field('Contact email','<input id="mw-school-contact-email" type="email" maxlength="160" value="'+e(settings.contact_email||'')+'" placeholder="office@school.edu">')+
     field('Telephone','<input id="mw-school-phone" maxlength="35" value="'+e(settings.contact_phone||'')+'" placeholder="+254…">')+
     field('School address','<textarea id="mw-school-address" maxlength="240" placeholder="School location">'+e(settings.school_address||'')+'</textarea>')+
     field('Academic term','<input id="mw-school-term" maxlength="100" value="'+e(settings.academic_term||'')+'" placeholder="e.g. Term 1, 2027">')+
+    field('Country / region','<select id="mw-school-country" required>'+countryOptions+'</select>')+
+    field('School local time zone','<select id="mw-school-timezone" required>'+zoneOptions+'</select>')+
+    '<p id="mw-local-clock-preview" class="mw-inline mw-inline-info" role="status"></p>'+
     actions(button('Save school details','mw-settings-submit','primary','type="submit"'))+'</form>')+'</div>';
   return{html,bind(){
+   const countrySelect=document.getElementById('mw-school-country'),zoneSelect=document.getElementById('mw-school-timezone');
+   const preview=()=>{const zone=zoneSelect.value;
+    const label=new Intl.DateTimeFormat('en-GB',{timeZone:zone,dateStyle:'full',timeStyle:'short'}).format(new Date());
+    document.getElementById('mw-local-clock-preview').textContent='🏫 Your school day uses '+zone+' · '+label+'. Parent and teacher devices follow this school clock.';
+   };
+   countrySelect.onchange=()=>{
+    const entry=AFRICAN_COUNTRIES.find(x=>x[0]===countrySelect.value);
+    if(entry&&AFRICAN_TIME_ZONES.includes(entry[2]))zoneSelect.value=entry[2];
+    preview();
+   };
+   zoneSelect.onchange=preview;preview();
    form('mw-settings-form',async()=>{
-    const payload={school_id:sid,contact_email:v('mw-school-contact-email')||null,contact_phone:v('mw-school-phone')||null,school_address:v('mw-school-address')||null,academic_term:v('mw-school-term')||null,updated_at:new Date().toISOString()};
-    result(await db.from('bp_school_settings').upsert(payload,{onConflict:'school_id'}));await reload();
+    const country=countrySelect.value,zone=zoneSelect.value;
+    if(!AFRICAN_COUNTRIES.some(x=>x[0]===country)||!AFRICAN_TIME_ZONES.includes(zone)||!isValidTimeZone(zone))
+     throw Error('Select a recognized school country and local time zone');
+    const payload={school_id:sid,contact_email:v('mw-school-contact-email')||null,contact_phone:v('mw-school-phone')||null,school_address:v('mw-school-address')||null,academic_term:v('mw-school-term')||null,
+      country_code:country,time_zone:zone,updated_at:new Date().toISOString()};
+    result(await db.from('bp_school_settings').upsert(payload,{onConflict:'school_id'}));
+    ctx.setTimeZone(zone);await reload();
    });
   }};
  }

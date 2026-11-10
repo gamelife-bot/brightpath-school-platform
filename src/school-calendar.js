@@ -1,10 +1,9 @@
+import {schoolDateTime,schoolDay,getSchoolTimeZone} from './school-day.js';
+import {schoolDateTimeInput,schoolLocalToUtc} from './school-clock-input.js';
 import {escapeHtml as e,dateLabel,stat,box,empty,pill,field,input,select,textarea,button,heading,option,read,write,update,form,notice,v,checked} from './workspace-core.js';
 
-const toLocal=iso=>new Date(iso).toLocaleString('en-KE',{dateStyle:'medium',timeStyle:'short'});
-const timeInput=offset=>{
- const value=new Date(Date.now()+offset-new Date().getTimezoneOffset()*60000);
- return value.toISOString().slice(0,16);
-};
+const toLocal=iso=>schoolDateTime(iso);
+const timeInput=offset=>schoolDateTimeInput(new Date(Date.now()+offset));
 export async function renderSchoolCalendar(ctx){
  const {db,role,schoolId:sid,user,reload}=ctx;
  const admin=role==='school_admin';
@@ -13,8 +12,8 @@ export async function renderSchoolCalendar(ctx){
  const upcoming=rows.filter(r=>new Date(r.ends_at).getTime()>=now&&(!(!admin&&!r.is_published)));
  const past=rows.filter(r=>new Date(r.ends_at).getTime()<now);
  const card=event=>'<article class="bp-calendar-event '+(!event.is_published?'bp-calendar-draft':'')+'">'+
-  '<div class="bp-calendar-day"><span>'+new Date(event.starts_at).toLocaleDateString('en-KE',{day:'2-digit'})+'</span><small>'+
-   new Date(event.starts_at).toLocaleDateString('en-KE',{month:'short'}).toUpperCase()+'</small></div>'+
+  '<div class="bp-calendar-day"><span>'+new Date(event.starts_at).toLocaleDateString('en-KE',{day:'2-digit',timeZone:getSchoolTimeZone()})+'</span><small>'+
+   new Date(event.starts_at).toLocaleDateString('en-KE',{month:'short',timeZone:getSchoolTimeZone()}).toUpperCase()+'</small></div>'+
   '<div class="bp-calendar-event-copy"><div><strong>'+e(event.title)+'</strong>'+pill(event.audience==='all'?'All families & staff':event.audience==='parents'?'Families':'Teachers','green')+
   (admin?pill(event.is_published?'Published':'Draft',event.is_published?'green':'amber'):'')+'</div>'+
   '<small>🕒 '+e(toLocal(event.starts_at))+' – '+e(toLocal(event.ends_at))+'</small>'+
@@ -43,7 +42,7 @@ export async function renderSchoolCalendar(ctx){
  return{html,bind(){
   if(!admin)return;
   form('bp-event-form',async()=>{
-   const start=new Date(v('bp-event-start')),end=new Date(v('bp-event-end'));
+   const start=schoolLocalToUtc(v('bp-event-start')),end=schoolLocalToUtc(v('bp-event-end'));
    if(!Number.isFinite(start.getTime())||!Number.isFinite(end.getTime())||end<=start)throw Error('The event must end after it starts');
    if(end.getTime()-start.getTime()>30*86400000)throw Error('Maximum duration is 30 days');
    await write(db,'bp_school_events',{school_id:sid,title:v('bp-event-title'),description:v('bp-event-description'),

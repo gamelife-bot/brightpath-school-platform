@@ -120,3 +120,6 @@
 @media (prefers-reduced-motion: reduce) {
   .mw-app .bp-nav-find input { transition: none; }
 }
+
+.mw-app .mw-region-clock{font-size:10px;color:#3b7d6a;background:#e9f7ef;border:1px solid #d3e9db;border-radius:11px;padding:6px 9px;font-weight:800;white-space:nowrap;}
+@media(max-width:700px){.mw-app .mw-region-clock{font-size:9px;max-width:125px;overflow:hidden;text-overflow:ellipsis;padding:5px 7px;}}
