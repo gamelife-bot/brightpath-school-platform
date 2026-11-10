@@ -12,7 +12,7 @@ const db=createClient({auth:{url:AUTH_URL,adapter:BetterAuthVanillaAdapter()},da
 const app=document.getElementById('app');
 const portal=document.body.dataset.portal||'landing';
 const portalLabel={owner:'Platform Owner',school_admin:'School Administration',teacher:'Teacher Workspace',parent:'Parent Portal'};
-let currentUser=null,context=null,currentSchool='',busy=false;
+let currentUser=null,context=null,busy=false;
 const h=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'}[c]));
 const $=id=>document.getElementById(id);
 const url=path=>ROOT+path;
@@ -26,43 +26,117 @@ function check(result){if(result?.error)throw new Error(errText(result.error));r
 function renderLanding(){renderMarketing(app,ROOT,'home')}
 function renderPricing(){renderMarketing(app,ROOT,'pricing')}
 function shell(body,title=portalLabel[portal]){
- app.innerHTML='<div class="portal"><header class="portal-header"><div>'+brand()+'<div class="portal-name">'+h(title)+'</div></div><div id="user-actions"></div></header><main class="portal-main" id="workspace">'+body+'</main><footer class="foot">© BrightPath</footer></div>';
+ app.innerHTML='<div class="portal"><header class="portal-header"><div>'+brand()+'<div class="portal-name">'+h(title)+'</div></div><div id="user-actions"></div></header><main class="portal-main" id="workspace"><div id="logout-status" role="alert"></div>'+body+'</main><footer class="foot">© BrightPath</footer></div>';
  if(currentUser){
   $('user-actions').innerHTML='<span style="font-size:13px;color:#c5dedf;margin-right:12px">'+h(currentUser.email||'')+'</span><button class="btn small" id="logout">Sign out</button>';
   $('logout').onclick=logout;
  }
 }
-function renderAuth(mode='signin',note=''){
+function renderAuth(mode='signin',note='',email=''){
  currentUser=null;
- const title=mode==='signup'?'Create your account':'Sign in to continue';
- const verification=mode==='verify';
- shell('<div class="login-shell"><div class="card"><h1 style="font-size:25px;margin:0 0 8px">'+(verification?'Verify your email':title)+'</h1><p class="muted" style="font-size:14px">Continue to '+h(portalLabel[portal])+'.</p><div class="auth-switch"><button class="btn '+(mode==='signin'?'':'ghost')+'" id="switch-in">Sign in</button><button class="btn '+(mode==='signup'?'':'ghost')+'" id="switch-up">Register</button></div>'+
- (verification?'<form id="verify-form"><label class="field">Email<input id="email" type="email" autocomplete="email" required></label><label class="field">Verification code from email<input id="otp" inputmode="numeric" autocomplete="one-time-code" required></label><button class="btn full" type="submit">Verify email</button></form>':
- '<form id="auth-form">'+(mode==='signup'?'<label class="field">Full name<input id="full-name" autocomplete="name" minlength="2" required></label>':'')+'<label class="field">Email<input id="email" type="email" autocomplete="email" required></label><label class="field">Password<input id="password" type="password" minlength="8" autocomplete="'+(mode==='signup'?'new-password':'current-password')+'" required></label><button class="btn full" type="submit">'+(mode==='signup'?'Register account':'Sign in')+'</button></form>')+
- '<div id="auth-note">'+(note?msg(note):'')+'</div></div></div>');
- $('switch-in').onclick=()=>renderAuth('signin');$('switch-up').onclick=()=>renderAuth('signup');
- if(verification){$('verify-form').onsubmit=async e=>{e.preventDefault();try{const email=$('email').value.trim();const otp=$('otp').value.trim();check(await db.auth.emailOtp.verifyEmail({email,otp}));renderAuth('signin','Email verified. Please sign in.')}catch(err){$('auth-note').innerHTML=msg(errText(err),'err')}};return}
- $('auth-form').onsubmit=async e=>{e.preventDefault();if(busy)return;busy=true;const button=e.currentTarget.querySelector('button[type=submit]');button.disabled=true;
- try{const email=$('email').value.trim();const password=$('password').value;if(mode==='signup'){const name=$('full-name').value.trim();check(await db.auth.signUp.email({email,password,name}));renderAuth('verify','A verification code may have been sent to your email. Enter it to activate your account.');const inp=$('email');if(inp)inp.value=email}else{check(await db.auth.signIn.email({email,password}));await enterPortal()}}
- catch(err){$('auth-note').innerHTML=msg(errText(err),'err');button.disabled=false}finally{busy=false}};
+ context=null;
+ const signup=mode==='signup',verification=mode==='verify';
+ const title=verification?'Verify your email':signup?'Create your account':'Sign in to continue';
+ const emailField='<label class="field">Email<input id="email" name="email" type="email" autocomplete="'+(verification?'email':'username')+'" value="'+h(email)+'" required></label>';
+ shell('<div class="login-shell"><div class="card"><h1 style="font-size:25px;margin:0 0 8px">'+title+'</h1><p class="muted" style="font-size:14px">'+h(portalLabel[portal])+'.</p><div class="auth-switch"><button type="button" class="btn '+(mode==='signin'?'':'ghost')+'" id="switch-in">Sign in</button><button type="button" class="btn '+(signup?'':'ghost')+'" id="switch-up">Sign up</button></div>'+
+ (verification?'<form id="verify-form">'+emailField+'<label class="field">Verification code from email<input id="otp" name="otp" inputmode="numeric" autocomplete="one-time-code" required></label><button class="btn full" type="submit">Verify email</button><button class="btn ghost full" type="button" id="resend-code">Send a new code</button></form>':
+ '<form id="auth-form">'+(signup?'<label class="field">Full name<input id="full-name" name="name" autocomplete="name" minlength="2" required></label>':'')+emailField+'<label class="field">Password<input id="password" name="password" type="password" '+(signup?'minlength="8" ':'')+'autocomplete="'+(signup?'new-password':'current-password')+'" required></label>'+
+ (signup?'<p class="smallnote">Portal access requires approval.</p>':'<label class="mw-check-label"><input id="remember-me" name="rememberMe" type="checkbox" checked> Keep me signed in on this device</label>')+
+ '<button class="btn full" type="submit">'+(signup?'Create account':'Sign in')+'</button></form>')+
+ '<div id="auth-note" role="status">'+(note?msg(note):'')+'</div></div></div>');
+
+ const emailValue=()=>$('email').value.trim();
+ $('switch-in').onclick=()=>{if(!busy)renderAuth('signin','',emailValue())};
+ $('switch-up').onclick=()=>{if(!busy)renderAuth('signup','',emailValue())};
+ const runAuth=async (button,action)=>{
+  if(busy)return;
+  busy=true;button.disabled=true;
+  try{await action()}catch(err){$('auth-note').innerHTML=msg(errText(err),'err')}
+  finally{busy=false;button.disabled=false}
+ };
+ if(verification){
+  $('verify-form').onsubmit=event=>{
+   event.preventDefault();
+   return runAuth(event.submitter,async()=>{
+    const email=emailValue();
+    check(await db.auth.emailOtp.verifyEmail({email,otp:$('otp').value.trim()}));
+    await enterPortal({note:'Email verified. Please sign in.',email});
+   });
+  };
+  $('resend-code').onclick=event=>{
+   if(!$('email').reportValidity())return;
+   return runAuth(event.currentTarget,async()=>{
+    check(await db.auth.emailOtp.sendVerificationOtp({email:emailValue(),type:'email-verification'}));
+    $('auth-note').innerHTML=msg('Verification code sent.');
+   });
+  };
+  return;
+ }
+ $('auth-form').onsubmit=event=>{
+  event.preventDefault();
+  return runAuth(event.submitter,async()=>{
+   const email=emailValue(),password=$('password').value;
+   if(signup){
+    const data=check(await db.auth.signUp.email({email,password,name:$('full-name').value.trim()}));
+    if(!data?.token&&!data?.user?.emailVerified){
+     renderAuth('verify','Enter the verification code from your email.',email);
+     return;
+    }
+    await enterPortal({note:'Account created. Please sign in.',email});
+   }else{
+    try{
+     const result=await db.auth.signIn.email({email,password,rememberMe:$('remember-me').checked});
+     if(result.error)throw result.error;
+    }catch(err){
+     if(!['email_not_confirmed','EMAIL_NOT_VERIFIED'].includes(err?.code))throw err;
+     renderAuth('verify','Verify your email before signing in. You can request a new code below.',email);
+     return;
+    }
+    await enterPortal({note:'Your browser did not keep the session. Check whether it allows cookies for BrightPath and try again.',email});
+   }
+  });
+ };
 }
-async function logout(){try{await db.auth.signOut()}catch{}currentUser=null;context=null;renderAuth('signin','Signed out.')}
-async function sessionUser(){const result=await db.auth.getSession();if(result.error)throw new Error(errText(result.error));const s=result.data||result;return s?.user||s?.session?.user||null}
-async function enterPortal(){
+async function logout(event){
+ const button=event.currentTarget;
+ if(button.disabled)return;
+ button.disabled=true;
+ try{check(await db.auth.signOut())}catch{
+  button.disabled=false;
+  const message='Couldn’t sign out. Try again.';
+  if($('logout-status'))$('logout-status').innerHTML=msg(message,'err');
+  else (await import('./workspace-core.js')).notice(message,'error');
+  return;
+ }
+ window.clearInterval(window.__bpNoticeTimer);
+ document.removeEventListener('keydown',window.__bpNavFindKeydown);
+ renderAuth('signin','Signed out.');
+}
+async function sessionUser(){
+ const session=check(await db.auth.getSession());
+ return session?.user||session?.session?.user||null;
+}
+async function enterPortal({mode='signin',note='',email=''}={}){
  shell('<div class="card"><h2>Checking your account…</h2></div>');
  try{
- currentUser=await sessionUser();
- if(!currentUser){renderAuth('signin');return}
- check(await db.rpc('bp_register_profile'));
- context=check(await db.rpc('bp_context'));
- if(typeof context==='string')context=JSON.parse(context);
- const memberships=(context?.memberships||[]).filter(m=>m.role===portal&&m.active);
- if(portal==='owner'&&!context?.is_owner){await renderDenied();return}
- if(portal!=='owner'&&!memberships.length){await renderDenied();return}
- currentSchool=memberships[0]?.school_id||'';
- const {launchWorkspace}=await import('./workspace-core.js');
- await launchWorkspace({ db, user: currentUser, role: portal, context, root: ROOT, logout, photoData });
- }catch(err){shell('<div class="card"><h2>Unable to open this account</h2>'+msg(errText(err),'err')+'<p class="muted">Verify your email and sign in again if needed.</p><button class="btn" id="relogin">Back to sign in</button></div>');$('relogin').onclick=()=>renderAuth('signin')}
+  currentUser=await sessionUser();
+  if(!currentUser){renderAuth(mode,note,email);return}
+  const pageUrl=new URL(location.href);
+  if(pageUrl.searchParams.has('auth')){
+   pageUrl.searchParams.delete('auth');
+   history.replaceState(history.state,'',pageUrl);
+  }
+  check(await db.rpc('bp_register_profile'));
+  context=check(await db.rpc('bp_context'));
+  if(typeof context==='string')context=JSON.parse(context);
+  const memberships=(context?.memberships||[]).filter(m=>m.role===portal&&m.active);
+  if(portal==='owner'?!context?.is_owner:!memberships.length){await renderDenied();return}
+  const {launchWorkspace}=await import('./workspace-core.js');
+  await launchWorkspace({db,user:currentUser,role:portal,context,root:ROOT,logout,photoData});
+ }catch(err){
+  shell('<div class="card"><h2>Unable to open this account</h2>'+msg(errText(err),'err')+'<button class="btn" id="retry-account">Try again</button></div>');
+  $('retry-account').onclick=()=>enterPortal({mode,note,email});
+ }
 }
 async function renderDenied(options={}){return renderAccessPending({db,context,portal,root:ROOT,shell,enterPortal},options)}
 
@@ -82,4 +156,8 @@ async function photoData(file){
  }finally{URL.revokeObjectURL(source)}
 }
 
-if(portal==='landing'){renderLanding()}else if(portal==='pricing'){renderPricing()}else{enterPortal()}
+if(portal==='landing'){renderLanding()}else if(portal==='pricing'){renderPricing()}else{
+ const mode=new URLSearchParams(location.search).get('auth')==='signup'?'signup':'signin';
+ window.addEventListener('pageshow',event=>{if(event.persisted)location.reload()});
+ enterPortal({mode});
+}

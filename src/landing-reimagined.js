@@ -96,12 +96,25 @@ export function renderLanding(app,root){
  '<div><span>✍️</span><b>Guardian acknowledgments</b><small>Sign school documents without giving staff a reusable signature.</small></div>'+
  '<div><span>👩‍🏫</span><b>Staff keep their judgment</b><small>Nothing claims a care moment happened unless someone recorded it.</small></div></div></section>';
  const questions='<section class="ql-section ql-faq" id="questions"><div class="ql-section-head"><span class="ql-kicker">GOOD QUESTIONS DESERVE CLEAR ANSWERS</span><h2>Questions we would<br><em>ask, too.</em></h2></div><div class="ql-faq-list">'+faq.map(([title,body],idx)=>'<details '+(idx===0?'open':'')+'><summary><span>'+String(idx+1).padStart(2,'0')+'</span>'+title+'<b aria-hidden="true">+</b></summary><p>'+body+'</p></details>').join('')+'</div></section>';
- const cta='<section class="ql-last" id="sign-in" tabindex="-1" aria-labelledby="ql-sign-in-title"><div class="ql-last-inner"><div class="ql-last-friends">'+welcomeArt('parent')+'</div><h2 id="ql-sign-in-title">Sign in to BrightPath</h2>'+
- '<div><a class="ql-btn ql-btn-dark" href="'+go('parent')+'">💛 Parent Portal</a><a class="ql-btn ql-btn-dark" href="'+go('teacher')+'">🍎 Teacher Portal</a><a class="ql-btn ql-btn-dark" href="'+go('school-admin')+'">🏫 School Administration</a></div>'+
+ const cta='<section class="ql-last" id="sign-in" tabindex="-1" aria-labelledby="ql-sign-in-title"><div class="ql-last-inner"><div class="ql-last-friends">'+welcomeArt('parent')+'</div><h2 id="ql-sign-in-title">Sign in or sign up</h2>'+
+ '<div class="ql-portal-mode" role="group" aria-label="Account action"><button class="ql-btn ql-btn-outline" type="button" data-auth-mode="signin" aria-pressed="true">Sign in</button><button class="ql-btn ql-btn-outline" type="button" data-auth-mode="signup" aria-pressed="false">Sign up</button></div>'+
+ '<div id="ql-portal-links"><a class="ql-btn ql-btn-dark" href="'+go('parent')+'">💛 Parent Portal</a><a class="ql-btn ql-btn-dark" href="'+go('teacher')+'">🍎 Teacher Portal</a><a class="ql-btn ql-btn-dark" href="'+go('school-admin')+'">🏫 School Administration</a></div>'+
  '<small>Registration and private school access are controlled by account approvals. Payment collection is not active.</small></div></section>';
  const footer='<footer class="ql-footer"><div class="ql-footer-top"><div><a class="ql-brand mark-logo" href="'+go('home')+'"><span class="ql-brand-star">✦</span><span>brightpath<span>.</span></span></a><p>More time with little learners.<br>Closer connections with families.</p></div><div><b>Explore</b><a href="#how">How it works</a><a href="#quiet">Quiet Classroom</a><a href="#experience">Role previews</a><a href="'+go('pricing')+'">Plans & pricing</a></div><div><b>Portals</b><a href="#sign-in">Sign in</a></div><div><b>Important</b><a href="#privacy">Child privacy</a><a href="#questions">FAQ</a><a href="#teacher-time">Time calculator</a></div></div>'+
  '<div class="ql-footer-bottom"><span>© BrightPath · Built for everyday childhood.</span><span>✦ Little moments. Big futures.</span></div></footer>';
  app.innerHTML='<div class="ql-page">'+nav+'<main>'+hero+strip+momentsSection+how+relaySection+quiet+featureHtml+preview+time+trust+questions+cta+'</main>'+footer+'</div>';
+ const accountModes=[...document.querySelectorAll('[data-auth-mode]')];
+ const portalLinks=document.querySelectorAll('#ql-portal-links a');
+ accountModes.forEach(button=>button.onclick=()=>{
+  const signup=button.dataset.authMode==='signup';
+  accountModes.forEach(mode=>mode.setAttribute('aria-pressed',String(mode===button)));
+  portalLinks.forEach(link=>{
+   const target=new URL(link.href);
+   if(signup)target.searchParams.set('auth','signup');
+   else target.searchParams.delete('auth');
+   link.href=target;
+  });
+ });
  const menu=document.getElementById('ql-menu'),navLinks=document.getElementById('ql-nav-links');
  menu.onclick=()=>{const open=navLinks.classList.toggle('ql-nav-open');menu.setAttribute('aria-expanded',String(open));menu.querySelector('span').textContent=open?'✕':'☰'};
  navLinks.querySelectorAll('a').forEach(a=>a.onclick=()=>{navLinks.classList.remove('ql-nav-open');menu.setAttribute('aria-expanded','false');menu.querySelector('span').textContent='☰'});

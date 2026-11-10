@@ -319,7 +319,7 @@ export async function launchWorkspace({db,user,role,context,root,logout,photoDat
   if(!items)return;items.hidden=!items.hidden;el.setAttribute('aria-expanded',String(!items.hidden));
  });
  if(role!=='owner')document.getElementById('mw-open-notifications').onclick=()=>show('notifications');
- document.getElementById('mw-logout').onclick=()=>{if(window.__bpNoticeTimer)window.clearInterval(window.__bpNoticeTimer);if(window.__bpNavFindKeydown)document.removeEventListener('keydown',window.__bpNavFindKeydown);logout()};
+ document.getElementById('mw-logout').onclick=logout;
  if(window.__bpNoticeTimer)window.clearInterval(window.__bpNoticeTimer);
  if(role!=='owner')window.__bpNoticeTimer=window.setInterval(()=>void refreshNotificationCount(),45000);
  const picker=document.getElementById('mw-school');
