@@ -24,14 +24,26 @@ const door=(root,path)=>root+path+'/';
 export function renderLanding(app,root){
  const go=(route)=>door(root,route);
  const nav='<header class="ql-nav" id="top"><a class="ql-brand mark-logo" href="'+go('home')+'" aria-label="BrightPath home"><span class="ql-brand-star">✦</span><span>brightpath<span>.</span></span></a>'+
-  '<nav class="ql-nav-links" id="ql-nav-links" aria-label="Main navigation"><a href="#relay">Care Relay</a><a href="#how">How it works</a><a href="#quiet">Quiet Classroom</a><a href="#experience">See the experience</a><a href="#questions">FAQs</a><a href="'+go('pricing')+'">Pricing</a></nav>'+
+  '<nav class="ql-nav-links" id="ql-nav-links" aria-label="Main navigation"><a href="#how">How it works</a><a href="#relay">Care Relay</a><a href="#quiet">Quiet Classroom</a><a href="#experience">Role previews</a><a href="#questions">FAQs</a><a href="'+go('pricing')+'">Pricing</a></nav>'+
   '<div class="ql-nav-actions"><a class="ql-btn ql-btn-dark" href="#sign-in">Portal access</a></div>'+
   '<button type="button" class="ql-menu" id="ql-menu" aria-label="Open navigation" aria-controls="ql-nav-links" aria-expanded="false"><span>☰</span></button></header>';
+ const portalLinks=[
+  ['parent','💛','Parent Portal'],
+  ['teacher','🍎','Teacher Portal'],
+  ['school-admin','🏫','School Administration']
+ ].map(([route,icon,label])=>
+  '<div class="ql-portal-card"><h3><span aria-hidden="true">'+icon+'</span> '+label+'</h3>'+
+  '<div class="ql-portal-actions"><a class="ql-btn ql-btn-dark" href="'+go(route)+'" aria-label="Sign in to '+label+'">Sign in</a>'+
+  '<a class="ql-btn ql-btn-outline" href="'+go(route)+'?auth=signup" aria-label="Sign up for '+label+'">Sign up</a></div></div>'
+ ).join('');
+ const portalAccess='<section class="ql-portal-access" id="sign-in" tabindex="-1" aria-labelledby="ql-sign-in-title"><h2 id="ql-sign-in-title">Sign in or sign up</h2>'+
+ '<div id="ql-portal-links" class="ql-portal-grid">'+portalLinks+'</div>'+
+ '<small>Portal access requires approval. Payment collection is unavailable.</small></section>';
  const hero='<section class="ql-hero ql-kinder-hero"><div class="ql-hero-sprinkles" aria-hidden="true"><span>✳</span><span>✦</span><span>♥</span><span>✿</span></div>'+
   '<div class="ql-hero-content"><span class="ql-eyebrow">🌼 A HAPPY LITTLE WORLD FOR EARLY LEARNERS</span>'+
   '<h1>Little hands.<br><em>Big discoveries.</em><br><span>Happy families.</span></h1>'+
-  '<p>Every day at preschool is full of tiny adventures. BrightPath helps parents feel close to those moments while teachers spend more time caring, playing and helping children grow.</p>'+
-  '<div class="ql-hero-actions"><a class="ql-btn ql-btn-dark ql-btn-lg" href="#sign-in">Find your portal <span aria-hidden="true">↓</span></a></div>'+
+  '<p>BrightPath connects families and preschool staff through daily care and classroom updates.</p>'+
+  portalAccess+
   '<div class="ql-hero-proof"><span><b>✓</b> Designed for toddlers & preschoolers</span><span><b>✓</b> Private family moments</span><span><b>✓</b> Less teacher paperwork</span></div>'+
   '<div class="ql-hero-handnote" aria-hidden="true"><span>✏️</span><span>Made for<br>little smiles!</span></div></div>'+
   '<div class="ql-kids-hero-visual"><div class="ql-kids-hero-scene">'+preschoolHeroArt()+'</div>'+
@@ -96,21 +108,9 @@ export function renderLanding(app,root){
  '<div><span>✍️</span><b>Guardian acknowledgments</b><small>Sign school documents without giving staff a reusable signature.</small></div>'+
  '<div><span>👩‍🏫</span><b>Staff keep their judgment</b><small>Nothing claims a care moment happened unless someone recorded it.</small></div></div></section>';
  const questions='<section class="ql-section ql-faq" id="questions"><div class="ql-section-head"><span class="ql-kicker">GOOD QUESTIONS DESERVE CLEAR ANSWERS</span><h2>Questions we would<br><em>ask, too.</em></h2></div><div class="ql-faq-list">'+faq.map(([title,body],idx)=>'<details '+(idx===0?'open':'')+'><summary><span>'+String(idx+1).padStart(2,'0')+'</span>'+title+'<b aria-hidden="true">+</b></summary><p>'+body+'</p></details>').join('')+'</div></section>';
- const portalLinks=[
-  ['parent','💛','Parent Portal'],
-  ['teacher','🍎','Teacher Portal'],
-  ['school-admin','🏫','School Administration']
- ].map(([route,icon,label])=>
-  '<div class="ql-portal-card"><h3><span aria-hidden="true">'+icon+'</span> '+label+'</h3>'+
-  '<div class="ql-portal-actions"><a class="ql-btn ql-btn-dark" href="'+go(route)+'" aria-label="Sign in to '+label+'">Sign in</a>'+
-  '<a class="ql-btn ql-btn-outline" href="'+go(route)+'?auth=signup" aria-label="Sign up for '+label+'">Sign up</a></div></div>'
- ).join('');
- const cta='<section class="ql-last" id="sign-in" tabindex="-1" aria-labelledby="ql-sign-in-title"><div class="ql-last-inner"><div class="ql-last-friends">'+welcomeArt('parent')+'</div><h2 id="ql-sign-in-title">Sign in or sign up</h2>'+
- '<div id="ql-portal-links" class="ql-portal-grid">'+portalLinks+'</div>'+
- '<small>Registration and private school access are controlled by account approvals. Payment collection is not active.</small></div></section>';
  const footer='<footer class="ql-footer"><div class="ql-footer-top"><div><a class="ql-brand mark-logo" href="'+go('home')+'"><span class="ql-brand-star">✦</span><span>brightpath<span>.</span></span></a><p>More time with little learners.<br>Closer connections with families.</p></div><div><b>Explore</b><a href="#how">How it works</a><a href="#quiet">Quiet Classroom</a><a href="#experience">Role previews</a><a href="'+go('pricing')+'">Plans & pricing</a></div><div><b>Portals</b><a href="#sign-in">Portal access</a></div><div><b>Important</b><a href="#privacy">Child privacy</a><a href="#questions">FAQ</a><a href="#teacher-time">Time calculator</a></div></div>'+
  '<div class="ql-footer-bottom"><span>© BrightPath · Built for everyday childhood.</span><span>✦ Little moments. Big futures.</span></div></footer>';
- app.innerHTML='<div class="ql-page">'+nav+'<main>'+hero+strip+momentsSection+how+relaySection+quiet+featureHtml+preview+time+trust+questions+cta+'</main>'+footer+'</div>';
+ app.innerHTML='<div class="ql-page">'+nav+'<main>'+hero+strip+how+momentsSection+relaySection+quiet+featureHtml+preview+trust+time+questions+'</main>'+footer+'</div>';
  const menu=document.getElementById('ql-menu'),navLinks=document.getElementById('ql-nav-links');
  menu.onclick=()=>{const open=navLinks.classList.toggle('ql-nav-open');menu.setAttribute('aria-expanded',String(open));menu.querySelector('span').textContent=open?'✕':'☰'};
  navLinks.querySelectorAll('a').forEach(a=>a.onclick=()=>{navLinks.classList.remove('ql-nav-open');menu.setAttribute('aria-expanded','false');menu.querySelector('span').textContent='☰'});

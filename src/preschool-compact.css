@@ -7,10 +7,31 @@
   padding-top: 35px;
   padding-bottom: 48px;
 }
-.ql-page .ql-kinder-hero h1 { margin-top: 16px; margin-bottom: 13px; }
+.ql-page .ql-kinder-hero h1 { font-size: clamp(44px, 4.8vw, 72px); margin-top: 16px; margin-bottom: 13px; }
 .ql-page .ql-kinder-hero .ql-hero-content>p { line-height: 1.65; }
-.ql-page .ql-kinder-hero .ql-hero-actions { margin-top: 20px; }
 .ql-page .ql-kinder-hero .ql-hero-proof { margin-top: 18px; }
+.ql-page .ql-portal-access {
+  max-width: 540px;
+  margin-top: 16px;
+  padding: 13px;
+  border: 1px solid #e7dcc5;
+  border-radius: 18px;
+  background: #fffdf5;
+  text-align: left;
+}
+.ql-portal-access h2 { margin: 0 0 6px; color: #245f50; font-size: 18px; }
+.ql-portal-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 0;
+}
+.ql-portal-card + .ql-portal-card { border-top: 1px solid #eee6d4; }
+.ql-portal-card h3 { margin: 0; color: #285f52; font-size: 14px; line-height: 1.3; }
+.ql-portal-actions { display: flex; gap: 6px; }
+.ql-page .ql-portal-actions .ql-btn { min-height: 44px; padding: 8px 10px; box-shadow: none; white-space: nowrap; }
+.ql-portal-access > small { display: block; margin-top: 5px; color: #586f63; font-size: 11px; line-height: 1.4; }
 .ql-page .ql-kids-hero-visual { min-height: 0; }
 .ql-page .ql-brightbar { padding-block: 13px; }
 
@@ -97,35 +118,13 @@
 .ql-page .ql-faq-list summary { padding-top: 14px; padding-bottom: 14px; }
 .ql-page .ql-faq-list details p { padding-bottom: 13px; }
 
-.ql-page .ql-last { padding-top: 20px; padding-bottom: 40px; }
-.ql-page .ql-last-inner { padding: 26px 20px; }
-.ql-page .ql-last-inner .ql-last-friends { max-width: 205px; margin-bottom: 0; }
-.ql-page .ql-last-inner h2 { margin-top: 0; margin-bottom: 9px; }
-.ql-page .ql-last-inner .ql-portal-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
-  gap: 10px;
-  max-width: 780px;
-  margin: 16px auto 0;
-}
-.ql-page .ql-portal-card {
-  min-width: 0;
-  padding: 13px 10px;
-  border: 1px solid #e2d6b8;
-  border-radius: 16px;
-  background: #fffdf4;
-}
-.ql-page .ql-portal-card h3 { margin: 0 0 8px; color: #2e6055; font-size: 15px; }
-.ql-page .ql-portal-actions { display: flex; justify-content: center; gap: 8px; }
-.ql-page .ql-last-inner .ql-portal-actions .ql-btn { width: auto; padding: 10px 13px; }
-.ql-page .ql-last-inner > p { margin-bottom: 15px; }
-.ql-page .ql-last-inner > small { margin-top: 13px; }
 .ql-page .ql-footer { padding-top: 35px; padding-bottom: 18px; }
 .ql-page .ql-footer-top { gap: 18px; }
 .ql-page .ql-footer-bottom { margin-top: 24px; padding-top: 17px; }
 
 @media (max-width: 1000px) {
   .ql-page .ql-kinder-hero { padding-top: 30px; padding-bottom: 40px; }
+  .ql-page .ql-portal-access { margin-inline: auto; }
   .ql-page .ql-kids-hero-visual { margin-top: 6px; }
   .ql-page .ql-quiet-inner { gap: 22px; }
   .ql-page .ql-quiet-illustration { min-height: 275px; }
@@ -136,7 +135,6 @@
   .ql-page .ql-kinder-hero { padding-top: 25px; padding-bottom: 30px; gap: 0; }
   .ql-page .ql-kinder-hero h1 { font-size: clamp(36px, 9.2vw, 49px); margin-top: 12px; margin-bottom: 10px; line-height: 1.06; }
   .ql-page .ql-kinder-hero .ql-hero-content > p { line-height: 1.55; font-size: 13px; }
-  .ql-page .ql-kinder-hero .ql-hero-actions { margin-top: 15px; gap: 8px; }
   .ql-page .ql-kinder-hero .ql-hero-proof { margin-top: 13px; gap: 4px 10px; }
   .ql-page .ql-kids-hero-visual { margin-top: 4px; margin-bottom: 0; }
   .ql-page .ql-kids-sun-sticker, .ql-page .ql-kids-rainbow-sticker { font-size: 26px; }
@@ -193,10 +191,6 @@
   .ql-page .ql-trust { gap: 12px; }
   .ql-page .ql-trust-tiles { gap: 7px; }
   .ql-page .ql-trust-tiles > div { padding: 12px; }
-  .ql-page .ql-last { padding-top: 12px; padding-bottom: 24px; }
-  .ql-page .ql-last-inner { padding: 22px 15px; }
-  .ql-page .ql-last-inner .ql-last-friends { max-width: 160px; }
-  .ql-page .ql-last-inner h2 { font-size: 35px; }
   .ql-page .ql-footer { padding-top: 25px; }
   .ql-page .ql-footer-top { gap: 14px; }
   .ql-page .ql-footer-bottom { margin-top: 18px; }

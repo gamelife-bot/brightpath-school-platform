@@ -231,6 +231,9 @@ try{
   await p.goto(base+'qa-home.html',{waitUntil:'networkidle'});
   assert.equal(await p.locator('.ql-kids-main-svg').count(),1);
   assert.equal(await p.locator('.ql-tiny-moment').count(),4);
+  const portalAccess=p.locator('.ql-kinder-hero #sign-in');
+  const accessBounds=await portalAccess.boundingBox();
+  assert(accessBounds&&accessBounds.y>=0&&accessBounds.y+accessBounds.height<=900,'Portal access must fit in the opening viewport at '+width);
   for(const [route,role] of [['parent','Parent Portal'],['teacher','Teacher Portal'],['school-admin','School Administration']]){
    assert.equal(await p.getByRole('link',{name:'Sign in to '+role,exact:true}).evaluate(link=>link.href),base+route+'/');
    assert.equal(await p.getByRole('link',{name:'Sign up for '+role,exact:true}).evaluate(link=>link.href),base+route+'/?auth=signup');
