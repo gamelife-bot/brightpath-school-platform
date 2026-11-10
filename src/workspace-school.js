@@ -81,16 +81,16 @@ export async function renderSchoolPage(ctx,tab){
    read(db,'bp_admin_conversations',q=>q.eq('school_id',sid).eq('status','open').limit(200)).catch(()=>[]),
    read(db,'bp_family_notices',q=>q.eq('school_id',sid).eq('status','submitted').limit(200)).catch(()=>[])
   ]);
-  const html=heading('DAYCARE OPERATIONS',school?.name||'Your school','Care, classrooms, families and your team — everything in one organized place.')+
+  const html=heading('DAYCARE OPERATIONS',school?.name||'Your school')+
    '<div class="mw-metrics">'+stat('Enrolled students',n(students.length),'🎒','teal')+stat('Classes',n(classes.length),'📚','blue')+
    stat('Active teachers',n(teachers),'👩‍🏫','amber')+stat('Care notes today',careCount,'☀','violet')+'</div>'+
-   '<div class="mw-welcome mw-welcome-school"><div><span class="mw-welcome-kicker">YOUR SCHOOL WORKSPACE</span><h2>Make every school day count</h2><p>Coordinate early-years classrooms, daily care, parent updates and safe pickup in one place.</p>'+button('Enroll a child ↗','mw-quick-enroll','light')+button('School setup','mw-quick-setup','light')+'</div><div class="mw-welcome-art">'+welcomeArt('school')+'</div></div>'+
-   (approvalQueueError?'<div class="mw-inline mw-inline-error">Approval requests could not be loaded. The rest of your school workspace is still available. Try refreshing.</div>':'')+
+   '<div class="mw-welcome mw-welcome-school"><div><h2>Enrollment and setup</h2>'+button('Enroll a child ↗','mw-quick-enroll','light')+button('School setup','mw-quick-setup','light')+'</div><div class="mw-welcome-art">'+welcomeArt('school')+'</div></div>'+
+   (approvalQueueError?'<div class="mw-inline mw-inline-error">Couldn’t load approval requests. Try refreshing.</div>':'')+
    '<div class="mw-two mw-approval-overview">'+box('Teacher approvals', '<div class="mw-approval-overview-count">'+pendingTeachers+'</div><p class="mw-fine">Pending teacher access requests</p>'+button('Review teacher requests','mw-review-teachers','outline'))+box('Parent approvals','<div class="mw-approval-overview-count">'+pendingParents+'</div><p class="mw-fine">Pending parent access requests</p>'+button('Review parent requests','mw-review-parents','outline'))+'</div>'+
    '<div class="bp-admin-communication"><div><span>💌</span><div><b>'+officeMessages.length+' open parent conversation'+(officeMessages.length===1?'':'s')+'</b><small>Private questions for School Administration</small></div>'+button('Open inbox','mw-open-admin-inbox','outline')+'</div><div><span>📮</span><div><b>'+familyNotices.length+' parent notice'+(familyNotices.length===1?'':'s')+' awaiting review</b><small>Absences, arrivals and care changes</small></div>'+button('Review notices','mw-open-family-notices','outline')+'</div></div>'+
-   '<div class="mw-section-title"><h2>Manage your school</h2><span>Quick actions</span></div><div class="mw-actions-grid">'+[
+   '<div class="mw-section-title"><h2>Quick actions</h2></div><div class="mw-actions-grid">'+[
     ['Care Relay · home to school','relay','🌈'],['Parent administration inbox','admin_inbox','💌'],['Parent day notices','family_notices','📮'],['Family signatures','signatures','✍️'],['Parent surveys & reviews','feedback','💛'],['School calendar','events','🗓️'],['Staff shifts & ratios','staffing','🍎'],['Medication safety','medications','💊'],['Guardian requests','guardian_changes','👨‍👩‍👧'],['Privacy center','privacy','🛡️'],['Child profiles','profiles','🧸'],['Quick classroom updates','quickcare','✨'],['Safe pickup desk','pickup','👋'],['Approve teachers','teachers','👩‍🏫'],['Approve parents','parents','💛']
-   ].map(([t,p,i])=>'<button class="mw-action" type="button" data-goto="'+p+'"><span>'+i+'</span><b>'+t+'</b><small>Open workspace</small><i>↗</i></button>').join('')+'</div>'+
+   ].map(([t,p,i])=>'<button class="mw-action" type="button" data-goto="'+p+'"><span>'+i+'</span><b>'+t+'</b><i>↗</i></button>').join('')+'</div>'+
    '<div class="mw-two">'+box('School setup',
     badgeProgress([[classes.length>0,'Create your first class','Organize classrooms'],
       [students.length>0,'Enroll students','Start school records'],
@@ -99,7 +99,7 @@ export async function renderSchoolPage(ctx,tab){
     box('This school day',
      '<div class="mw-daily"><div><strong>'+n(attended.filter(a=>a.status==='present').length)+'</strong><span>Present today</span></div><div><strong>'+n(attended.filter(a=>a.status==='absent').length)+'</strong><span>Absent today</span></div><div><strong>'+n(attended.filter(a=>a.status==='late').length)+'</strong><span>Late arrivals</span></div></div>'+
      '<div class="mw-form-actions">'+button('View attendance','mw-view-attendance','outline')+'</div>')+'</div>'+
-   box('Latest care moments',careToday.length?table(['Child','Care activity','Observation','When'],careToday.slice(0,8).map(log=>tr([e(students.find(k=>k.id===log.student_id)?.full_name||'Child'),e(log.event_type),e(log.details),dateLabel(log.occurred_at)]))):empty('☀️','Today’s care diary is ready','Staff can record snacks, naps, moods and playtime from the Daily care or Quick group updates sections.'));
+   box('Latest care moments',careToday.length?table(['Child','Care activity','Observation','When'],careToday.slice(0,8).map(log=>tr([e(students.find(k=>k.id===log.student_id)?.full_name||'Child'),e(log.event_type),e(log.details),dateLabel(log.occurred_at)]))):empty('☀️','No care notes today'));
   return{html,bind(){
    click('mw-quick-setup',()=>go('setup'));click('mw-open-admin-inbox',()=>go('admin_inbox'));click('mw-open-family-notices',()=>go('family_notices'));click('mw-quick-enroll',()=>go('students'));click('mw-view-attendance',()=>go('attendance'));click('mw-review-teachers',()=>go('teachers'));click('mw-review-parents',()=>go('parents'));
    document.querySelectorAll('[data-goto]').forEach(b=>b.onclick=()=>go(b.dataset.goto));
@@ -111,7 +111,7 @@ export async function renderSchoolPage(ctx,tab){
   const teachers=new Set(teacherClasses.map(t=>t.teacher_user_id));
   const profiles=await read(db,'bp_profiles');
   const names=new Map(profiles.map(p=>[p.user_id,p.full_name]));
-  const html=heading('ROOMS & CLASSES','Classes and daycare rooms','Organize children into their daycare rooms and assign teachers.')+
+  const html=heading('ROOMS & CLASSES','Classes and daycare rooms')+
    '<div class="mw-two mw-two-side">'+box('Create class / room',
     '<form id="mw-class-form" class="mw-form">'+field('Class name',input('mw-class-name','e.g. Baby Room, Toddlers, Nursery A','text','required minlength="2" maxlength="100"'))+
     actions(button('Create class / room','mw-class-create','primary','type="submit"'))+'</form>')+
@@ -130,14 +130,14 @@ export async function renderSchoolPage(ctx,tab){
  if(tab==='students'){
   const {classes,students,activities}=await schoolData(db,sid);
   const noClasses=classes.length===0;
-  const html=heading('DAYCARE ENROLLMENT','Children & enrollment','Create a class or daycare room, then register children into it.')+
+  const html=heading('DAYCARE ENROLLMENT','Children & enrollment')+
    '<div class="mw-metrics">'+
     stat('Classes & rooms',n(classes.length),'📚','teal')+
     stat('Enrolled children',n(students.length),'🎒','blue')+
     stat('Photo permissions',n(students.filter(s=>s.photo_consent).length),'📷','amber')+
     stat('Video permissions',n(students.filter(s=>s.video_consent).length),'🎬','violet')+'</div>'+
    (noClasses?'<div class="bp-class-setup-alert" id="mw-class-setup-alert"><span>🏫</span><div><strong>Start by creating your first class or daycare room</strong><p>Once saved, it will immediately appear in the Class dropdown for enrolling children.</p></div></div>':'')+
-   '<div class="mw-inline mw-inline-info bp-guardian-consent-note"><strong>🛡️ Guardian-controlled media permissions.</strong> Photos and videos can be enabled or withdrawn only by a verified linked guardian from their Parent Portal → Photos &amp; Videos. School staff can review the status below but cannot grant consent. '+button('Review parent approvals','mw-consent-parents','outline','type="button"')+'</div>'+
+   '<div class="mw-inline mw-inline-info bp-guardian-consent-note"><strong>🛡️ Guardian-controlled media permissions.</strong> Only a verified, linked guardian can grant or withdraw consent in Parent Portal → Photos &amp; Videos. Staff can view the status. '+button('Review parent approvals','mw-consent-parents','outline','type="button"')+'</div>'+
    '<div class="mw-two mw-two-side">'+box('1. Create a class or room',
      '<form id="mw-enroll-class-form" class="mw-form">'+
        field('Class / daycare room name',input('mw-enroll-class-name','e.g. Toddlers, Nursery A or Preschool','text','required minlength="2" maxlength="100"'))+
@@ -283,7 +283,7 @@ export async function renderSchoolPage(ctx,tab){
  if(tab==='activities'){
   const {students,classes,activities}=await schoolData(db,sid);
   const mean=activities.length?Math.round(activities.reduce((sum,a)=>sum+Number(a.score),0)/activities.length):null;
-  const html=heading('ACADEMIC REPORTS','Learning reports','Monitor activity scores and teacher observations.')+
+  const html=heading('ACADEMIC REPORTS','Learning reports')+
    '<div class="mw-metrics">'+stat('Recent assessments',activities.length,'✎','teal')+
    stat('Average score',mean===null?'—':mean+'%','◈','blue')+
    stat('Participating students',new Set(activities.map(a=>a.student_id)).size,'🎓','violet')+'</div>'+
@@ -396,7 +396,7 @@ async function renderSchoolAttendance(ctx){
   read(db,'bp_attendance',q=>q.eq('school_id',sid).order('attendance_date',{ascending:false}).limit(500))
  ]);
  const day=today(),todays=records.filter(r=>r.attendance_date===day),count=st=>todays.filter(r=>r.status===st).length;
- const html=heading('SCHOOL ATTENDANCE','Attendance register','Record and review student attendance by date and class.')+
+ const html=heading('SCHOOL ATTENDANCE','Attendance register')+
   '<div class="mw-metrics">'+stat('Present today',count('present'),'✓','teal')+stat('Absent today',count('absent'),'✕','amber')+
   stat('Late today',count('late'),'◷','blue')+stat('Recorded today',todays.length,'▤','violet')+'</div>'+
   box('Daily attendance','<div class="mw-filter-row">'+field('Date','<input type="date" id="mw-att-date" value="'+day+'">')+

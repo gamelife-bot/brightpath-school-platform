@@ -31,7 +31,7 @@ export async function renderPickupDesk(ctx){
  const pending=contacts.filter(c=>c.status==='pending');
  const isStaff=role!=='parent';
  const isAdmin=role==='school_admin';
- const html=heading('SAFE ARRIVALS','Check-in & pickup','Know when each child arrives and who is authorized to collect them.')+
+ const html=heading('SAFE ARRIVALS','Check-in & pickup')+
  '<div class="mw-metrics">'+stat('Approved pickup contacts',contacts.filter(c=>c.status==='approved').length,'✅','teal')+
  stat('Contacts pending',pending.length,'◷','amber')+
  stat('Check-ins today',events.filter(e=>e.event_type==='check_in'&&schoolDay(e.occurred_at)===currentDay).length,'🎒','blue')+

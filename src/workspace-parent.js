@@ -72,32 +72,31 @@ export async function renderParentPage(ctx,tab){
   const ids=new Set(children.map(c=>c.id));const care=careRecords.filter(x=>ids.has(x.student_id)),growth=growthRecords.filter(x=>ids.has(x.student_id)),pickup=pickupRecords.filter(x=>ids.has(x.student_id));
   const todayCare=care.filter(x=>schoolDay(x.occurred_at)===schoolDay());
   const latestGrowth=growth.slice(0,5);
-  const html=heading('YOUR LITTLE ONE’S DAY','Welcome home','A calm, happy window into the little moments your child’s teachers are sharing.')+
+  const html=heading('YOUR LITTLE ONE’S DAY','Welcome home')+
    '<div class="mw-metrics">'+stat('My children',children.length,'💛','teal')+
    stat('Care updates today',todayCare.length,'☀','blue')+
    stat('Development moments',growth.length,'🌱','violet')+'</div>'+
-   '<div class="mw-welcome mw-welcome-parent"><div><span class="mw-welcome-kicker">HELLO, FAMILY!</span><h2>Little moments. Big milestones.</h2><p>Celebrate every achievement and stay close to your child’s school day.</p>'+
+   '<div class="mw-welcome mw-welcome-parent"><div><h2>Daily care diary</h2>'+
    button('See today’s care diary →','mw-family-journal','light')+'</div><div class="mw-welcome-art">'+welcomeArt('parent')+'</div></div>'+
-   '<div class="cr-home-banner"><span>🌈</span><div><b>Morning note. Safer pickup. Verified evening handback.</b><p>Care Relay connects your child’s day at home and at school without extra teacher paperwork.</p></div>'+button('Open Care Relay','cr-family-home','outline')+'</div>'+
-   '<div class="mw-section-title"><h2>Your child’s day</h2></div><div class="mw-actions-grid">'+[['Home ↔ School Care Relay','relay','🌈'],['Today’s care diary','care','☀'],['Daily summary','daily_summary','📔'],['Photos & videos','moments','📸'],['Message School Admin','admin_inbox','💌'],['Notify absence','family_notices','📮'],['Child profile','children','🧸'],['Medication plans','medications','💊'],['Guardian changes','guardian_changes','👨‍👩‍👧'],['Privacy & records','privacy','🛡️'],['Milestones','milestones','🌱'],['Classroom messages','messages','✉'],['School documents','signatures','✍️'],['Parent surveys & reviews','feedback','💛'],['School events','events','🗓️']].map(([label,tab,icon])=>'<button class="mw-action" type="button" data-family-quick="'+tab+'"><span>'+icon+'</span><b>'+label+'</b><small>Open updates ↗</small></button>').join('')+'</div>'+
-   '<div class="bp-parent-office-banner"><span>💌</span><div><strong>Need to speak with School Administration?</strong><p>Ask about fees, family concerns, school policies or your child’s needs. Only school administrators can read the conversation.</p></div>'+button('Message the school office','bp-parent-admin-cta','outline')+'</div>'+
+   '<div class="mw-section-title"><h2>Your child’s day</h2></div><div class="mw-actions-grid">'+[['Home ↔ School Care Relay','relay','🌈'],['Daily summary','daily_summary','📔'],['Photos & videos','moments','📸'],['Message School Admin','admin_inbox','💌'],['Notify absence','family_notices','📮'],['Child profile','children','🧸'],['Medication plans','medications','💊'],['Guardian changes','guardian_changes','👨‍👩‍👧'],['Privacy & records','privacy','🛡️'],['Milestones','milestones','🌱'],['Classroom messages','messages','✉'],['School documents','signatures','✍️'],['Parent surveys & reviews','feedback','💛'],['School events','events','🗓️']].map(([label,tab,icon])=>'<button class="mw-action" type="button" data-family-quick="'+tab+'"><span>'+icon+'</span><b>'+label+'</b><i aria-hidden="true">↗</i></button>').join('')+'</div>'+
+   '<div class="bp-parent-office-banner"><span>💌</span><div><strong>School office</strong><p>Only school administrators can read your message.</p></div>'+button('Message the school office','bp-parent-admin-cta','outline')+'</div>'+
    '<div class="mw-two">'+box('My little ones',
     children.length?'<div class="mw-children-mini">'+children.map(k=>
      '<button class="bp-parent-child-quick" type="button" data-open-child="'+e(k.id)+'"><span class="mw-round-icon">'+initial(k.full_name)+'</span><span><b>'+e(k.full_name)+'</b><small>'+e(classes.find(c=>c.id===k.class_id)?.name||'Daycare room')+'</small></span><span aria-hidden="true">↗</span></button>').join('')+'</div>':
     empty('🧸','Your little one’s profile is waiting','Once the school has approved your account and verified guardianship, your child will appear here.'))+
    box('A peek at today',todayCare.length?'<div class="bp-home-care-list">'+todayCare.slice(0,6).map(log=>
      '<div><span class="bp-home-care-icon">'+({meal:'🥣',nap:'😴',mood:'😊',play:'🧸',diaper:'🧷',toilet:'🚽'}[log.event_type]||'☀️')+'</span><div><strong>'+e(children.find(x=>x.id===log.student_id)?.full_name||'Child')+'</strong><p>'+e(log.details)+'</p><small>'+new Date(log.occurred_at).toLocaleTimeString('en-KE',{hour:'2-digit',minute:'2-digit'})+'</small></div></div>').join('')+'</div>':
-    empty('☀️','No updates shared today','When your child’s teacher adds a meal, nap or playtime note, it will show up here.'))+'</div>'+
+    empty('☀️','No care updates today'))+'</div>'+
    '<div class="mw-two">'+box('Growing every day',latestGrowth.length?'<div class="mw-recent">'+latestGrowth.map(m=>
     '<div><b>🌱 '+e(m.title)+'</b><small>'+e(children.find(c=>c.id===m.student_id)?.full_name||'Child')+' · '+dateLabel(m.observed_at)+'</small><span>'+e(m.progress)+'</span></div>'
-   ).join('')+'</div>':empty('🌱','Big milestones start small','New words, new friendships and little achievements will appear as teachers record them.'))+
+   ).join('')+'</div>':empty('🌱','No milestones recorded yet'))+
    box('Safe arrivals and pickups',pickup.length?'<div class="mw-recent">'+pickup.slice(0,5).map(x=>
     '<div><b>'+(x.event_type==='check_in'?'🎒 Arrived safely':'💛 Picked up')+'</b><small>'+e(children.find(c=>c.id===x.student_id)?.full_name||'Child')+'</small><span>'+new Date(x.occurred_at).toLocaleTimeString('en-KE',{hour:'2-digit',minute:'2-digit'})+'</span></div>'
-   ).join('')+'</div>':empty('🎒','No arrivals recorded yet','School staff will record safe check-ins and pickups here.'))+'</div>';
-  return{html,bind(){click('bp-parent-admin-cta',()=>go('admin_inbox'));click('cr-family-home',()=>go('relay'));click('mw-family-journal',()=>go('care'));document.querySelectorAll('[data-family-quick]').forEach(b=>b.onclick=()=>go(b.dataset.familyQuick));document.querySelectorAll('[data-open-child]').forEach(b=>b.onclick=()=>{const url=new URL(location.href);url.searchParams.set('child',b.dataset.openChild);history.replaceState(null,'',url.pathname+url.search);go('children')})}};
+   ).join('')+'</div>':empty('🎒','No check-ins or pickups yet'))+'</div>';
+  return{html,bind(){click('bp-parent-admin-cta',()=>go('admin_inbox'));click('mw-family-journal',()=>go('care'));document.querySelectorAll('[data-family-quick]').forEach(b=>b.onclick=()=>go(b.dataset.familyQuick));document.querySelectorAll('[data-open-child]').forEach(b=>b.onclick=()=>{const url=new URL(location.href);url.searchParams.set('child',b.dataset.openChild);history.replaceState(null,'',url.pathname+url.search);go('children')})}};
  }
  if(tab==='children'){
-  const html=heading('MY FAMILY','My children','View each linked child’s profile and subject progress.')+
+  const html=heading('MY FAMILY','My children')+
    (children.length?'<div class="mw-class-grid">'+children.map(s=>{
     const childActs=activities.filter(a=>a.student_id===s.id),mean=childActs.length?Math.round(childActs.reduce((v,a)=>v+a.score,0)/childActs.length):null;
     return '<article class="mw-class-card mw-child-card"><div class="mw-child-avatar">'+initial(s.full_name)+'</div><p>STUDENT PROFILE</p><h2>'+e(s.full_name)+'</h2><span>'+e(classes.find(c=>c.id===s.class_id)?.name||'Class')+'</span>'+
@@ -122,7 +121,7 @@ export async function renderParentPage(ctx,tab){
  if(tab==='attendance'){
   const records=await read(db,'bp_attendance',q=>q.eq('school_id',sid).order('attendance_date',{ascending:false}).limit(300));
   const visible=records.filter(r=>children.some(s=>s.id===r.student_id));
-  const html=heading('SCHOOL ATTENDANCE','Attendance','Follow your child’s school attendance and attendance history.')+
+  const html=heading('SCHOOL ATTENDANCE','Attendance')+
    '<div class="mw-metrics">'+stat('Present',visible.filter(a=>a.status==='present').length,'✓','teal')+
    stat('Late',visible.filter(a=>a.status==='late').length,'◷','blue')+
    stat('Absent',visible.filter(a=>a.status==='absent').length,'◉','amber')+'</div>'+
@@ -134,7 +133,7 @@ export async function renderParentPage(ctx,tab){
  if(tab==='announcements'){
   const notices=await read(db,'bp_announcements',q=>q.eq('school_id',sid).order('created_at',{ascending:false}).limit(100));
   const visible=notices.filter(a=>a.is_published&&(a.audience==='all'||a.audience==='parents'));
-  return{html:heading('SCHOOL COMMUNITY','Announcements','News, activities and important messages from your child’s school.')+
+  return{html:heading('SCHOOL COMMUNITY','Announcements')+
    box('School updates',visible.length?'<div class="mw-journal-list">'+visible.map(a=>
     '<article class="mw-notice-entry"><div class="mw-line-between"><div><strong>'+e(a.title)+'</strong><small>'+dateLabel(a.created_at)+'</small></div>'+
     pill(a.audience==='parents'?'For parents':'Schoolwide','green')+'</div><p>'+e(a.body)+'</p></article>').join('')+'</div>':

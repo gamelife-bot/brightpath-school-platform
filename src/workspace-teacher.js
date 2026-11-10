@@ -57,26 +57,23 @@ export async function renderTeacherPage(ctx,tab){
   const [careLogs,milestones]=await Promise.all([read(db,'bp_care_logs',q=>q.eq('school_id',sid).order('occurred_at',{ascending:false}).limit(80)),read(db,'bp_milestones',q=>q.eq('school_id',sid).order('observed_at',{ascending:false}).limit(80))]);
   const childIds=new Set(students.map(s=>s.id));const careToday=careLogs.filter(x=>childIds.has(x.student_id)&&schoolDay(x.occurred_at)===today());const recentMilestones=milestones.filter(x=>childIds.has(x.student_id));
   const recorded=attendance.filter(a=>students.some(s=>s.id===a.student_id));
-  const html=heading('WELCOME TO YOUR CLASSROOM','Good morning, '+(user.name?.split(' ')[0]||'Teacher'),'Everything you need for a caring, happy day with your little learners.')+
+  const html=heading('WELCOME TO YOUR CLASSROOM','Good morning, '+(user.name?.split(' ')[0]||'Teacher'))+
    '<div class="mw-metrics">'+stat('My classes',classes.length,'📚','teal')+stat('My students',students.length,'🎒','blue')+
    stat('Daily care updates',careToday.length,'☀','violet')+stat('Milestones',recentMilestones.length,'🌱','amber')+'</div>'+
-   '<div class="mw-welcome mw-welcome-teacher"><div><span class="mw-welcome-kicker">TEACHER WORKSPACE</span><h2>Every little moment counts</h2><p>Share nap times, meals, playtime, photo updates and growing milestones with families.</p>'+
+   '<div class="mw-welcome mw-welcome-teacher"><div><h2>Daily care</h2>'+
    button('Log a care moment →','mw-new-post','light')+'</div><div class="mw-welcome-art">'+welcomeArt('teacher')+'</div></div>'+
    '<div class="mw-section-title"><h2>Your daily tools</h2></div>'+
    '<div class="mw-actions-grid">'+[
-    ['Care Relay · family handovers','relay','🌈'],['Quiet Classroom assistant','quiet','🌿'],['Log daily care','care','☀'],['Share photos & videos','moments','📸'],['Record a milestone','milestones','🌱'],['Parent messages','messages','💌']
-   ].map(([label,p,ico])=>'<button class="mw-action" data-goto="'+p+'"><span>'+ico+'</span><b>'+label+'</b><small>Open workspace</small><i>↗</i></button>').join('')+'</div>'+
-   '<div class="cr-home-banner"><span>🌈</span><div><b>Know what needs your attention today.</b><p>Important morning notes, safely recorded pickups and reviewed daily summaries—without an extra report for every child.</p></div>'+button('Care Relay →','cr-teacher-home','outline')+'</div>'+
-   '<div class="bp-teacher-callout"><span>🌿</span><div><b>Less paperwork, more presence.</b><p>Quiet Classroom shows today’s actual records and prepares private drafts. No compulsory extra report.</p></div>'+button('Open my assistant →','bp-open-quiet','outline')+'</div>'+
-   '<div class="bp-teacher-callout"><span>✨</span><div><b>Group storytime, snacks or rest?</b><p>Post the same routine to every child who participated, with one quick update.</p></div>'+button('Quick classroom update →','bp-quick-start','outline')+'</div>'+
+    ['Care Relay','relay','🌈'],['Quiet Classroom','quiet','🌿'],['Quick classroom update','quickcare','✨'],['Share photos & videos','moments','📸'],['Record a milestone','milestones','🌱'],['Parent messages','messages','💌']
+   ].map(([label,p,ico])=>'<button class="mw-action" data-goto="'+p+'"><span>'+ico+'</span><b>'+label+'</b><i>↗</i></button>').join('')+'</div>'+
    '<div class="mw-two">'+box('My classes',classes.length?'<div class="mw-class-mini">'+classes.map(c=>'<div><b>'+e(c.name)+'</b><span>'+students.filter(s=>s.class_id===c.id).length+' students</span></div>').join('')+'</div>':
     empty('📗','Awaiting class assignment','Your school administrator will assign your classrooms.'))+
    box('Recent activities',activities.length?'<div class="mw-recent">'+activities.slice(0,5).map(a=>'<div><b>'+e(a.title)+'</b><small>'+e(students.find(s=>s.id===a.student_id)?.full_name||'Student')+' · '+dateLabel(a.created_at)+'</small><span>'+a.score+'%</span></div>').join('')+'</div>':
-    empty('✎','Your activity journal is ready','Publish your first lesson update.'))+'</div>';
-  return {html,bind(){click('mw-new-post',()=>go('care'));click('bp-quick-start',()=>go('quickcare'));click('bp-open-quiet',()=>go('quiet'));click('cr-teacher-home',()=>go('relay'));document.querySelectorAll('[data-goto]').forEach(b=>b.onclick=()=>go(b.dataset.goto))}};
+    empty('✎','No activities posted yet'))+'</div>';
+  return {html,bind(){click('mw-new-post',()=>go('care'));document.querySelectorAll('[data-goto]').forEach(b=>b.onclick=()=>go(b.dataset.goto))}};
  }
  if(tab==='classes'){
-  const html=heading('MY CLASSROOMS','Assigned classes','View your classroom assignments and student groups.')+
+  const html=heading('MY CLASSROOMS','Assigned classes')+
    '<div class="mw-metrics">'+stat('Teaching classes',classes.length,'📚','teal')+stat('Enrolled students',students.length,'🎒','blue')+'</div>'+
    (classes.length?'<div class="mw-class-grid">'+classes.map(c=>'<article class="mw-class-card"><div class="mw-class-icon">📚</div><p>YOUR CLASS</p><h2>'+e(c.name)+'</h2><strong>'+students.filter(s=>s.class_id===c.id).length+'</strong><span>students</span><button data-class-students="1" class="mw-btn mw-btn-outline">View students ↗</button></article>').join('')+'</div>':
    empty('📚','Your classes will appear here','Ask the school administrator to assign your teaching classes.'));
@@ -84,7 +81,7 @@ export async function renderTeacherPage(ctx,tab){
  }
  if(tab==='students'){
   const scores=new Map(students.map(s=>[s.id,activities.filter(a=>a.student_id===s.id)]));
-  const html=heading('CLASS ROSTER','My students','Students assigned to your classrooms and their recent progress.')+
+  const html=heading('CLASS ROSTER','My students')+
    '<div class="mw-metrics">'+stat('Students',students.length,'🎒','teal')+stat('Classes',classes.length,'📗','blue')+'</div>'+
    box('Class roster',students.length?'<div class="mw-filter-row">'+input('mw-students-search','Search students')+'</div><div id="mw-students-table">'+
    table(['Student','Class','Activities','Average score','Photo permission'],students.map(s=>{
@@ -100,21 +97,17 @@ export async function renderTeacherPage(ctx,tab){
   }};
  }
  if(tab==='publish'){
-  const html=heading('LEARNING JOURNAL','Post a classroom activity','Record a student’s achievement, assessment and observation.')+
-   '<div class="mw-two mw-two-side">'+box('New activity',
+  const html=heading('LEARNING JOURNAL','Post a classroom activity')+
+   box('New activity',
     '<form id="mw-publish-form" class="mw-form">'+field('Student',select('mw-post-student','<option value="">Select student</option>'+students.map(s=>option(s.id,kidLabel(s,classes))).join(''),'required'))+
      field('Subject',select('mw-post-subject',SUBJECTS.map(s=>option(s,s)).join('')))+
      field('Activity title',input('mw-post-title','What did they learn?','text','required minlength="2" maxlength="120"'))+
      field('Teacher observation',textarea('mw-post-notes','Describe participation, progress and achievement…','required minlength="2" maxlength="2000"'))+
      field('Score (0–100)',input('mw-post-score','85','number','min="0" max="100" required value="85"'))+
-     '<div class="mw-form-tip">Share photos and short videos in the dedicated Photos & videos workspace.</div>'+
+     '<p class="mw-fine">Linked families can read published activities.</p>'+
      '<div class="mw-form-actions">'+button('Publish activity','mw-publish-submit','primary','type="submit" '+(!students.length?'disabled':''))+'</div></form>')+
-    box('Publishing guide', '<div class="mw-guidance">'+
-     '<div><span>1</span><p><b>Choose the student</b><small>Only your assigned class roster is available</small></p></div>'+
-     '<div><span>2</span><p><b>Write an observation</b><small>Record real progress, not just a score</small></p></div>'+
-     '<div><span>3</span><p><b>Share securely</b><small>Linked families can read approved learning updates</small></p></div></div>')+'</div>'+
    box('Recent posts',activities.length?'<div class="mw-journal-list">'+activities.slice(0,6).map(a=>teachingActivity(a,students)).join('')+'</div>':
-    empty('✎','Your class journal is ready','Post the first learning activity above.'));
+    empty('✎','No activities posted yet'));
   return{html,bind(){
    form('mw-publish-form',async()=>{
     const student=students.find(s=>s.id===v('mw-post-student'));
@@ -130,7 +123,7 @@ export async function renderTeacherPage(ctx,tab){
  }
  if(tab==='gradebook'){
   const scoreAvg=activities.length?Math.round(activities.reduce((v,a)=>v+Number(a.score),0)/activities.length):null;
-  const html=heading('STUDENT PROGRESS','Gradebook','Explore recorded learning scores across your assigned classrooms.')+
+  const html=heading('STUDENT PROGRESS','Gradebook')+
    '<div class="mw-metrics">'+stat('Recorded assessments',activities.length,'✎','teal')+
    stat('Average score',scoreAvg===null?'—':scoreAvg+'%','📈','blue')+
    stat('Students assessed',new Set(activities.map(a=>a.student_id)).size,'🎓','violet')+'</div>'+
@@ -148,7 +141,7 @@ export async function renderTeacherPage(ctx,tab){
  if(tab==='attendance'){
   const records=await read(db,'bp_attendance',q=>q.eq('school_id',sid).order('attendance_date',{ascending:false}).limit(500));
   const todayRecords=records.filter(a=>a.attendance_date===today()&&students.some(s=>s.id===a.student_id));
-  const html=heading('CLASSROOM ATTENDANCE','Attendance register','Mark attendance for students assigned to your classes.')+
+  const html=heading('CLASSROOM ATTENDANCE','Attendance register')+
    '<div class="mw-metrics">'+stat('Recorded today',todayRecords.length,'▤','teal')+
    stat('Present',todayRecords.filter(r=>r.status==='present').length,'✓','blue')+
    stat('Absent',todayRecords.filter(r=>r.status==='absent').length,'◷','amber')+'</div>'+
@@ -156,7 +149,7 @@ export async function renderTeacherPage(ctx,tab){
     field('Class',select('mw-att-class','<option value="all">All my classes</option>'+classes.map(c=>option(c.id,c.name)).join('')))+'</div><div id="mw-att-roster"></div>')+
    box('Recent records',records.length?table(['Student','Date','Status'],records.filter(a=>students.some(s=>s.id===a.student_id)).slice(0,25).map(a=>tr([
     e(students.find(s=>s.id===a.student_id)?.full_name||'Student'),dateLabel(a.attendance_date),status(a.status)
-   ]))):empty('✓','Attendance register is ready','Select a day and mark your students.'));
+   ]))):empty('✓','No attendance recorded yet'));
   return{html,bind(){
    const render=()=>{
     const day=v('mw-att-date')||today(),cls=v('mw-att-class')||'all';
@@ -184,10 +177,10 @@ export async function renderTeacherPage(ctx,tab){
  if(tab==='announcements'){
   const announcements=await read(db,'bp_announcements',q=>q.eq('school_id',sid).order('created_at',{ascending:false}).limit(100));
   const visible=announcements.filter(a=>a.is_published&&(a.audience==='all'||a.audience==='teachers'));
-  return{html:heading('SCHOOL UPDATES','Announcements','Important school messages shared with your teaching team.')+
+  return{html:heading('SCHOOL UPDATES','Announcements')+
    box('Latest announcements',visible.length?'<div class="mw-journal-list">'+visible.map(a=>
     '<article class="mw-notice-entry"><div class="mw-line-between"><div><strong>'+e(a.title)+'</strong><small>'+dateLabel(a.created_at)+'</small></div>'+pill(a.audience==='all'?'Schoolwide':'Teachers','green')+'</div><p>'+e(a.body)+'</p></article>'
-   ).join('')+'</div>':empty('📣','You are all caught up','New school announcements will appear here.'))};
+   ).join('')+'</div>':empty('📣','No announcements yet'))};
  }
  return{html:heading('Teacher portal','Page unavailable','Choose a workspace section.')};
 }

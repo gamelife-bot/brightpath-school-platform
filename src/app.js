@@ -26,7 +26,7 @@ function check(result){if(result?.error)throw new Error(errText(result.error));r
 function renderLanding(){renderMarketing(app,ROOT,'home')}
 function renderPricing(){renderMarketing(app,ROOT,'pricing')}
 function shell(body,title=portalLabel[portal]){
- app.innerHTML='<div class="portal"><header class="portal-header"><div>'+brand()+'<div class="portal-name">'+h(title)+'</div></div><div id="user-actions"></div></header><main class="portal-main" id="workspace">'+body+'</main><footer class="foot">© BrightPath · Learning together, every day.</footer></div>';
+ app.innerHTML='<div class="portal"><header class="portal-header"><div>'+brand()+'<div class="portal-name">'+h(title)+'</div></div><div id="user-actions"></div></header><main class="portal-main" id="workspace">'+body+'</main><footer class="foot">© BrightPath</footer></div>';
  if(currentUser){
   $('user-actions').innerHTML='<span style="font-size:13px;color:#c5dedf;margin-right:12px">'+h(currentUser.email||'')+'</span><button class="btn small" id="logout">Sign out</button>';
   $('logout').onclick=logout;
@@ -41,7 +41,7 @@ function renderAuth(mode='signin',note=''){
  '<form id="auth-form">'+(mode==='signup'?'<label class="field">Full name<input id="full-name" autocomplete="name" minlength="2" required></label>':'')+'<label class="field">Email<input id="email" type="email" autocomplete="email" required></label><label class="field">Password<input id="password" type="password" minlength="8" autocomplete="'+(mode==='signup'?'new-password':'current-password')+'" required></label><button class="btn full" type="submit">'+(mode==='signup'?'Register account':'Sign in')+'</button></form>')+
  '<div id="auth-note">'+(note?msg(note):'')+'</div></div></div>');
  $('switch-in').onclick=()=>renderAuth('signin');$('switch-up').onclick=()=>renderAuth('signup');
- if(verification){$('verify-form').onsubmit=async e=>{e.preventDefault();try{const email=$('email').value.trim();const otp=$('otp').value.trim();check(await db.auth.emailOtp.verifyEmail({email,otp}));renderAuth('signin','Email verified. Sign in to open your workspace.')}catch(err){$('auth-note').innerHTML=msg(errText(err),'err')}};return}
+ if(verification){$('verify-form').onsubmit=async e=>{e.preventDefault();try{const email=$('email').value.trim();const otp=$('otp').value.trim();check(await db.auth.emailOtp.verifyEmail({email,otp}));renderAuth('signin','Email verified. Please sign in.')}catch(err){$('auth-note').innerHTML=msg(errText(err),'err')}};return}
  $('auth-form').onsubmit=async e=>{e.preventDefault();if(busy)return;busy=true;const button=e.currentTarget.querySelector('button[type=submit]');button.disabled=true;
  try{const email=$('email').value.trim();const password=$('password').value;if(mode==='signup'){const name=$('full-name').value.trim();check(await db.auth.signUp.email({email,password,name}));renderAuth('verify','A verification code may have been sent to your email. Enter it to activate your account.');const inp=$('email');if(inp)inp.value=email}else{check(await db.auth.signIn.email({email,password}));await enterPortal()}}
  catch(err){$('auth-note').innerHTML=msg(errText(err),'err');button.disabled=false}finally{busy=false}};
@@ -49,7 +49,7 @@ function renderAuth(mode='signin',note=''){
 async function logout(){try{await db.auth.signOut()}catch{}currentUser=null;context=null;renderAuth('signin','Signed out.')}
 async function sessionUser(){const result=await db.auth.getSession();if(result.error)throw new Error(errText(result.error));const s=result.data||result;return s?.user||s?.session?.user||null}
 async function enterPortal(){
- shell('<div class="card"><h2>Checking your account…</h2><p class="muted">Verifying your school permissions.</p></div>');
+ shell('<div class="card"><h2>Checking your account…</h2></div>');
  try{
  currentUser=await sessionUser();
  if(!currentUser){renderAuth('signin');return}

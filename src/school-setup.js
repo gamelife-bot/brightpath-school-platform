@@ -46,22 +46,22 @@ export async function renderSchoolSetup(ctx){
  ];
  const settings=await read(db,'bp_school_settings',q=>q.eq('school_id',sid));
  const region=settings[0];
- checks.push({id:16,label:'Confirm country and school-local timezone',
-  desc:'Your region determines attendance dates, pickup safety checks and evening reports. Set it before inviting families.',
+ checks.push({id:16,label:'Confirm country and time zone',
+  desc:'Set the local time zone for attendance, pickup and daily summaries before inviting families.',
   done:Boolean(region?.country_code&&region?.time_zone),tab:'settings',cta:'School region & clock',icon:'🌍'});
  const [signatures,surveys]=await Promise.all([read(db,'bp_signature_requests',q=>q.eq('school_id',sid).limit(1)),read(db,'bp_family_surveys',q=>q.eq('school_id',sid).limit(1))]);
  checks[13].done=signatures.length>0;checks[14].done=surveys.length>0;
  const details=await read(db,'bp_child_details',q=>q.eq('school_id',sid));
  checks[6].done=details.some(x=>x.emergency_contact_name&&x.emergency_contact_phone);
  const completed=checks.filter(x=>x.done).length,pct=Math.round(100*completed/checks.length);
- const html=heading('DAYCARE SETUP','Your school launch checklist','A guided path from the first classroom to the first happy update home.')+
- '<div class="bp-setup-hero"><div><span class="bp-overline">WELCOME TO BRIGHTPATH</span><h2>'+e(schools[0]?.name||'Your daycare')+'</h2><p>Set up your school at your own pace. We’ll keep track of what is already in place.</p><div class="bp-setup-progress"><div style="width:'+pct+'%"></div></div><strong>'+completed+' of '+checks.length+' steps completed · '+pct+'%</strong></div><div class="bp-setup-illustration" aria-hidden="true">🧸<span>✦</span></div></div>'+
+ const html=heading('DAYCARE SETUP','Your school launch checklist')+
+ '<div class="bp-setup-hero"><div><span class="bp-overline">WELCOME TO BRIGHTPATH</span><h2>'+e(schools[0]?.name||'Your daycare')+'</h2><div class="bp-setup-progress"><div style="width:'+pct+'%"></div></div><strong>'+completed+' of '+checks.length+' steps completed · '+pct+'%</strong></div><div class="bp-setup-illustration" aria-hidden="true">🧸<span>✦</span></div></div>'+
  '<div class="bp-setup-grid">'+checks.map(c=>'<article class="bp-setup-step '+(c.done?'bp-setup-done':'')+'"><div class="bp-setup-step-icon">'+c.icon+'</div>'+
  '<div class="bp-setup-step-copy"><div class="bp-setup-step-top"><span>STEP '+c.id+'</span>'+pill(c.done?'Completed':'To do',c.done?'green':'amber')+'</div>'+
  '<h3>'+e(c.label)+'</h3><p>'+e(c.desc)+'</p><button class="mw-btn mw-btn-outline" type="button" data-setup-go="'+c.tab+'">'+e(c.cta)+' ↗</button></div></article>').join('')+'</div>'+
  box('Before you invite real families','<div class="bp-care-safety-guide"><div>🔐 <b>Check permissions</b><p>Verify accounts, classroom assignments, guardian relationships and photo consent.</p></div>'+
  '<div>☎️ <b>Complete emergency information</b><p>Ensure contact details and care instructions have been confirmed by the family.</p></div>'+
- '<div>🧪 <b>Test actual workflows</b><p>Run a real parent–teacher–admin test before adding children’s sensitive information. Payments and email/SMS delivery are not active.</p></div>'+
+ '<div>🧪 <b>Check account access</b><p>Check access with real staff and parent accounts before adding sensitive records. Payments and email/SMS delivery are unavailable.</p></div>'+
  '<div>💊 <b>Medication plans when needed</b><p>Families authorize plans in writing; an administrator verifies each plan before trained staff record administration.</p><button type="button" data-setup-go="medications" class="mw-btn mw-btn-outline">Medication safety ↗</button></div>'+
  '<div>🔐 <b>Family privacy</b><p>Review requests for access, correction and retention with documented safeguards.</p><button type="button" data-setup-go="privacy" class="mw-btn mw-btn-outline">Privacy center ↗</button></div>'+
  '<div>🌍 <b>Country-specific obligations</b><p>Before enrolling real children, confirm school licensing, business registration, lawful child-data processing, retention and incident-reporting requirements for the school’s own country.</p><button type="button" data-setup-go="settings" class="mw-btn mw-btn-outline">Check school region ↗</button></div></div>');

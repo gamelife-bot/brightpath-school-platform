@@ -21,13 +21,13 @@ export async function renderOwnerPage(ctx,tab){
    read(db,'bp_school_plan_requests',q=>q.order('requested_at',{ascending:false}).limit(100)),
    read(db,'bp_activities',q=>q.order('created_at',{ascending:false}).limit(100))
   ]);
-  const html=heading('PLATFORM CONTROL CENTER','Good to see you, '+(user.name?.split(' ')[0]||'Owner'),'Your schools, subscriptions and operations at a glance.')+
+  const html=heading('PLATFORM CONTROL CENTER','Good to see you, '+(user.name?.split(' ')[0]||'Owner'))+
   '<div class="mw-metrics">'+stat('Total schools',n(schools.length),'🏫','teal','Registered on BrightPath')+
   stat('School accounts',n(members.filter(m=>m.active).length),'♙','blue','Approved members')+
   stat('Registered users',n(profiles.length),'👥','amber','Across your platform')+
   stat('Learning updates',n(activities.length),'📈','violet','Recent recorded activities')+'</div>'+
   (schools.length===0?'<div class="mw-welcome"><div><span class="mw-welcome-kicker">GET STARTED</span><h2>Build your first school community</h2><p>Set up a school, approve its administrator and let the school enroll students and invite teachers.</p>'+button('Register first school →','mw-add-school','light')+'</div><div class="mw-welcome-art">🏫<span>✦</span></div></div>':'')+
-  '<div class="mw-section-title"><h2>Quick actions</h2><span>Manage BrightPath</span></div><div class="mw-actions-grid">'+
+  '<div class="mw-section-title"><h2>Quick actions</h2></div><div class="mw-actions-grid">'+
   quick('Register a school','Create a school workspace','schools','🏫')+
   quick('Manage access','Approve administrators and members','people','🔐')+
   quick('Revenue dashboard','View requests and earnings','revenue','💳')+
@@ -44,14 +44,14 @@ export async function renderOwnerPage(ctx,tab){
     ].map(([yes,title,desc])=>'<div class="mw-check"><span class="'+(yes?'mw-checked':'')+'">'+(yes?'✓':'○')+'</span><div><b>'+title+'</b><small>'+desc+'</small></div></div>').join('')+'</div>')+'</div>'+
   box('Go-live readiness · owner checklist',
    '<div class="mw-checklist">'+[
-    ['🌍','School regions','Each school administrator confirms country, city and IANA timezone before real attendance.'],
-    ['🏢','Register the operating company','Company registration, tax identity and a verified business support contact are owner-managed external steps.'],
-    ['🛡️','Data protection registration','For Kenya, verify the appropriate ODPC data-controller / processor registration and publish legal contact and child-data terms before inviting families.'],
-    ['🔐','Real multi-account privacy test','Before enrolling children, sign in as a real administrator, an assigned teacher and two separately linked parents and verify that records never cross families.'],
-    ['🌐','Attach your own domain','After buying and verifying a domain, switch the public root build, configure GitHub Pages and DNS/HTTPS. The current GitHub Pages URL remains active.'],
-    ['💳','Payments and country pricing','Payment collection, automated subscription enforcement and non-Kenyan prices are not live. Do not collect production subscriptions yet.']
+    ['🌍','School regions','Confirm each school’s country, city and time zone before recording attendance.'],
+    ['🏢','Register the operating company','Complete company registration and tax setup. Verify the support contact.'],
+    ['🛡️','Data protection registration','Before inviting families in Kenya, confirm ODPC registration requirements and publish your legal contact and child-data terms.'],
+    ['🔐','Real multi-account privacy test','Before enrolling children, check that an administrator, an assigned teacher and two separately linked parents each see only the records they’re authorized to view.'],
+    ['🌐','Attach your own domain','Connect and verify your domain.'],
+    ['💳','Payments and country pricing','Payment collection and automatic subscription checks are unavailable. Do not collect subscriptions yet. Prices are available for Kenya only.']
    ].map(([icon,title,detail])=>'<div class="mw-check"><span>'+icon+'</span><div><b>'+title+'</b><small>'+detail+'</small></div></div>').join('')+'</div>'+
-   '<p class="mw-fine">Technical tests are not government approvals or proof of a completed live family pilot. Confirm each requirement before onboarding real children.</p>');
+   '<p class="mw-fine">Confirm launch requirements and complete a live privacy check before onboarding children.</p>');
   return {html,bind(){bindQuick(go);click('mw-add-school',()=>go('schools'));click('mw-add-school2',()=>go('schools'))}};
  }
  if(tab==='schools'){
@@ -60,7 +60,7 @@ export async function renderOwnerPage(ctx,tab){
   const counts=new Map(schools.map(s=>[s.id,students.filter(k=>k.school_id===s.id).length]));
   const html=heading('SCHOOLS','School directory','Register schools, review enrollment and manage operating status.')+
    '<div class="mw-two mw-two-side"><section class="mw-card"><div class="mw-card-head"><h2>Register school</h2></div><form id="mw-school-create" class="mw-form">'+field('Official school name',input('mw-school-name','Enter school name','text','minlength="2" maxlength="140" required'))+
-   '<div class="mw-form-tip">Each school receives its own separate administration workspace.</div>'+button('Create school →','mw-school-create-btn','primary','type="submit"')+'</form></section>'+
+   button('Create school →','mw-school-create-btn','primary','type="submit"')+'</form></section>'+
    '<section class="mw-card mw-how"><div class="mw-card-head"><h2>Onboarding flow</h2></div><div class="mw-steps"><div><span>1</span><p><b>Register the school</b><small>Create its profile</small></p></div><div><span>2</span><p><b>Assign administrator</b><small>Approve the leader’s account</small></p></div><div><span>3</span><p><b>Start enrollment</b><small>Schools manage staff, classes and families</small></p></div></div></section></div>'+
    box('<span>All schools</span><span class="mw-count">'+schools.length+'</span>',
     schools.length?'<div class="mw-filter-row">'+input('mw-school-search','Search schools')+'</div><div id="mw-schools-table">'+
@@ -120,7 +120,7 @@ export async function renderOwnerPage(ctx,tab){
    read(db,'bp_students',q=>q.select('id,school_id')),read(db,'bp_classes'),read(db,'bp_attendance',q=>q.order('attendance_date',{ascending:false}).limit(100))
   ]);
   const counts=schools.map(s=>({school:s,students:students.filter(x=>x.school_id===s.id).length,classes:classes.filter(x=>x.school_id===s.id).length,activities:activities.filter(x=>x.school_id===s.id).length}));
-  const html=heading('PLATFORM INSIGHTS','Activity monitor','Review live educational activity and enrollment across your schools.')+
+  const html=heading('PLATFORM INSIGHTS','Activity monitor')+
    '<div class="mw-metrics">'+stat('Students',n(students.length),'🎒','teal')+stat('Classes',n(classes.length),'📗','blue')+stat('Recent activities',n(activities.length),'✎','violet')+stat('Attendance entries',n(attendance.length),'✓','amber')+'</div>'+
    box('School performance',counts.length?table(['School','Classes','Students','Recent posts'],counts.map(o=>tr([e(o.school.name),n(o.classes),n(o.students),n(o.activities)]))):empty('📊','No school activity','School enrollment and activity will appear once schools start using BrightPath.'))+
    box('Latest learning activity',activities.length?table(['School','Activity','Subject','Score','Date'],activities.slice(0,20).map(a=>tr([e(schools.find(s=>s.id===a.school_id)?.name||'School'),e(a.title),e(a.subject),pill(a.score+'%','green'),dateLabel(a.created_at)]))):empty('✏️','Learning feed is empty','Teacher activity updates will show here.'));
@@ -139,7 +139,7 @@ export async function renderOwnerPage(ctx,tab){
    read(db,'bp_schools'),read(db,'bp_profiles')
   ]);
   const p=new Map(profiles.map(x=>[x.user_id,x]));
-  const html=heading('SERVICE DESK','Support inbox','Resolve requests sent by school administrators.')+
+  const html=heading('SERVICE DESK','Support inbox')+
    '<div class="mw-metrics">'+stat('Open tickets',tickets.filter(t=>t.status==='open').length,'✉','amber')+
    stat('In progress',tickets.filter(t=>t.status==='in_progress').length,'◷','blue')+
    stat('Resolved',tickets.filter(t=>t.status==='resolved').length,'✓','teal')+'</div>'+

@@ -15,7 +15,7 @@ export async function renderNotifications(ctx){
  '<div class="bp-notification-icon">'+(icon[n.kind]||'🔔')+'</div><div class="bp-notification-copy"><div><strong>'+e(n.title)+'</strong>'+(!n.read_at?'<span class="bp-new-pill">NEW</span>':'')+'</div><p>'+e(n.summary)+'</p><small>'+prettyDate(n.created_at)+'</small></div>'+
  '<div class="bp-notification-actions">'+button('Open','bp-note-open-'+n.id,'outline','data-open-notice="'+n.id+'" data-open-tab="'+e(n.target_tab)+'"')+
  (!n.read_at?button('Mark read','bp-note-read-'+n.id,'outline','data-read-notice="'+n.id+'"'):'')+'</div></article>').join('');
- return{html:heading('YOUR UPDATES','Notifications','Messages, daily care moments and important notices — all in one place.')+
+ return{html:heading('YOUR UPDATES','Notifications')+
  '<div class="mw-metrics">'+stat('Unread',unread.length,'🔔','amber')+stat('All updates',notifications.length,'💌','teal')+'</div>'+
  box('Notification inbox',
   '<div class="bp-notifications-toolbar"><span>'+unread.length+' unread update'+(unread.length===1?'':'s')+'</span>'+button('Mark all as read','bp-mark-all','outline','type="button" '+(!unread.length?'disabled':''))+
@@ -81,8 +81,8 @@ export async function renderQuickCare(ctx){
  const presentIds=new Set(todayAttendance.filter(a=>['present','late'].includes(a.status)).map(a=>a.student_id));
  const available=classes.filter(c=>children.some(k=>k.class_id===c.id));
  const roster=id=>children.filter(c=>c.class_id===id);
- const html=heading('FAST CLASSROOM LOGGING','Quick classroom update','Record one routine or activity for multiple children in the same room, in a few taps.')+
- '<div class="bp-quick-intro"><span>✨</span><div><strong>One action, each child’s own private diary</strong><p>Choose the children who participated. BrightPath creates an individual record for each selected child and notifies their linked family.</p></div></div>'+
+ const html=heading('FAST CLASSROOM LOGGING','Quick classroom update')+
+ '<div class="bp-quick-intro"><span>✨</span><div><strong>One update for selected children</strong><p>Each linked family receives only their child’s update.</p></div></div>'+
  '<div class="mw-two mw-two-side">'+box('Post to your classroom',
  '<form id="bp-group-care-form" class="mw-form">'+
  field('Classroom or group',select('bp-group-class','<option value="">Choose a room</option>'+available.map(c=>option(c.id,c.name)).join(''),'required'))+
@@ -95,9 +95,8 @@ export async function renderQuickCare(ctx){
  field('Observation',input('bp-group-value','e.g. Enjoyed, Completed, Participated','text','maxlength="100"'))+
  '<p class="bp-private-hint">Do not include one child’s personal or medical information in a group update. For individual needs, use the Daily care diary.</p>'+
  '<div class="mw-form-actions">'+button('Save updates for selected children','bp-group-save','primary','type="submit" '+(!children.length?'disabled':''))+'</div></form>')+
- box('Reusable classroom templates','<p class="bp-private-hint">No separate daily summary to write: BrightPath builds a child’s report from real attendance, care moments and photos already recorded. Surveys and signatures go to School Administration or parents—not teachers.</p><div class="bp-quick-presets">'+presets.map(([label,type,details])=>
- '<button type="button" class="bp-preset" data-preset-type="'+e(type)+'" data-preset-details="'+e(details)+'">'+label+' <span>↗</span></button>').join('')+'</div>'+
- '<div class="bp-care-safety-guide"><div>💛 <b>Individual privacy</b><p>Every family receives only its own child’s update.</p></div><div>🧑‍🏫 <b>Assigned classes only</b><p>Teachers can only post updates for children in their assigned rooms.</p></div></div>')+'</div>';
+ box('Classroom templates','<div class="bp-quick-presets">'+presets.map(([label,type,details])=>
+ '<button type="button" class="bp-preset" data-preset-type="'+e(type)+'" data-preset-details="'+e(details)+'">'+label+' <span>↗</span></button>').join('')+'</div>')+'</div>';
  return{html,bind(){
   const chooser=document.getElementById('bp-group-class'),list=document.getElementById('bp-group-children'),all=document.getElementById('bp-group-selectall');
   const selected=()=>[...document.querySelectorAll('[data-group-child]:checked')].map(x=>x.value);
@@ -182,7 +181,7 @@ export async function renderDailySummary(ctx){
  };
  const current=new URLSearchParams(location.search).get('child');
  const active=kids.some(k=>k.id===current)?current:kids[0]?.id||'';
- const html=heading('ONE LOVELY DAY','Daily summary','A clear overview of meals, naps, play and happy milestones, together in one printable report.')+
+ const html=heading('ONE LOVELY DAY','Daily summary')+
  '<div class="bp-summary-tools">'+field('Child',select('bp-summary-child','<option value="">Choose a child</option>'+kids.map(c=>option(c.id,c.full_name)).join('')))+
  field('Day','<input type="date" id="bp-summary-date" value="'+today+'" max="'+today+'">')+
  button('Print / Save as PDF','bp-summary-print','primary','type="button" '+(!kids.length?'disabled':''))+'</div>'+

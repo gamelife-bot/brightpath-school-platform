@@ -19,11 +19,10 @@ const factualSummary=(data)=>{
  if(lines.length===1)lines.push('No additional care or learning events were recorded in BrightPath for this date.');
  return lines.join('\n');
 };
-const hero=(eyebrow,title,description,variant='parent')=>
- '<div class="cr-hero cr-hero-'+variant+'"><div class="cr-hero-copy"><span class="cr-eyebrow">✦ '+eyebrow+'</span><h2>'+title+'</h2><p>'+description+'</p>'+
- '<div class="cr-hero-chips"><span>🌞 Morning</span><span>🧸 School day</span><span>🎒 Safe pickup</span><span>🌙 Evening</span></div></div>'+
+const hero=(title,description,variant='parent')=>
+ '<div class="cr-hero cr-hero-'+variant+'"><div class="cr-hero-copy"><h2>'+title+'</h2><p>'+description+'</p></div>'+
  '<div class="cr-hero-visual">'+careRelayArt({small:true})+'</div><span class="cr-hero-deco" aria-hidden="true">✳</span></div>';
-const stages=[['🌞','Home','Parent morning note'],['🍎','School','Assigned teacher sees what matters'],['🎒','Pickup','Approved adult and ID checked'],['🌙','Evening','Verified factual handback']];
+const stages=[['🌞','Home','Parent morning note'],['🍎','School','Assigned teachers review notes'],['🎒','Pickup','Approved adult and ID checked'],['🌙','Evening','Verified daily summary']];
 const rail=()=>'<div class="cr-journey" aria-label="Care Relay stages">'+stages.map(([icon,title,description],i)=>
  '<div class="cr-journey-step"><span>'+icon+'</span><div><b>'+title+'</b><small>'+description+'</small></div></div>'+(i<3?'<span class="cr-journey-arrow" aria-hidden="true">→</span>':'')).join('')+'</div>';
 function morningCard(entry,{staff=false,name='Child'}={}){
@@ -39,7 +38,7 @@ function eveningCard(verified){
  const facts=factualSummary(verified.snapshot||{});
  return '<article class="cr-summary-card"><div class="cr-summary-head"><span>🌙</span><div><span class="cr-mini-heading">SCHOOL-VERIFIED DAY</span><h3>'+dateLabel(verified.relay_day)+'</h3><small>Verified '+dateLabel(verified.verified_at)+' at '+time(verified.verified_at)+' · Revision '+safe(verified.revision||1)+'</small></div>'+pill('Verified','green')+'</div>'+
  '<div class="cr-summary-facts">'+facts.split('\n').map(line=>'<p>'+safe(line)+'</p>').join('')+'</div>'+
- '<p class="cr-summary-note">A snapshot of records entered when staff verified the day. Unrecorded activities may still have happened. Open the child’s full diary for later corrections.</p>'+
+ '<p class="cr-summary-note">This summary includes records available at verification. Check the full diary for later corrections.</p>'+
  button('Open full daily diary','cr-open-diary','outline','type="button"')+'</article>';
 }
 async function parentRelay(ctx){
@@ -58,16 +57,15 @@ async function parentRelay(ctx){
  const mine=mornings.filter(x=>x.parent_user_id===user.id&&ids.has(x.student_id));
  const todayNotes=mine.filter(x=>x.relay_day===day).length;
  const todayEvenings=evenings.filter(x=>ids.has(x.student_id)&&x.relay_day===day).length;
- const html=heading('HOME ↔ SCHOOL','Care Relay','One caring note from home, a safer school day, and a verified handback from existing records.')+
- hero('HOME & SCHOOL, CONNECTED','A little note from home.<br><em>A happier handover.</em>',
- 'Share what matters with your child’s school. The teacher sees important exceptions; the evening view comes only from actual school records.')+rail()+
+ const html=heading('HOME ↔ SCHOOL','Care Relay')+
+ hero('Home and school handover','Send a morning note, check pickup and read your child’s verified summary.')+rail()+
  '<div class="mw-metrics">'+stat('Linked children',children.length,'🧸','teal')+stat('Morning notes today',todayNotes,'☀️','amber')+
  stat('Verified evening summaries today',todayEvenings,'🌙','blue')+'</div>'+
  (children.length?'<div class="cr-child-picker"><span>💛</span><div><b>Choose your little one</b><small>Each child’s handover and summary stays private.</small></div>'+
  '<select id="cr-parent-child" aria-label="Choose child">'+children.map(x=>option(x.id,x.full_name)).join('')+'</select></div><div id="cr-parent-detail"></div>':
  empty('🧸','Your family relay is waiting','Your school must approve your parent account and link your child first.'))+
  '<div class="cr-care-promise"><div>🛡️ <b>Private child notes</b><p>Only the submitting parent, assigned teachers and authorized school administrators can read morning notes.</p></div>'+
- '<div>🍎 <b>Light work for teachers</b><p>Routine family notes do not demand extra reports. Important concerns require acknowledgement.</p></div>'+
+ '<div>🍎 <b>Notes needing attention</b><p>Flag a note if you need staff to acknowledge it.</p></div>'+
  '<div>📞 <b>Emergencies need a phone call</b><p>This feature is not an emergency service and does not approve pickup changes.</p></div></div>';
  const detail=(id)=>{
   const child=children.find(x=>x.id===id);if(!child)return '';
@@ -82,7 +80,7 @@ async function parentRelay(ctx){
    box('🌞 Morning family handover',
     todayNote?'<div class="cr-inline-confirm">✓ Today’s note was received. To update it, message the classroom.</div>'+
     morningCard(todayNote,{name:child.full_name})+button('Message the classroom','cr-family-message','outline','type="button"'):
-    '<p class="cr-field-intro">An optional, 30-second handover. No need to submit anything if nothing has changed.</p>'+
+    '<p class="cr-field-intro">Sending a morning note is optional.</p>'+
     '<form class="mw-form cr-handover-form" id="cr-parent-handover">'+
     field('How was their sleep?',select('cr-sleep','<option value="not_shared">Prefer not to share</option><option value="usual">Slept as usual</option><option value="less">Less sleep than usual</option><option value="restless">Restless night</option>'))+
     field('How are they feeling?',select('cr-mood','<option value="not_shared">Prefer not to share</option><option value="settled">Feeling settled</option><option value="tired">A little tired</option><option value="needs_comfort">May need extra comfort</option>'))+
@@ -99,10 +97,10 @@ async function parentRelay(ctx){
     '<div class="cr-approved-contacts"><b>Approved collectors</b><div>'+(collectors.length?collectors.map(c=>'<span>✓ '+safe(c.full_name)+'</span>').join(''):'<span>No approved contacts yet</span>')+'</div></div>'+
     '<p class="cr-form-disclaimer">A parent note never replaces independent approval and identity checks at the school gate.</p>'+
     button('View approved pickup contacts','cr-open-pickup','outline','type="button"'))+'</div><div class="cr-stack">'+
-   box('🌙 Verified evening handback',latest?eveningCard(latest)+
+   box('🌙 Verified daily summaries',latest?eveningCard(latest)+
      (childEvenings.length>1?'<div class="cr-evening-history"><b>Earlier verified days</b>'+
      childEvenings.slice(1,6).map(x=>'<button type="button" data-cr-evening="'+safe(x.id)+'">📔 '+dateLabel(x.relay_day)+' <span>View ↗</span></button>').join('')+'</div>':''):
-     empty('🌙','A family summary appears here','School staff will review and verify an evidence-based summary. Missing details are never made up.'))+
+     empty('🌙','No verified summary yet'))+
    (earlier.length?box('🌻 Earlier morning notes','<div class="cr-history">'+earlier.map(x=>morningCard(x,{name:child.full_name})).join('')+'</div>'):'')+'</div></div>';
  };
  return{html,bind(){
@@ -174,19 +172,18 @@ async function staffRelay(ctx){
    '<span>No additional care records</span>')+
    (picked?'<span>🎒 Pickup '+time(picked.occurred_at)+(confirmed.some(c=>c.pickup_event_id===picked.id)?' · contact and ID check confirmed':' · confirmation pending')+'</span>':'')+'</div></article>';
  };
- const html=heading('A CALMER CLASSROOM','Care Relay · school day','Only the exceptions need attention. Review existing records once before releasing family summaries.')+
- hero('LESS PAPERWORK, MORE PRESENCE','Help the children.<br><em>We’ll organize the handover.</em>',
- 'See the few family notes needing attention, verify actual pickup, and publish factual day summaries together.','staff')+rail()+
+ const html=heading('FAMILY HANDOVERS','Care Relay · school day')+
+ hero('Today’s handovers','Review morning notes, verify pickup and publish daily summaries.','staff')+
  '<div class="mw-metrics">'+stat('Care notes needing attention',priority.length,'💛','amber')+stat('Attendance not recorded',missing.length,'📝','blue')+
  stat('Confirmed pickups',confirmed.length,'🎒','teal')+stat('Verified evening summaries',verified.length,'🌙','violet')+'</div>'+
  '<div class="cr-two-columns"><div class="cr-stack">'+
- box('💛 Morning exception inbox',
- '<p class="cr-field-intro">Only family notes flagged for follow-up require explicit acknowledgment. Routine notes remain available without another daily form.</p>'+
+ box('💛 Morning notes needing attention',
+ '<p class="cr-field-intro">Acknowledge notes flagged for follow-up.</p>'+
  (priority.length?'<div class="cr-morning-list">'+priority.map(x=>morningCard(x,{staff:true,name:byId.get(x.student_id)?.full_name||'Child'})).join('')+'</div>':
- empty('🌻','No unacknowledged priority notes','Your classroom can focus on the children.'))+
+ empty('🌻','No unacknowledged priority notes'))+
  (routine.length?'<details class="cr-routine-details"><summary>Routine notes and acknowledged messages ('+routine.length+')</summary><div class="cr-morning-list">'+routine.map(x=>morningCard(x,{name:byId.get(x.student_id)?.full_name||'Child'})).join('')+'</div></details>':'')+
- (missing.length?'<div class="cr-school-action"><span>📝</span><p><b>'+missing.length+' children need an attendance status.</b><small>Mark it in the register once, not another form.</small></p>'+button('Open attendance','cr-open-attendance','outline')+'</div>':''))+
- box('🎒 Safe pickup · one checked action',
+ (missing.length?'<div class="cr-school-action"><span>📝</span><p><b>'+missing.length+' children need an attendance status.</b></p>'+button('Open attendance','cr-open-attendance','outline')+'</div>':''))+
+ box('🎒 Verify pickup',
  '<p class="cr-field-intro">Use this only when the adult is physically present. Check their identity against the school’s approved collector list.</p>'+
  '<form id="cr-staff-pickup" class="mw-form cr-pickup-form">'+
  field('Child',select('cr-pickup-child','<option value="">Choose a child</option>'+children.map(x=>option(x.id,x.full_name)).join(''),'required'))+
@@ -200,14 +197,14 @@ async function staffRelay(ctx){
  button('Confirm existing','cr-existing-'+x.id,'outline','type="button" data-cr-existing="'+safe(x.id)+'"')+'</div>').join(''):'')+
  '<button type="button" class="cr-text-link" id="cr-open-pickup">View contacts and full pickup history ↗</button></div>')+
  '</div><div class="cr-stack">'+
- box('🌙 Verified evening handback',
- '<div class="cr-evening-intro"><span>✦</span><div><b>One review can cover a classroom.</b><p>Choose a room and review the recorded facts. Children whose attendance is missing cannot be verified. Families see only their own child.</p></div></div>'+
+ box('🌙 Verify daily summaries',
+ '<div class="cr-evening-intro"><span>✦</span><div><b>Review recorded facts before publishing.</b><p>Attendance is required. Guardians only see summaries for their linked children.</p></div></div>'+
  field('Classroom',select('cr-room','<option value="all">All assigned rooms</option>'+roomOpts))+
  '<div id="cr-evening-review" class="cr-evening-review"></div>'+
  '<form class="mw-form cr-review-form" id="cr-evening-form"><label class="mw-check-label"><input type="checkbox" id="cr-summary-attested" required><span>I have reviewed the selected children’s recorded facts and authorize these summaries to be shared with their verified guardians.</span></label>'+
  button('Publish verified summaries','cr-verify-evenings','primary','type="submit"')+'</form>'+
  '<p class="cr-form-disclaimer">Verifying a record does not certify unrecorded care activities or make an unverified pickup safe.</p>'+
- '<div class="cr-relay-small-art">'+careRelayArt({small:true})+'<div><b>Less typing. More together time.</b><small>Little moments deserve a big place in the day.</small></div></div>')+
+ '<div class="cr-relay-small-art">'+careRelayArt({small:true})+'</div>')+
  '</div></div>';
  return{html,bind(){
   document.querySelectorAll('[data-cr-ack]').forEach(b=>b.onclick=async()=>{

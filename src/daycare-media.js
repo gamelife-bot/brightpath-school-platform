@@ -71,7 +71,7 @@ export async function renderChildMoments(ctx){
  const media=await read(db,'bp_child_media',q=>q.eq('school_id',sid).order('created_at',{ascending:false}).limit(140));
  const visible=media.filter(x=>allowed.has(x.student_id));
  const photos=visible.filter(x=>x.kind==='photo'),videos=visible.filter(x=>x.kind==='video');
- const html=heading('CLASSROOM MEMORIES','Photos & videos','The wonderful little moments worth sharing from each child’s day.')+
+ const html=heading('CLASSROOM MEMORIES','Photos & videos')+
  '<div class="mw-metrics">'+stat('Photos shared',photos.length,'📸','teal')+
  stat('Videos shared',videos.length,'🎥','blue')+
  stat('Children in gallery',new Set(visible.map(x=>x.student_id)).size,'💛','amber')+'</div>'+

@@ -81,7 +81,7 @@ export async function renderChildProfiles(ctx){
    '<label class="mw-check-label"><input type="checkbox" id="bp-profile-verified" required><span>I have verified these details with the child’s parent or authorized guardian.</span></label>'+
    '<div class="mw-form-actions">'+button('Save child profile','bp-profile-save','primary','type="submit"')+'</div></form>';
  };
- const html=heading('CHILD-CENTRED CARE',role==='parent'?'My little ones':'Child profiles','A safe, personal view of each child’s needs, routines and happy milestones.')+
+ const html=heading('CHILD-CENTRED CARE',role==='parent'?'My little ones':'Child profiles')+
   '<div class="bp-profile-layout"><aside class="bp-profile-list"><div class="bp-profile-list-title">Children <span>'+children.length+'</span></div>'+
   (children.length?children.map(card).join(''):empty('🧸','No children yet','The school must enroll and link a child first.'))+
   (role==='school_admin'?'<div class="bp-profile-note">💛 Important: collect and verify emergency details before the child’s first day.</div>':'')+

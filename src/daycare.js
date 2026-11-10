@@ -48,7 +48,7 @@ export async function renderCareDiary(ctx){
  const day=logs.filter(l=>isToday(l.occurred_at));
  const canPost=role!=='parent';
  const counts={meal:day.filter(l=>l.event_type==='meal').length,nap:day.filter(l=>l.event_type==='nap').length,mood:day.filter(l=>l.event_type==='mood').length,other:day.length};
- const html=heading('DAILY CARE','Daily care diary','Meals, naps, toilet care, moods and playtime — all in one daily timeline.')+
+ const html=heading('DAILY CARE','Daily care diary')+
  '<div class="mw-metrics">'+stat('Care updates today',counts.other,'🌤️','teal')+
  stat('Meals logged',counts.meal,'🥣','amber')+
  stat('Naps logged',counts.nap,'😴','blue')+
@@ -106,7 +106,7 @@ export async function renderMilestones(ctx){
  const all=await read(db,'bp_milestones',q=>q.eq('school_id',sid).order('observed_at',{ascending:false}).limit(150));
  const marks=all.filter(m=>ids.has(m.student_id));
  const achieved=marks.filter(m=>m.progress==='achieved');
- const html=heading('GROWTH & DISCOVERY','Development milestones','Celebrate each child’s communication, movement, independence and confidence.')+
+ const html=heading('GROWTH & DISCOVERY','Development milestones')+
  '<div class="mw-metrics">'+stat('Observations',marks.length,'✦','teal')+
  stat('Milestones achieved',achieved.length,'🌟','amber')+
  stat('Developing skills',marks.filter(m=>m.progress==='developing').length,'🌱','blue')+'</div>'+

@@ -12,12 +12,12 @@ const features=[
  {icon:'✍️',tone:'peach',label:'Administration, not teacher paperwork',title:'Parent signatures and school feedback.',body:'Families draw or upload a signature, answer short surveys, and message administration—without adding more teacher forms.'}
 ];
 const faq=[
- ['Does BrightPath write daily reports for teachers?','It compiles what has already been recorded into an on-screen summary and a factual preview. It does not invent missing observations or force teachers to write a daily essay.'],
- ['Does the assistant secretly record children or use an external AI?','No. The currently available Quiet Classroom assistant is rules-based. It reads the teacher’s authorized school records. It does not listen to the classroom or send child information to an outside AI service.'],
+ ['Does BrightPath write daily reports for teachers?','It prepares a summary from existing records for teachers to review. Drafts stay private until shared.'],
+ ['Does Quiet Classroom record audio or use external AI?','No. Quiet Classroom uses authorized school records. It does not record classroom audio or send child information to external AI services.'],
  ['Must teachers upload photographs every day?','No. Photos and milestones are optional unless a school’s own policy requires specific records. Parents only see permitted media associated with their child.'],
  ['Can the school collect signatures and parent feedback?','Yes. Approved parents can sign a specific school document by drawing or uploading a signature, answer short private surveys, and send reviews directly to school administration.'],
- ['Can schools try it before changing their routine?','They can explore the existing portals and begin school setup. A full live rollout should be piloted with real staff and separately authenticated parents to validate usability, privacy and staffing time.'],
- ['Does it work without internet or automatically send SMS?','Not yet. These browser-based features require connectivity, and external SMS/email delivery is not active. BrightPath does not claim offline sync or external push delivery.']
+ ['Can schools try it before changing their routine?','Yes. Use the role previews below or open School Administration to begin setup.'],
+ ['Does it work without internet or automatically send SMS?','BrightPath requires an internet connection. Updates appear in the portal. External SMS and email notifications are unavailable.']
 ];
 
 const door=(root,path)=>root+path+'/';
@@ -64,7 +64,7 @@ export function renderLanding(app,root){
   '<button type="button" role="tab" id="ql-relay-tab-evening" aria-selected="false" aria-controls="ql-relay-story" data-ql-relay="evening">🌙 Evening</button></div>'+
   '<div class="ql-relay-story" id="ql-relay-story" role="tabpanel" aria-labelledby="ql-relay-tab-morning"><span id="ql-relay-story-icon">☀️</span><div><b id="ql-relay-story-title">A gentle note from home</b><p id="ql-relay-story-copy">A parent shares a useful morning handover. Important care notes are flagged for an assigned teacher to acknowledge.</p></div></div>'+
   '<div class="ql-relay-actions"><a class="ql-btn ql-btn-dark" href="'+go('parent')+'?tab=relay">See the family side <span>↗</span></a><a class="ql-btn ql-btn-outline" href="'+go('teacher')+'?tab=relay">See the teacher side</a></div></div>'+
-  '<div class="ql-relay-right"><div class="ql-relay-art-frame">'+careRelayArt()+'<div class="ql-relay-art-caption"><span>🏡</span><div><strong>Where home and school meet.</strong><small>Original BrightPath illustration · sample scene</small></div></div></div><div class="ql-relay-stars" aria-hidden="true">✦  ✳  🌼</div></div></div></section>';
+  '<div class="ql-relay-right"><div class="ql-relay-art-frame">'+careRelayArt()+'<div class="ql-relay-art-caption"><span>🏡</span><div><strong>Where home and school meet.</strong></div></div></div><div class="ql-relay-stars" aria-hidden="true">✦  ✳  🌼</div></div></div></section>';
  const quiet='<section class="ql-quiet" id="quiet"><div class="ql-quiet-inner"><div class="ql-quiet-illustration"><span class="ql-doodle ql-doodle-a">✳</span><span class="ql-doodle ql-doodle-b">🌼</span>'+
   '<div class="ql-quiet-board"><span class="ql-quiet-label">✦ QUIET CLASSROOM</span><h3>What needs my attention?</h3>'+
   '<div><span>✓</span><p><b>Attendance</b><small>See which children have a recorded status</small></p></div>'+
@@ -72,20 +72,19 @@ export function renderLanding(app,root){
   '<div><span>📔</span><p><b>Family draft</b><small>Facts from school records, ready to review</small></p></div>'+
   '<div class="ql-quiet-note">No made-up updates. No hidden background posting.</div></div></div>'+
   '<div class="ql-quiet-copy"><span class="ql-kicker">MEET YOUR CALM CLASSROOM COMPANION</span>'+
-  '<h2>Not another chatbot.<br><em>A quieter way to work.</em></h2>'+
-  '<p>Instead of demanding long notes from busy teachers, Quiet Classroom points them toward the next useful task and builds evidence-based family previews from the records they already made.</p>'+
+  '<h2>Quiet Classroom</h2>'+
+  '<p>Check attendance and preview private family notes from existing classroom records.</p>'+
   '<div class="ql-quiet-checks"><p><span>✓</span> A quick checklist, not an extra daily report</p><p><span>✓</span> Class-wide activity templates and present-child selection</p><p><span>✓</span> Parent drafts that stay private until someone acts</p><p><span>✓</span> No external AI or always-on classroom listening</p></div>'+
-  '<a class="ql-btn ql-btn-light" href="'+go('teacher')+'?tab=quiet">Explore the teacher assistant <span>↗</span></a>'+
-  '<small>Quiet Classroom currently uses simple rules and existing school records. It is not a self-operating AI agent.</small></div></div></section>';
+  '<a class="ql-btn ql-btn-light" href="'+go('teacher')+'?tab=quiet">Explore the teacher assistant <span>↗</span></a></div></div></section>';
  const featureHtml='<section class="ql-section ql-features" id="features"><div class="ql-section-head"><span class="ql-kicker">THOUGHTFUL DETAILS, NOT MORE CLUTTER</span><h2>All the little things<br><em>that make a big difference.</em></h2><p>Thoughtfully made for the people who care for little learners: parents, teachers and the school family.</p></div>'+
  '<div class="ql-feature-grid">'+features.map(x=>'<article class="ql-feature ql-f-'+x.tone+'"><div class="ql-feature-top"><span>'+x.icon+'</span><small>'+x.label+'</small></div><h3>'+x.title+'</h3><p>'+x.body+'</p><span aria-hidden="true" class="ql-feature-decoration">✦</span></article>').join('')+'</div></section>';
- const preview='<section class="ql-section ql-experience" id="experience"><div class="ql-section-head"><span class="ql-kicker">STEP INSIDE BRIGHTPATH</span><h2>A special place for<br><em>everyone who cares.</em></h2><p>Choose a role to preview what BrightPath is designed to help them do. The examples below are illustrations, not live customer records.</p></div>'+
+ const preview='<section class="ql-section ql-experience" id="experience"><div class="ql-section-head"><span class="ql-kicker">STEP INSIDE BRIGHTPATH</span><h2>A special place for<br><em>everyone who cares.</em></h2><p>Choose a role to see example screens.</p></div>'+
  '<div class="ql-role-tabs" role="tablist" aria-label="Choose a BrightPath role"><button type="button" role="tab" id="ql-tab-teacher" aria-selected="true" aria-controls="ql-role-output" data-role="teacher">🍎 Teacher</button><button type="button" role="tab" id="ql-tab-parent" aria-selected="false" aria-controls="ql-role-output" data-role="parent">💛 Parent</button><button type="button" role="tab" id="ql-tab-school" aria-selected="false" aria-controls="ql-role-output" data-role="school">🏫 School team</button></div>'+
  '<div class="ql-role-content" id="ql-role-output" role="tabpanel" aria-labelledby="ql-tab-teacher"><div class="ql-role-art"><div class="ql-role-scene" id="ql-role-scene"><div class="ql-role-kids-art" id="ql-role-kids-art">'+welcomeArt('teacher')+'</div><div class="ql-role-scene-paper"><span>✓ Attendance</span><span>☀️ Group updates</span><span>📔 Factual recaps</span></div></div></div>'+
  '<div class="ql-role-copy"><span id="ql-role-tag">TEACHER VIEW</span><h3 id="ql-role-title">The children come first.</h3><p id="ql-role-desc">One small group update can support daily family records. Quiet Classroom shows what’s missing without making optional moments mandatory.</p>'+
  '<div id="ql-role-points" class="ql-role-points"><span>✓ Real classroom facts</span><span>✓ No repetitive daily essays</span><span>✓ Fast mobile actions</span></div>'+
  '<a class="ql-btn ql-btn-dark" id="ql-role-link" href="'+go('teacher')+'">Explore teacher space <span>↗</span></a></div></div></section>';
- const time='<section class="ql-time" id="teacher-time"><div class="ql-time-inner"><div class="ql-time-copy"><span class="ql-kicker">THE TIME-BACK EXPERIMENT</span><h2>What could a calmer<br><em>classroom save?</em></h2><p>Try an illustrative comparison between typing the same group activity separately for every child and recording it once for the group.</p>'+
+ const time='<section class="ql-time" id="teacher-time"><div class="ql-time-inner"><div class="ql-time-copy"><span class="ql-kicker">GROUP UPDATES</span><h2>Estimate time saved<br><em>on group updates.</em></h2><p>Try an illustrative comparison between typing the same group activity separately for every child and recording it once for the group.</p>'+
  '<label for="ql-kids">Children participating <strong id="ql-kids-label">15</strong></label><input id="ql-kids" type="range" min="3" max="30" step="1" value="15">'+
  '<label for="ql-routines">Shared activity updates per day <strong id="ql-routines-label">2</strong></label><input id="ql-routines" type="range" min="1" max="5" step="1" value="2">'+
  '<details class="ql-assumptions"><summary>See the calculation assumptions</summary><p>Illustration only: 45 seconds to type a note for one child versus 90 seconds per whole-group note. It assumes all participating children had the same factual group activity. Actual times and workload vary; individual care and consent cannot be batched away.</p></details></div>'+
@@ -93,8 +92,8 @@ export function renderLanding(app,root){
  '<div class="ql-time-bar"><span class="ql-time-old" id="ql-time-old"></span><small>Separate entries</small></div>'+
  '<div class="ql-time-bar"><span class="ql-time-new" id="ql-time-new"></span><small>Group entries</small></div>'+
  '<div class="ql-time-math"><div><b id="ql-before">22.5 min</b><small>Individual-entry illustration</small></div><div><b id="ql-after">3 min</b><small>Shared-entry illustration</small></div></div>'+
- '<p class="ql-time-caution">Not a verified performance result. Confirm savings and any change in documentation quality with teachers during a real pilot.</p></div></div></section>';
- const trust='<section class="ql-section ql-trust" id="privacy"><div class="ql-trust-copy"><span class="ql-kicker">CARE IS PERSONAL</span><h2>A private window into<br><em>their little world.</em></h2><p>School access, approved guardian links, photo permission and private family communication are built into the experience. The product is not a public child-photo feed.</p>'+
+ '<p class="ql-time-caution">Illustrative estimate. Actual time savings vary.</p></div></div></section>';
+ const trust='<section class="ql-section ql-trust" id="privacy"><div class="ql-trust-copy"><span class="ql-kicker">CARE IS PERSONAL</span><h2>A private window into<br><em>their little world.</em></h2><p>Schools approve access. Linked guardians see their child’s records and media shared with consent.</p>'+
  '<a class="ql-text-link" href="'+go('parent')+'">Explore the parent experience <span>↗</span></a></div>'+
  '<div class="ql-trust-tiles"><div><span>🔐</span><b>Linked families only</b><small>Parents access their own verified child’s records.</small></div>'+
  '<div><span>📷</span><b>Media consent checks</b><small>Photos and videos use the private media gallery.</small></div>'+
