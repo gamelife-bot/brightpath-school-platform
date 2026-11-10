@@ -173,7 +173,7 @@ html{scroll-behavior:smooth}
 .ql-last-inner>div{display:flex;flex-wrap:wrap;justify-content:center;gap:13px}
 .ql-last-inner>small{display:block;font-size:10px;color:#8d9186;margin-top:23px}
 .ql-footer{background:#163e39;color:#edf6f0;padding:60px max(5%,calc((100vw - 1240px)/2)) 25px}
-.ql-footer .ql-brand{color:white}.ql-footer-top{display:grid;grid-template-columns:2.3fr repeat(3,1fr);gap:30px}
+.ql-footer .ql-brand{color:white}.ql-footer-top{display:grid;grid-template-columns:2.3fr repeat(2,1fr);gap:30px}
 .ql-footer-top>div{display:flex;flex-direction:column;align-items:flex-start;gap:13px}
 .ql-footer-top>div>p{font-size:12px;color:#b1d5c7}
 .ql-footer-top>div>b{font-size:12px;color:#a8e7cf;text-transform:uppercase;letter-spacing:1px}

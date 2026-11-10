@@ -231,13 +231,19 @@ try{
   await p.goto(base+'qa-home.html',{waitUntil:'networkidle'});
   assert.equal(await p.locator('.ql-kids-main-svg').count(),1);
   assert.equal(await p.locator('.ql-tiny-moment').count(),4);
-  const portalAccess=p.locator('.ql-kinder-hero #sign-in');
-  const accessBounds=await portalAccess.boundingBox();
-  assert(accessBounds&&accessBounds.y>=0&&accessBounds.y+accessBounds.height<=900,'Portal access must fit in the opening viewport at '+width);
+  const openPortals=p.getByRole('button',{name:'Sign in / Sign up',exact:true});
+  const accessBounds=await openPortals.boundingBox();
+  assert(accessBounds&&accessBounds.y>=0&&accessBounds.y+accessBounds.height<=900,'Account entry must be visible on load at '+width);
+  const chooser=p.getByRole('dialog',{name:'Choose your portal'});
+  assert.equal(await chooser.count(),0);
+  await openPortals.click();
+  assert.equal(await chooser.getByRole('link').count(),3);
   for(const [route,role] of [['parent','Parent Portal'],['teacher','Teacher Portal'],['school-admin','School Administration']]){
-   assert.equal(await p.getByRole('link',{name:'Sign in to '+role,exact:true}).evaluate(link=>link.href),base+route+'/');
-   assert.equal(await p.getByRole('link',{name:'Sign up for '+role,exact:true}).evaluate(link=>link.href),base+route+'/?auth=signup');
+   assert.equal(await chooser.getByRole('link',{name:role,exact:true}).evaluate(link=>link.href),base+route+'/');
   }
+  await p.keyboard.press('Escape');
+  assert.equal(await chooser.count(),0);
+  assert(await openPortals.evaluate(button=>button===document.activeElement));
   await p.getByRole('tab',{name:'Pickup'}).click();
   assert((await p.locator('#ql-relay-story-title').innerText()).includes('verified hand'));
   const sizes=await p.evaluate(()=>({w:innerWidth,scroll:document.documentElement.scrollWidth}));
