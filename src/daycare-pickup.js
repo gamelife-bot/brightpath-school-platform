@@ -1,15 +1,22 @@
-import {escapeHtml as h,dateLabel,stat,box,empty,pill,field,input,select,textarea,button,heading,table,tr,option,read,write,update,form,click,notice,v,checked} from './workspace-core.js';
+import {escapeHtml as h,dateLabel,stat,box,empty,pill,field,input,select,textarea,button,heading,table,tr,option,read,write,update,rpc,form,click,notice,v,checked} from './workspace-core.js';
 
 const label={check_in:'Checked in',check_out:'Picked up'};
-const time=iso=>new Date(iso).toLocaleString('en-KE',{dateStyle:'medium',timeStyle:'short'});
+const SCHOOL_TZ='Africa/Nairobi';
+const schoolDay=(value=new Date())=>{
+ const pieces=new Intl.DateTimeFormat('en-GB',{timeZone:SCHOOL_TZ,day:'2-digit',month:'2-digit',year:'numeric'}).formatToParts(new Date(value));
+ const parts=Object.fromEntries(pieces.map(x=>[x.type,x.value]));
+ return parts.year+'-'+parts.month+'-'+parts.day;
+};
+const time=iso=>new Date(iso).toLocaleString('en-KE',{dateStyle:'medium',timeStyle:'short',timeZone:SCHOOL_TZ});
 const childOpts=kids=>'<option value="">Choose a child</option>'+kids.map(c=>option(c.id,c.full_name)).join('');
 export async function renderPickupDesk(ctx){
  const {db,schoolId:sid,user,role,reload}=ctx;
- const [allChildren,links,allContacts,allEvents]=await Promise.all([
+ const [allChildren,links,allContacts,allEvents,allRelayConfirmations]=await Promise.all([
   read(db,'bp_students',q=>q.eq('school_id',sid).order('full_name')),
   role==='parent'?read(db,'bp_parent_links',q=>q.eq('school_id',sid)):Promise.resolve([]),
   read(db,'bp_pickup_contacts',q=>q.eq('school_id',sid).order('created_at',{ascending:false}).limit(220)),
-  read(db,'bp_pickup_events',q=>q.eq('school_id',sid).order('occurred_at',{ascending:false}).limit(220))
+  read(db,'bp_pickup_events',q=>q.eq('school_id',sid).order('occurred_at',{ascending:false}).limit(220)),
+  read(db,'bp_care_relay_pickups',q=>q.eq('school_id',sid).order('confirmed_at',{ascending:false}).limit(220))
  ]);
  let children=allChildren;
  if(role==='parent'){const ids=new Set(links.map(x=>x.student_id));children=allChildren.filter(x=>ids.has(x.id))}
@@ -21,6 +28,9 @@ export async function renderPickupDesk(ctx){
  const childSet=new Set(children.map(c=>c.id));
  const contacts=allContacts.filter(x=>childSet.has(x.student_id));
  const events=allEvents.filter(x=>childSet.has(x.student_id));
+ const relayConfirmed=new Set(allRelayConfirmations.filter(x=>childSet.has(x.student_id)).map(x=>x.pickup_event_id));
+ const currentDay=schoolDay();
+ const checkoutToday=events.filter(x=>x.event_type==='check_out'&&schoolDay(x.occurred_at)===currentDay);
  const name=id=>children.find(c=>c.id===id)?.full_name||'Child';
  const contactName=id=>contacts.find(c=>c.id===id)?.full_name||'Guardian';
  const pending=contacts.filter(c=>c.status==='pending');
@@ -29,8 +39,8 @@ export async function renderPickupDesk(ctx){
  const html=heading('SAFE ARRIVALS','Check-in & pickup','Know when each child arrives and who is authorized to collect them.')+
  '<div class="mw-metrics">'+stat('Approved pickup contacts',contacts.filter(c=>c.status==='approved').length,'✅','teal')+
  stat('Contacts pending',pending.length,'◷','amber')+
- stat('Check-ins today',events.filter(e=>e.event_type==='check_in'&&new Date(e.occurred_at).toDateString()===new Date().toDateString()).length,'🎒','blue')+
- stat('Pickups today',events.filter(e=>e.event_type==='check_out'&&new Date(e.occurred_at).toDateString()===new Date().toDateString()).length,'👋','violet')+'</div>'+
+ stat('Check-ins today',events.filter(e=>e.event_type==='check_in'&&schoolDay(e.occurred_at)===currentDay).length,'🎒','blue')+
+ stat('Pickups today',events.filter(e=>e.event_type==='check_out'&&schoolDay(e.occurred_at)===currentDay).length,'👋','violet')+'</div>'+
  '<div class="mw-two mw-two-side">'+
  box(role==='parent'?'Nominate a pickup contact':'Add a pickup contact',
   '<form id="bp-pickup-contact-form" class="mw-form">'+
@@ -38,14 +48,14 @@ export async function renderPickupDesk(ctx){
   field('Pickup person’s full name',input('bp-contact-name','Full name','text','required minlength="2" maxlength="140"'))+
   field('Relationship',select('bp-contact-relation',['Mother','Father','Grandparent','Guardian','Family member','Other approved adult'].map(x=>option(x,x)).join('')))+
   field('Contact number',input('bp-contact-phone','Phone number','tel','required minlength="6" maxlength="36"'))+
-  '<p class="mw-fine">School approval is required before this person can collect the child.</p>'+
+  '<p class="mw-fine">School approval is required before this person can collect the child. A parent note or nomination is not pickup authorization.</p>'+
   '<div class="mw-form-actions">'+button('Submit contact','bp-contact-submit','primary','type="submit" '+(!children.length?'disabled':''))+'</div></form>')+
  (isStaff?box('Record arrival or pickup',
   '<form id="bp-pickup-event-form" class="mw-form">'+field('Child',select('bp-event-child',childOpts(children),'required'))+
   field('Action',select('bp-event-action','<option value="check_in">Morning check-in</option><option value="check_out">Pickup / check-out</option>'))+
   '<div id="bp-pickup-person-holder" hidden>'+field('Approved pickup person',select('bp-event-contact','<option value="">Select approved person</option>'))+
-  '<label class="mw-check-label"><input type="checkbox" id="bp-pickup-verified"><span>I checked the pickup person’s identity and school authorization.</span></label></div>'+
-  field('Notes (optional)',textarea('bp-event-notes','Optional arrival or pickup note','maxlength="700"'))+
+  '<label class="mw-check-label"><input type="checkbox" id="bp-pickup-verified"><span>I checked the pickup person’s identity and school authorization in person.</span></label><p id="bp-pickup-helper" class="mw-fine" role="status"></p></div>'+
+  field('Notes (optional)',textarea('bp-event-notes','Optional arrival or pickup note','maxlength="350"'))+
   '<div class="mw-form-actions">'+button('Save record','bp-event-submit','primary','type="submit" '+(!children.length?'disabled':''))+'</div></form>'):
   box('Pickup process',
    '<div class="mw-guidance">'+
@@ -65,9 +75,10 @@ export async function renderPickupDesk(ctx){
    ...(isAdmin?[c.status==='approved'?button('Revoke','bp-revoke-'+c.id,'danger','data-contact-action="revoked" data-contact-id="'+h(c.id)+'"'):'—']:[])
   ]))):empty('💛','No approved pickup contacts','Once the school approves an adult, they will appear here.'))+
  box('Arrival & pickup history',events.length?
-  table(['Child','Action','Pickup person','Date & time'],events.map(x=>tr([
+  table(['Child','Action','Pickup person','Date & time','Verification'],events.map(x=>tr([
    h(name(x.student_id)),pill(label[x.event_type],x.event_type==='check_in'?'green':'neutral'),
-   x.event_type==='check_in'?'—':h(contactName(x.contact_id)),time(x.occurred_at)
+   x.event_type==='check_in'?'—':h(contactName(x.contact_id)),time(x.occurred_at),
+   x.event_type==='check_in'?'—':relayConfirmed.has(x.id)?pill('Care Relay confirmed','green'):pill('School record only','amber')
   ]))):empty('🎒','No arrival or pickup records yet','Each confirmed arrival and handover will appear here.'));
  return{html,bind(){
   form('bp-pickup-contact-form',async()=>{
@@ -86,15 +97,32 @@ export async function renderPickupDesk(ctx){
   if(isStaff){
    const chooser=document.getElementById('bp-event-child'),action=document.getElementById('bp-event-action'),picker=document.getElementById('bp-event-contact');
    const refresh=()=>{
-    document.getElementById('bp-pickup-person-holder').hidden=action.value!=='check_out';
-    picker.innerHTML='<option value="">Select approved person</option>'+contacts.filter(c=>c.student_id===chooser.value&&c.status==='approved').map(c=>option(c.id,c.full_name+' · '+c.relationship)).join('');
+    const isCheckout=action.value==='check_out';
+    const child=chooser.value,approved=contacts.filter(c=>c.student_id===child&&c.status==='approved');
+    const alreadyRecorded=checkoutToday.some(e=>e.student_id===child);
+    const box=document.getElementById('bp-pickup-person-holder');
+    box.hidden=!isCheckout;
+    picker.innerHTML='<option value="">Select approved person</option>'+approved.map(c=>option(c.id,c.full_name+' · '+c.relationship)).join('');
+    const helper=document.getElementById('bp-pickup-helper');
+    helper.textContent=!child?'Choose a child first.':alreadyRecorded?'A checkout is already recorded for this child today. Review the history or open Care Relay for a previous confirmation.':!approved.length?'No approved collector is listed for this child. Approve a contact first.':'Check the approved contact and photo ID in person before recording.';
+    const submit=document.getElementById('bp-event-submit');
+    if(submit)submit.disabled=!child||(isCheckout&&(alreadyRecorded||!approved.length));
    };
    chooser.onchange=refresh;action.onchange=refresh;refresh();
    form('bp-pickup-event-form',async()=>{
     const child=v('bp-event-child'),type=v('bp-event-action');
     if(!children.some(c=>c.id===child))throw Error('Choose a child');
-    if(type==='check_out'&&(!v('bp-event-contact')||!checked('bp-pickup-verified')))throw Error('Choose an approved pickup person and confirm identity');
-    await write(db,'bp_pickup_events',{school_id:sid,student_id:child,event_type:type,contact_id:type==='check_out'?v('bp-event-contact'):null,identity_verified:type==='check_out'?true:false,notes:v('bp-event-notes'),recorded_by:user.id});
+    if(type==='check_out'){
+     const contact=v('bp-event-contact');
+     if(!contacts.some(c=>c.id===contact&&c.student_id===child&&c.status==='approved')||!checked('bp-pickup-verified'))
+      throw Error('Choose an approved collector and confirm their identity in person');
+     const response=await rpc(db,'bp_relay_record_pickup',{p_school:sid,p_child:child,p_contact:contact,p_identity_checked:true,p_note:v('bp-event-notes')});
+     if(response?.ok!==true||!response.pickup_event_id)throw Error('Pickup was not confirmed. Check school history before retrying.');
+     notice('Verified pickup and Care Relay handback recorded');
+    }else{
+     await write(db,'bp_pickup_events',{school_id:sid,student_id:child,event_type:'check_in',
+      contact_id:null,identity_verified:false,notes:v('bp-event-notes'),recorded_by:user.id});
+    }
     await reload();
    });
   }

@@ -166,10 +166,13 @@ async function staffRelay(ctx){
  const preview=(child)=>{
   const a=byAttendance.get(child.id),logs=within(todayCare,child.id),pics=within(todayMedia,child.id),growth=within(todayMilestones,child.id);
   const picked=pickups.find(x=>x.student_id===child.id),isVerified=verified.some(x=>x.student_id===child.id);
-  return '<article class="cr-verify-child"><label class="cr-verify-child-check"><input type="checkbox" value="'+safe(child.id)+'" data-cr-verify-child="'+safe(child.id)+'" '+(a?'checked':'disabled')+'><span>'+
+  const hasUnacknowledgedConcern=priority.some(x=>x.student_id===child.id);
+  const ready=Boolean(a)&&!hasUnacknowledgedConcern;
+  return '<article class="cr-verify-child"><label class="cr-verify-child-check"><input type="checkbox" value="'+safe(child.id)+'" data-cr-verify-child="'+safe(child.id)+'" '+(ready?'checked':'disabled')+'><span>'+
    '<b>'+safe(child.full_name)+'</b><small>'+(a?'Attendance: '+safe(a.status):'Attendance not recorded')+
-   ' · '+logs.length+' care · '+pics.length+' media · '+growth.length+' milestones</small></span></label>'+
-   pill(isVerified?'Verified today':a?'Ready for review':'Needs attendance',isVerified?'green':a?'teal':'amber')+
+   ' · '+logs.length+' care · '+pics.length+' media · '+growth.length+' milestones'+
+   (hasUnacknowledgedConcern?' · Acknowledge family concern above first':'')+'</small></span></label>'+
+   pill(hasUnacknowledgedConcern?'Care follow-up first':isVerified?'Verified today':a?'Ready for review':'Needs attendance',hasUnacknowledgedConcern?'amber':isVerified?'green':a?'teal':'amber')+
    '<div class="cr-record-preview">'+(logs.length?logs.slice(0,3).map(x=>'<span>'+(icons[x.event_type]||'☀️')+' '+safe(String(x.details||x.event_value||'Care update recorded').slice(0,100))+'</span>').join(''):
    '<span>No additional care records</span>')+
    (picked?'<span>🎒 Pickup '+time(picked.occurred_at)+(confirmed.some(c=>c.pickup_event_id===picked.id)?' · contact and ID check confirmed':' · confirmation pending')+'</span>':'')+'</div></article>';

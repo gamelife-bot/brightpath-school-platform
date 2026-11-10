@@ -136,6 +136,7 @@ export async function renderSchoolPage(ctx,tab){
     stat('Photo permissions',n(students.filter(s=>s.photo_consent).length),'📷','amber')+
     stat('Video permissions',n(students.filter(s=>s.video_consent).length),'🎬','violet')+'</div>'+
    (noClasses?'<div class="bp-class-setup-alert" id="mw-class-setup-alert"><span>🏫</span><div><strong>Start by creating your first class or daycare room</strong><p>Once saved, it will immediately appear in the Class dropdown for enrolling children.</p></div></div>':'')+
+   '<div class="mw-inline mw-inline-info bp-guardian-consent-note"><strong>🛡️ Guardian-controlled media permissions.</strong> Photos and videos can be enabled or withdrawn only by a verified linked guardian from their Parent Portal → Photos &amp; Videos. School staff can review the status below but cannot grant consent. '+button('Review parent approvals','mw-consent-parents','outline','type="button"')+'</div>'+
    '<div class="mw-two mw-two-side">'+box('1. Create a class or room',
      '<form id="mw-enroll-class-form" class="mw-form">'+
        field('Class / daycare room name',input('mw-enroll-class-name','e.g. Toddlers, Nursery A or Preschool','text','required minlength="2" maxlength="100"'))+
@@ -153,8 +154,7 @@ export async function renderSchoolPage(ctx,tab){
      '<span class="mw-identity"><span class="mw-round-icon">'+initial(s.full_name)+'</span><b>'+e(s.full_name)+'</b></span>',
      '<select class="mw-inline-select" data-move-student="'+e(s.id)+'" aria-label="Move child to class">'+classes.map(c=>'<option value="'+e(c.id)+'" '+(c.id===s.class_id?'selected':'')+'>'+e(c.name)+'</option>').join('')+'</select>',
      status(s.photo_consent?'approved':'not recorded'),status(s.video_consent?'approved':'not recorded'),n(activities.filter(a=>a.student_id===s.id).length),
-     '<div class="bp-consent-actions">'+button(s.photo_consent?'Revoke photos':'Allow photos','mw-consent-'+s.id,s.photo_consent?'danger':'outline','data-photo-student="'+e(s.id)+'" data-photo-next="'+(!s.photo_consent)+'"')+
-      button(s.video_consent?'Revoke videos':'Allow videos','mw-video-'+s.id,s.video_consent?'danger':'outline','data-video-student="'+e(s.id)+'" data-video-next="'+(!s.video_consent)+'"')+'</div>'
+     '<div class="bp-consent-actions"><small>Managed by verified guardians</small></div>'
     ])))+'</div>':empty('🎒','No children enrolled yet','Create a class or room, then use the enrollment form above.'));
   return{html,bind(){
    document.querySelectorAll('[data-room-name]').forEach(b=>b.onclick=()=>{
@@ -189,16 +189,7 @@ export async function renderSchoolPage(ctx,tab){
     if(!confirm('Move this student to the selected class?')){await reload();return}
     try{await update(db,'bp_students',{class_id:s.value},{id:s.dataset.moveStudent,school_id:sid});notice('Class updated');await reload()}catch(err){notice(err.message,'error')}
    });
-   document.querySelectorAll('[data-video-student]').forEach(b=>b.onclick=async()=>{
-    const enabled=b.dataset.videoNext==='true';
-    if(!confirm(enabled?'Confirm written guardian consent to share short videos of this child?':'Withdraw video-sharing permission for this child?'))return;
-    try{await update(db,'bp_students',{video_consent:enabled},{id:b.dataset.videoStudent,school_id:sid});notice('Video permissions updated');await reload()}catch(err){notice(err.message,'error')}
-   });
-   document.querySelectorAll('[data-photo-student]').forEach(b=>b.onclick=async()=>{
-    const enabled=b.dataset.photoNext==='true';
-    if(!confirm(enabled?'Confirm guardian photo consent has been obtained and documented?':'Revoke photo-sharing permission for this student?'))return;
-    try{await update(db,'bp_students',{photo_consent:enabled},{id:b.dataset.photoStudent,school_id:sid});notice('Photo permissions updated');await reload()}catch(err){notice(err.message,'error')}
-   });
+   click('mw-consent-parents',()=>go('parents'));
    const f=document.getElementById('mw-kid-search');if(f)f.oninput=()=>{
     const term=f.value.toLowerCase();document.querySelectorAll('#mw-kid-table tbody tr').forEach(row=>row.hidden=!row.textContent.toLowerCase().includes(term));
    };
