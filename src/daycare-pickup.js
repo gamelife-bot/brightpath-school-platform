@@ -1,13 +1,8 @@
+import {schoolDay,SCHOOL_TIME_ZONE} from './school-day.js';
 import {escapeHtml as h,dateLabel,stat,box,empty,pill,field,input,select,textarea,button,heading,table,tr,option,read,write,update,rpc,form,click,notice,v,checked} from './workspace-core.js';
 
 const label={check_in:'Checked in',check_out:'Picked up'};
-const SCHOOL_TZ='Africa/Nairobi';
-const schoolDay=(value=new Date())=>{
- const pieces=new Intl.DateTimeFormat('en-GB',{timeZone:SCHOOL_TZ,day:'2-digit',month:'2-digit',year:'numeric'}).formatToParts(new Date(value));
- const parts=Object.fromEntries(pieces.map(x=>[x.type,x.value]));
- return parts.year+'-'+parts.month+'-'+parts.day;
-};
-const time=iso=>new Date(iso).toLocaleString('en-KE',{dateStyle:'medium',timeStyle:'short',timeZone:SCHOOL_TZ});
+const time=iso=>new Date(iso).toLocaleString('en-KE',{dateStyle:'medium',timeStyle:'short',timeZone:SCHOOL_TIME_ZONE});
 const childOpts=kids=>'<option value="">Choose a child</option>'+kids.map(c=>option(c.id,c.full_name)).join('');
 export async function renderPickupDesk(ctx){
  const {db,schoolId:sid,user,role,reload}=ctx;

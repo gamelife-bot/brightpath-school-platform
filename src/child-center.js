@@ -1,3 +1,4 @@
+import {schoolDay} from './school-day.js';
 import {escapeHtml as e,dateLabel,initial,stat,box,empty,pill,field,input,select,textarea,button,heading,table,tr,option,read,write,update,form,notice,v,checked} from './workspace-core.js';
 
 const DISPLAY_DATE=x=>x?new Date(x).toLocaleString('en-KE',{dateStyle:'medium',timeStyle:'short'}):'—';
@@ -69,7 +70,7 @@ export async function renderChildProfiles(ctx){
   return '<form id="bp-profile-form" class="mw-form">'+
    field('Full legal name',input('bp-full-name',child.full_name,'text','disabled value="'+e(child.full_name)+'"'))+
    field('Preferred name',input('bp-preferred','What this child likes to be called','text','maxlength="100" value="'+value('preferred_name')+'"'))+
-   field('Date of birth','<input id="bp-birthday" type="date" max="'+new Date().toISOString().slice(0,10)+'" value="'+value('date_of_birth')+'">')+
+   field('Date of birth','<input id="bp-birthday" type="date" max="'+schoolDay()+'" value="'+value('date_of_birth')+'">')+
    '<div class="bp-profile-form-pair">'+
     field('Emergency contact name',input('bp-emergency-name','Parent or trusted guardian','text','maxlength="140" value="'+value('emergency_contact_name')+'"'))+
     field('Emergency contact phone',input('bp-emergency-phone','e.g. +254…','tel','maxlength="40" value="'+value('emergency_contact_phone')+'"'))+'</div>'+

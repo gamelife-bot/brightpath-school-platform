@@ -1,9 +1,10 @@
+import {schoolDay} from './school-day.js';
 import {escapeHtml as e,dateLabel,stat,box,empty,pill,field,input,select,textarea,button,heading,table,tr,option,read,rpc,form,notice,v} from './workspace-core.js';
 import {visibleChildren} from './child-center.js';
 
 const icon={care:'☀️',milestone:'🌱',photo:'📷',video:'🎥',message:'💌',pickup:'🎒',incident:'🩹',school_request:'🔔'};
 const prettyDate=x=>new Date(x).toLocaleString('en-KE',{dateStyle:'medium',timeStyle:'short'});
-const dayKey=x=>new Date(x).toLocaleDateString('en-CA');
+const dayKey=x=>schoolDay(x);
 const emptyAction=description=>empty('🧸','Nothing shared yet',description);
 export async function renderNotifications(ctx){
  const {db,user,schoolId:sid,role,go,reload,refreshNotifications}=ctx;
@@ -72,7 +73,7 @@ const presets=[
 export async function renderQuickCare(ctx){
  const {db,schoolId:sid,role,go,reload}=ctx;
  if(role==='parent')return{html:heading('School staff only','Care updates','Only authorized staff can publish classroom updates.')};
- const today=new Date().toLocaleDateString('en-CA',{timeZone:'Africa/Nairobi'});
+ const today=schoolDay();
  const [children,classes,todayAttendance]=await Promise.all([
   visibleChildren(ctx),read(db,'bp_classes',q=>q.eq('school_id',sid).order('name')),
   read(db,'bp_attendance',q=>q.eq('school_id',sid).eq('attendance_date',today))
@@ -151,7 +152,7 @@ export async function renderDailySummary(ctx){
   read(db,'bp_attendance',q=>q.eq('school_id',sid).order('attendance_date',{ascending:false}).limit(400)),
   read(db,'bp_incident_reports',q=>q.eq('school_id',sid).order('happened_at',{ascending:false}).limit(200))
  ]);
- const today=new Date().toLocaleDateString('en-CA');
+ const today=schoolDay();
  const dateScope=(id,date)=>{
   const logs=care.filter(x=>x.student_id===id&&dayKey(x.occurred_at)===date);
   const mill=marks.filter(x=>x.student_id===id&&dayKey(x.observed_at)===date);

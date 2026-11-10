@@ -1,3 +1,4 @@
+import {schoolDay} from './school-day.js';
 import {escapeHtml as e,dateLabel,stat,box,empty,pill,field,input,select,textarea,button,heading,option,read,rpc,form,notice,v} from './workspace-core.js';
 const TYPES={
  absence:['🏡','Child absent','My child will be absent'],
@@ -6,7 +7,7 @@ const TYPES={
  care_change:['🧸','Change to daily routine','I need to update today’s care instructions'],
  other:['💌','Another notice','I need to tell School Administration something']
 };
-const localToday=()=>new Date(Date.now()-new Date().getTimezoneOffset()*60000).toISOString().slice(0,10);
+const localToday=()=>schoolDay();
 const fineDate=s=>s?dateLabel(s):'—';
 export async function renderFamilyNotices(ctx){
  const {db,role,schoolId:sid,user,reload}=ctx,admin=role==='school_admin';

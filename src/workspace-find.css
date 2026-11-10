@@ -1,0 +1,122 @@
+/* Compact, searchable navigation across BrightPath's four role workspaces.
+   Keeps preschool colours and does not affect the marketing landing page. */
+.mw-app .bp-nav-find {
+  flex: 0 0 auto;
+  margin: 0 9px 9px;
+  padding: 9px 10px 10px;
+  border-radius: 13px;
+  background: #ffffff0b;
+  border: 1px solid #e4fbf81c;
+}
+.mw-app .bp-nav-find label {
+  display: block;
+  color: #bce7db;
+  font-size: 10px;
+  letter-spacing: .25px;
+  font-weight: 850;
+  margin-bottom: 6px;
+}
+.mw-app .bp-nav-find label:after {
+  content: "/";
+  float: right;
+  color: #a7d5ce;
+  border: 1px solid #ffffff40;
+  border-radius: 5px;
+  min-width: 14px;
+  text-align: center;
+  line-height: 15px;
+  font-size: 11px;
+}
+.mw-app .bp-nav-find input {
+  appearance: none;
+  display: block;
+  width: 100%;
+  min-width: 0;
+  height: 35px;
+  padding: 7px 11px;
+  border: 1px solid #a4d7cb3d;
+  border-radius: 9px;
+  background: #edf7f1;
+  color: #214c44;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  outline: none;
+  transition: border-color .15s, box-shadow .15s;
+}
+.mw-app .bp-nav-find input::placeholder { color: #6f9386; opacity: 1; font-weight: 550; }
+.mw-app .bp-nav-find input:focus {
+  border-color: #80e2b1;
+  box-shadow: 0 0 0 3px #7edeb44e;
+}
+.mw-app .bp-nav-find p {
+  color: #cdece2;
+  margin: 6px 1px 0;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1.35;
+}
+.mw-app .bp-nav-find p:empty { display: none; }
+.mw-app.mw-role-parent .bp-nav-find {
+  background: #fff8ed;
+  border-color: #efdcca;
+}
+.mw-app.mw-role-parent .bp-nav-find label { color: #97745b; }
+.mw-app.mw-role-parent .bp-nav-find label:after { color: #97745b; border-color: #efd1ab; }
+.mw-app.mw-role-parent .bp-nav-find input {
+  background: #fffefb;
+  border-color: #ead6be;
+  color: #6d5747;
+}
+.mw-app.mw-role-parent .bp-nav-find input:focus {
+  border-color: #ecb98d;
+  box-shadow: 0 0 0 3px #f4d6b77a;
+}
+.mw-app.mw-role-parent .bp-nav-find p { color: #9a785d; }
+.mw-app .bp-nav-filter-hidden { display: none !important; }
+.mw-app .bp-mobile-find { display: none; }
+@media (max-width:850px) {
+  .mw-app .bp-nav-find { display: none !important; }
+  .mw-app .bp-mobile-find {
+    display: block;
+    flex: 0 0 auto;
+    padding: 10px 17px;
+    border-bottom: 1px solid #e4eee9;
+    background: #fbfdf8;
+  }
+  .mw-app .bp-mobile-find label {
+    display: block;
+    color: #56846e;
+    font-size: 11px;
+    font-weight: 900;
+    margin-bottom: 7px;
+  }
+  .mw-app .bp-mobile-find input {
+    width: 100%;
+    min-width: 0;
+    height: 43px;
+    padding: 10px 13px;
+    border-radius: 12px;
+    border: 1px solid #cde9d8;
+    outline: none;
+    background: #fff;
+    color: #315e50;
+    font: 700 13px/1.3 inherit;
+    font-family: inherit;
+  }
+  .mw-app .bp-mobile-find input::placeholder { color: #829a8c; font-weight: 500; }
+  .mw-app .bp-mobile-find input:focus { border-color: #54b997; box-shadow: 0 0 0 3px #b6e8cc; }
+  .mw-app .bp-mobile-find p {
+    margin: 6px 0 0;
+    font-size: 11px;
+    font-weight: 850;
+    color: #5a9b7a;
+  }
+  .mw-app .bp-mobile-find p:empty { display: none; }
+  .mw-app .bp-mobile-sheet-scroll { padding-top: 5px; }
+  .mw-app .bp-mobile-menu-section { padding-block: 9px; }
+  .mw-app .bp-mobile-menu-section h3 { margin-block: 5px 7px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .mw-app .bp-nav-find input { transition: none; }
+}

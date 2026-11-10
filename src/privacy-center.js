@@ -1,3 +1,4 @@
+import {schoolDay} from './school-day.js';
 import {escapeHtml as e,dateLabel,stat,box,empty,pill,field,input,select,textarea,button,heading,option,read,rpc,form,notice,v} from './workspace-core.js';
 
 const TYPES={access:['📁','Access or copy of records'],correction:['✏️','Correct inaccurate information'],deletion:['🧹','Request deletion / retention review'],consent:['🔐','Privacy or consent concern']};
@@ -67,7 +68,7 @@ export async function renderPrivacyCenter(ctx){
      if(!record?.child)throw Error('The server could not verify this child’s export');
      const blob=new Blob([JSON.stringify(record,null,2)],{type:'application/json;charset=utf-8'});
      const url=URL.createObjectURL(blob),link=document.createElement('a');
-     link.href=url;link.download='BrightPath-child-record-'+id.slice(0,8)+'-'+new Date().toISOString().slice(0,10)+'.json';
+     link.href=url;link.download='BrightPath-child-record-'+id.slice(0,8)+'-'+schoolDay()+'.json';
      document.body.appendChild(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),1500);
      notice('Private child record prepared');
     }catch(err){notice(err.message,'error')}finally{btn.disabled=false}

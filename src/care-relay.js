@@ -1,11 +1,8 @@
+import {schoolDay,SCHOOL_TIME_ZONE} from './school-day.js';
 import {escapeHtml as e,dateLabel,stat,box,empty,pill,field,select,textarea,button,heading,option,read,rpc,form,notice,v,checked} from './workspace-core.js';
 import {careRelayArt} from './care-relay-art.js';
-const localDay=(input=new Date())=>{
- const parts=new Intl.DateTimeFormat('en-GB',{timeZone:'Africa/Nairobi',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date(input));
- const map=Object.fromEntries(parts.filter(x=>['year','month','day'].includes(x.type)).map(x=>[x.type,x.value]));
- return map.year+'-'+map.month+'-'+map.day;
-};
-const time=(input)=>input?new Date(input).toLocaleTimeString('en-KE',{hour:'2-digit',minute:'2-digit',timeZone:'Africa/Nairobi'}):'—';
+const localDay=schoolDay;
+const time=(input)=>input?new Date(input).toLocaleTimeString('en-KE',{hour:'2-digit',minute:'2-digit',timeZone:SCHOOL_TIME_ZONE}):'—';
 const mood={not_shared:'No mood shared',settled:'Feeling settled',tired:'A little tired',needs_comfort:'May need extra comfort'};
 const sleep={not_shared:'Not shared',usual:'Slept as usual',less:'Less sleep than usual',restless:'Restless night'};
 const icons={meal:'🥣',nap:'😴',mood:'😊',play:'🧸',diaper:'🧷',toilet:'🚽',other:'✨'};

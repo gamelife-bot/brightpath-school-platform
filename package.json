@@ -6,7 +6,9 @@
   "scripts": {
     "build": "vite build",
     "dev": "vite --host",
-    "test:workflows": "node ops/run-synthetic-workflows.mjs"
+    "test:workflows": "node ops/run-synthetic-workflows.mjs",
+    "test:dates": "node --test ops/school-day.test.mjs",
+    "test": "npm run test:dates && npm run test:workflows"
   },
   "dependencies": {
     "@neondatabase/neon-js": "0.9.0-beta",

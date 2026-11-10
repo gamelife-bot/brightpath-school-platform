@@ -1,6 +1,7 @@
+import {schoolDay} from './school-day.js';
 import {escapeHtml as e,dateLabel,stat,box,empty,pill,field,input,select,textarea,button,heading,option,read,rpc,form,notice,v,checked} from './workspace-core.js';
 
-const today=()=>new Date().toLocaleDateString('en-CA',{timeZone:'Africa/Nairobi'});
+const today=()=>schoolDay();
 const formatDate=x=>new Date(x).toLocaleString('en-KE',{dateStyle:'medium',timeStyle:'short'});
 const statusKind=s=>s==='approved'?'green':['revoked','declined'].includes(s)?'red':'amber';
 export async function renderMedicationSafety(ctx){

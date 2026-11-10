@@ -7,6 +7,7 @@ import './signatures-feedback.css';
 import './quiet-classroom.css';
 import './care-relay.css';
 import './workspace-compact.css';
+import './workspace-find.css';
 import {renderOwnerPage} from './workspace-owner.js';
 import {renderSchoolPage} from './workspace-school.js';
 import {renderTeacherPage} from './workspace-teacher.js';
@@ -114,15 +115,21 @@ export async function launchWorkspace({db,user,role,context,root,logout,photoDat
   const [name,ico]=navMap.get(id);
   return '<button type="button" class="bp-mobile-tab" data-bp-mobile-tab="'+id+'"><span aria-hidden="true">'+(role==='owner'?ico:(playfulIcons[id]||ico))+'</span><small>'+escapeHtml(role==='parent'&&id==='admin_inbox'?'School office':role==='school_admin'&&id==='admin_inbox'?'Parent inbox':role==='school_admin'&&id==='family_notices'?'Notices':role==='parent'&&id==='family_notices'?'Absences':name)+'</small></button>'
  }).join('')+'<button type="button" id="bp-mobile-more" class="bp-mobile-tab" aria-label="Open full menu" aria-expanded="false"><span>☷</span><small>More</small></button></nav>';
+ const mobileFind='<div class="bp-mobile-find"><label for="bp-mobile-section-search">🔎 Find a section</label>'+
+  '<input id="bp-mobile-section-search" type="search" placeholder="Search pickup, photos, approvals…" autocomplete="off" aria-controls="bp-mobile-menu-list">'+
+  '<p id="bp-mobile-find-count" role="status" aria-live="polite"></p></div>';
+ const desktopFind='<div class="bp-nav-find"><label for="bp-section-search">🔎 Find a section</label>'+
+  '<input id="bp-section-search" type="search" placeholder="Search pages…" autocomplete="off" aria-controls="mw-navigation-list">'+
+  '<p id="bp-nav-find-count" role="status" aria-live="polite"></p></div>';
  const mobileMenu='<div class="bp-mobile-overlay" id="bp-mobile-overlay" hidden></div><div class="bp-mobile-sheet" id="bp-mobile-sheet" role="dialog" aria-modal="true" aria-label="All BrightPath sections" hidden>'+ 
-  '<div class="bp-mobile-sheet-head"><div><b>✦ BrightPath menu</b><small>Find every daycare feature</small></div><button id="bp-mobile-close" type="button" aria-label="Close menu">✕</button></div><div class="bp-mobile-sheet-scroll">'+
+  '<div class="bp-mobile-sheet-head"><div><b>✦ BrightPath menu</b><small>Find every daycare feature</small></div><button id="bp-mobile-close" type="button" aria-label="Close menu">✕</button></div>'+mobileFind+'<div class="bp-mobile-sheet-scroll" id="bp-mobile-menu-list">'+
   (navGroups[role]||[]).map(([group,ids])=>'<section class="bp-mobile-menu-section"><h3>'+escapeHtml(group)+'</h3>'+ids.filter(id=>navMap.has(id)).map(id=>{
    const [name,ico]=navMap.get(id);return '<button type="button" data-bp-mobile-menu="'+id+'"><span>'+(role==='owner'?ico:(playfulIcons[id]||ico))+'</span>'+escapeHtml(name)+'<span class="bp-mobile-menu-arrow">›</span></button>'
   }).join('')+'</section>').join('')+'</div></div>';
  const navHtml=(navGroups[role]||[]).map(([title,ids],idx)=>'<section class="mw-nav-group"><button type="button" class="mw-nav-group-label" data-nav-toggle="'+idx+'" aria-expanded="true"><span>'+escapeHtml(title)+'</span><span class="mw-nav-chevron">⌄</span></button><div class="mw-nav-group-items" id="mw-nav-group-'+idx+'">'+ids.filter(id=>navMap.has(id)).map(id=>navEntry(id,...navMap.get(id))).join('')+'</div></section>').join('');
  document.getElementById('app').innerHTML='<div class="mw-app mw-role-'+role+'"><aside class="mw-sidebar">'+
   '<div class="mw-brandzone">'+logo+'<p>'+escapeHtml(role==='owner'?'Platform administration':role==='school_admin'?'Little learners. Big care.':role==='teacher'?'Care · Play · Grow':'Every little moment matters')+'</p><div class="bp-side-tiles" aria-hidden="true"><span>A</span><span>B</span><span>C</span><span>★</span></div></div>'+
-  '<div class="mw-side-caption">WORKSPACE</div><nav class="mw-navigation" aria-label="Workspace sections">'+navHtml+'</nav>'+
+  '<div class="mw-side-caption">WORKSPACE</div>'+desktopFind+'<nav class="mw-navigation" id="mw-navigation-list" aria-label="Workspace sections">'+navHtml+'</nav>'+
   '<div class="mw-side-footer"><div class="mw-avatar">'+initial(user.name||user.email)+'</div><div><b>'+escapeHtml(user.name||'My account')+'</b><span>'+escapeHtml(roleTitle[role])+'</span></div></div></aside>'+
   '<div class="mw-main"><header class="mw-topbar"><div class="mw-location"><span class="mw-location-dot"></span> '+escapeHtml(roleTitle[role])+' workspace <span class="bp-top-doodle" aria-hidden="true">✦</span></div>'+
   '<div class="mw-top-actions">'+(role!=='owner'?'<button class="bp-top-notice" id="mw-open-notifications" aria-label="Open notifications" title="Notifications">🔔 <span id="mw-notification-count" hidden></span></button>':'')+schoolPicker+'<span class="mw-user-email">'+escapeHtml(user.email||'')+'</span><button id="mw-logout" class="mw-btn mw-btn-outline mw-logout">Sign out</button></div></header>'+
@@ -157,6 +164,7 @@ export async function launchWorkspace({db,user,role,context,root,logout,photoDat
  async function show(tab){
   if(!nav.some(([id])=>id===tab))tab='overview';
   current=tab;
+  if(typeof clearFind==='function')clearFind();
   document.querySelectorAll('.mw-nav-group').forEach(group=>{
    const button=group.querySelector('.mw-nav-group-label'),items=group.querySelector('.mw-nav-group-items');
    if(group.querySelector('[data-mw-page="'+tab+'"]')&&items?.hidden){items.hidden=false;if(button)button.setAttribute('aria-expanded','true')}
@@ -186,14 +194,110 @@ export async function launchWorkspace({db,user,role,context,root,logout,photoDat
   }
  }
  const more=document.getElementById('bp-mobile-more'),sheet=document.getElementById('bp-mobile-sheet'),overlay=document.getElementById('bp-mobile-overlay');
+
+ const alias={
+  overview:'home today dashboard',relay:'home handover evening morning pickup',students:'enroll enrolment register children',
+  parents:'parent approval access requests',teachers:'teacher approval access requests',
+  guardian_changes:'guardianship custody change links',families:'link parents guardians verification',
+  pickup:'check-in check-out collectors safe arrival departure handover',
+  moments:'gallery pictures photo video',daily_summary:'report end of day diary',
+  medications:'medicines medication dose',admin_inbox:'school office principal director contact',
+  family_notices:'absence late arrival early pickup',staffing:'shifts ratio staff coverage',
+  quickcare:'group update bulk care teacher shortcuts',quiet:'teacher assistant automation time saving',
+  signatures:'sign document draw signature',feedback:'survey review feedback',
+  gradebook:'scores marks grades reports',activities:'learning reports progress',
+  support:'help support ticket',privacy:'consent information export',
+  care:'meal nap routine diary',milestones:'development achievement learning',
+  notifications:'updates alert inbox',setup:'onboarding checklist'
+ };
+ const lower=value=>String(value||'').trim().toLocaleLowerCase();
+ const matchSection=(query,title,id,group)=>!query||
+  lower(title+' '+id+' '+id.replace(/_/g,' ')+' '+(alias[id]||'')+' '+group).includes(query);
+ const hideWhen=(el,hidden)=>el.classList.toggle('bp-nav-filter-hidden',hidden);
+ const sidebarFind=document.getElementById('bp-section-search');
+ const mobileFindInput=document.getElementById('bp-mobile-section-search');
+ let desktopExpandedBeforeFind=null;
+ const desktopGroups=[...document.querySelectorAll('.mw-navigation .mw-nav-group')];
+ const applyDesktopFind=()=>{
+  const query=lower(sidebarFind.value);
+  if(query&&!desktopExpandedBeforeFind){
+   desktopExpandedBeforeFind=new Map(desktopGroups.map(g=>[g,g.querySelector('.mw-nav-group-items')?.hidden]));
+  }
+  let visible=0;
+  for(const group of desktopGroups){
+   const label=group.querySelector('.mw-nav-group-label'),list=group.querySelector('.mw-nav-group-items');
+   const groupName=label?.textContent||'';
+   const groupMatch=query&&lower(groupName).includes(query);
+   let inGroup=0;
+   group.querySelectorAll('[data-mw-page]').forEach(btn=>{
+    const found=!query||groupMatch||matchSection(query,btn.textContent,btn.dataset.mwPage,'');
+    hideWhen(btn,!found);if(found){visible++;inGroup++;}
+   });
+   hideWhen(group,!!query&&inGroup===0);
+   if(query&&inGroup){list.hidden=false;label?.setAttribute('aria-expanded','true');}
+   else if(!query&&desktopExpandedBeforeFind){
+    list.hidden=!!desktopExpandedBeforeFind.get(group);
+    label?.setAttribute('aria-expanded',String(!list.hidden));
+   }
+  }
+  if(!query)desktopExpandedBeforeFind=null;
+  const count=document.getElementById('bp-nav-find-count');
+  count.textContent=query?(visible?visible+' matching section'+(visible===1?'':'s'):'No matching sections'):'';
+ };
+ const applyMobileFind=()=>{
+  const query=lower(mobileFindInput.value);
+  let visible=0;
+  document.querySelectorAll('.bp-mobile-menu-section').forEach(section=>{
+   const title=section.querySelector('h3')?.textContent||'';
+   const groupMatch=query&&lower(title).includes(query);
+   let foundInGroup=0;
+   section.querySelectorAll('[data-bp-mobile-menu]').forEach(btn=>{
+    const found=!query||groupMatch||matchSection(query,btn.textContent,btn.dataset.bpMobileMenu,'');
+    hideWhen(btn,!found);if(found){visible++;foundInGroup++;}
+   });
+   hideWhen(section,!!query&&!foundInGroup);
+  });
+  document.getElementById('bp-mobile-find-count').textContent=query?
+   (visible?visible+' matching section'+(visible===1?'':'s'):'No matching sections'):'';
+ };
+ const clearFind=()=>{
+  sidebarFind.value='';applyDesktopFind();
+  mobileFindInput.value='';applyMobileFind();
+ };
+ sidebarFind.addEventListener('input',applyDesktopFind);
+ mobileFindInput.addEventListener('input',applyMobileFind);
+ sidebarFind.addEventListener('keydown',event=>{
+  if(event.key==='Escape'){sidebarFind.value='';applyDesktopFind();}
+  if(event.key==='Enter'&&lower(sidebarFind.value)){
+   const first=document.querySelector('.mw-navigation [data-mw-page]:not(.bp-nav-filter-hidden)');
+   if(first){event.preventDefault();first.click();}
+  }
+ });
+ mobileFindInput.addEventListener('keydown',event=>{
+  if(event.key==='Escape'&&mobileFindInput.value){event.preventDefault();event.stopPropagation();mobileFindInput.value='';applyMobileFind();}
+  if(event.key==='Enter'&&lower(mobileFindInput.value)){
+   const first=document.querySelector('.bp-mobile-sheet [data-bp-mobile-menu]:not(.bp-nav-filter-hidden)');
+   if(first){event.preventDefault();first.click();}
+  }
+ });
+ if(window.__bpNavFindKeydown)document.removeEventListener('keydown',window.__bpNavFindKeydown);
+ window.__bpNavFindKeydown=event=>{
+  const target=event.target;
+  if(event.key==='/'&&!event.metaKey&&!event.ctrlKey&&!event.altKey&&window.innerWidth>850&&
+      !(target?.matches?.('input,textarea,select,[contenteditable="true"]'))&&sheet.hidden){
+   event.preventDefault();sidebarFind.focus();sidebarFind.select();
+  }
+ };
+ document.addEventListener('keydown',window.__bpNavFindKeydown);
+
  let previousFocus=null;
- function closeMobileMenu(){if(sheet.hidden)return;sheet.hidden=true;overlay.hidden=true;more.setAttribute('aria-expanded','false');document.body.classList.remove('bp-menu-open');if(previousFocus?.isConnected)previousFocus.focus();}
- function openMobileMenu(){previousFocus=document.activeElement;sheet.hidden=false;overlay.hidden=false;more.setAttribute('aria-expanded','true');document.body.classList.add('bp-menu-open');document.getElementById('bp-mobile-close').focus();}
+ function closeMobileMenu(){if(sheet.hidden)return;sheet.hidden=true;overlay.hidden=true;more.setAttribute('aria-expanded','false');document.body.classList.remove('bp-menu-open');mobileFindInput.value='';applyMobileFind();if(previousFocus?.isConnected)previousFocus.focus();}
+ function openMobileMenu(){previousFocus=document.activeElement;sheet.hidden=false;overlay.hidden=false;more.setAttribute('aria-expanded','true');document.body.classList.add('bp-menu-open');mobileFindInput.focus();}
  more.onclick=()=>sheet.hidden?openMobileMenu():closeMobileMenu();
  document.getElementById('bp-mobile-close').onclick=closeMobileMenu;
  overlay.onclick=closeMobileMenu;
  sheet.addEventListener('keydown',event=>{if(event.key==='Escape'){event.preventDefault();closeMobileMenu()}if(event.key==='Tab'){
-  const els=[...sheet.querySelectorAll('button:not([disabled])')].filter(b=>b.offsetParent!==null);const first=els[0],last=els[els.length-1];
+  const els=[...sheet.querySelectorAll('button:not([disabled]),input:not([disabled])')].filter(b=>b.offsetParent!==null);const first=els[0],last=els[els.length-1];
   if(event.shiftKey&&document.activeElement===first){event.preventDefault();last.focus()}else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus()}
  }});
  document.querySelectorAll('[data-bp-mobile-tab]').forEach(el=>el.onclick=()=>show(el.dataset.bpMobileTab));
@@ -204,7 +308,7 @@ export async function launchWorkspace({db,user,role,context,root,logout,photoDat
   if(!items)return;items.hidden=!items.hidden;el.setAttribute('aria-expanded',String(!items.hidden));
  });
  if(role!=='owner')document.getElementById('mw-open-notifications').onclick=()=>show('notifications');
- document.getElementById('mw-logout').onclick=()=>{if(window.__bpNoticeTimer)window.clearInterval(window.__bpNoticeTimer);logout()};
+ document.getElementById('mw-logout').onclick=()=>{if(window.__bpNoticeTimer)window.clearInterval(window.__bpNoticeTimer);if(window.__bpNavFindKeydown)document.removeEventListener('keydown',window.__bpNavFindKeydown);logout()};
  if(window.__bpNoticeTimer)window.clearInterval(window.__bpNoticeTimer);
  if(role!=='owner')window.__bpNoticeTimer=window.setInterval(()=>void refreshNotificationCount(),45000);
  const picker=document.getElementById('mw-school');

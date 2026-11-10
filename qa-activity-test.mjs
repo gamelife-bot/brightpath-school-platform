@@ -129,6 +129,44 @@ try{
    p.on('pageerror',e=>js.push(e.message));
    await p.goto(base+'qa-activity.html?role='+role,{waitUntil:'networkidle'});
    const tabNames=await p.locator('[data-mw-page]').evaluateAll(items=>items.map(x=>x.dataset.mwPage));
+   // Discoverability: the mobile menu and desktop sidebar must find every feature quickly.
+   const findTab=role==='owner'?'revenue':'pickup',findTerm=role==='owner'?'revenue':'pickup';
+   if(width===390){
+    await p.locator('#bp-mobile-more').click();
+    const input=p.locator('#bp-mobile-section-search');
+    assert(await input.evaluate(el=>document.activeElement===el),'Mobile menu should focus its section search');
+    await input.fill('not a real section anywhere');
+    assert((await p.locator('#bp-mobile-find-count').innerText()).includes('No matching sections'));
+    await input.fill(findTerm);
+    assert(await p.locator('[data-bp-mobile-menu="'+findTab+'"]').isVisible());
+    await p.locator('[data-bp-mobile-menu="'+findTab+'"]').click();
+    assert.equal(await p.locator('#bp-mobile-more').getAttribute('aria-expanded'),'false');
+    assert.equal(await input.inputValue(),'');
+   }else{
+    const input=p.locator('#bp-section-search');
+    await input.fill('not a real section anywhere');
+    assert((await p.locator('#bp-nav-find-count').innerText()).includes('No matching sections'));
+    assert.equal(await p.locator('.mw-navigation [data-mw-page]:not(.bp-nav-filter-hidden)').count(),0);
+    await input.fill(findTerm);
+    assert(await p.locator('[data-mw-page="'+findTab+'"]').isVisible());
+    await p.locator('[data-mw-page="'+findTab+'"]').click();
+    assert.equal(await input.inputValue(),'');
+    await p.locator('.mw-page-head h1').click();
+    await p.keyboard.press('/');
+    assert(await input.evaluate(el=>document.activeElement===el),'Slash shortcut must focus navigation search');
+    await input.press('Escape');
+   }
+   if(role==='teacher'&&width===1280){
+    const finder=p.locator('#bp-section-search');
+    await finder.fill('quickcare');
+    assert(await p.locator('[data-mw-page="quickcare"]').isVisible(),'Internal section names should be searchable');
+    await finder.press('Escape');
+    assert.equal(await finder.inputValue(),'');
+    passed++;
+   }
+   await p.locator('#panel-content .mw-page-head').waitFor({timeout:13000});
+   passed+=2;
+   console.log('PASS find-a-section',role,width,findTerm);
    for(const tab of tabNames){
     if(width===390){await p.locator('#bp-mobile-more').click();await p.locator('[data-bp-mobile-menu="'+tab+'"]').click();}
     else await p.locator('[data-mw-page="'+tab+'"]').click();

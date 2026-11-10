@@ -1,6 +1,7 @@
+import {schoolDay} from './school-day.js';
 import {escapeHtml as e,dateLabel,stat,box,empty,pill,field,input,select,textarea,button,heading,option,read,write,update,rpc,form,notice,v} from './workspace-core.js';
 
-const dateToday=()=>new Date().toLocaleDateString('en-CA',{timeZone:'Africa/Nairobi'});
+const dateToday=()=>schoolDay();
 const choose=(id,arr,field='name')=>'<option value="">Choose…</option>'+arr.map(a=>option(a.id,a[field])).join('');
 const time=x=>String(x||'').slice(0,5);
 export async function renderStaffCoverage(ctx){

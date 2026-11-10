@@ -1,3 +1,4 @@
+import {schoolDay} from './school-day.js';
 import {renderCareRelay} from './care-relay.js';
 import {renderQuietClassroom} from './quiet-classroom.js';
 import {renderStaffCoverage} from './staff-coverage.js';
@@ -11,7 +12,7 @@ import {renderPickupDesk} from './daycare-pickup.js';
 import {renderChildMoments} from './daycare-media.js';
 import {escapeHtml as e,numberLabel as n,dateLabel,initial,stat,box,empty,pill,status,field,input,select,textarea,button,heading,table,tr,option,bar,read,write,result,form,click,notice,v} from './workspace-core.js';
 
-const today=()=>new Date().toLocaleDateString('en-CA');
+const today=()=>schoolDay();
 const SUBJECTS=['Mathematics','English','Reading','Science','Art & Creativity','Physical Education','Social Skills','Other'];
 const kidLabel=(s,classes)=>s.full_name+' · '+(classes.find(c=>c.id===s.class_id)?.name||'Class');
 async function teacherData(db,sid){

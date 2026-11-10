@@ -1,7 +1,6 @@
 import './style.css';
 import { renderMarketing } from './marketing.js';
 import { enableBrandShortcut } from './logo-shortcut.js';
-import { launchWorkspace } from './workspace-core.js';
 import {renderAccessPending} from './access-request.js';
 import { createClient, BetterAuthVanillaAdapter } from '@neondatabase/neon-js';
 
@@ -61,6 +60,7 @@ async function enterPortal(){
  if(portal==='owner'&&!context?.is_owner){await renderDenied();return}
  if(portal!=='owner'&&!memberships.length){await renderDenied();return}
  currentSchool=memberships[0]?.school_id||'';
+ const {launchWorkspace}=await import('./workspace-core.js');
  await launchWorkspace({ db, user: currentUser, role: portal, context, root: ROOT, logout, photoData });
  }catch(err){shell('<div class="card"><h2>Unable to open this account</h2>'+msg(errText(err),'err')+'<p class="muted">Verify your email and sign in again if needed.</p><button class="btn" id="relogin">Back to sign in</button></div>');$('relogin').onclick=()=>renderAuth('signin')}
 }

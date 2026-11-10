@@ -1,3 +1,4 @@
+import {schoolDay} from './school-day.js';
 import {renderCareRelay} from './care-relay.js';
 import {renderSignatures} from './signature-center.js';
 import {renderFamilyFeedback} from './family-feedback.js';
@@ -18,7 +19,7 @@ import {renderChildMoments} from './daycare-media.js';
 import {renderSchoolApprovals} from './workspace-approvals.js';
 import {escapeHtml as e,numberLabel as n,dateLabel,dollar,initial,stat,box,empty,pill,status,field,input,select,textarea,button,heading,table,tr,option,bar,read,write,update,rpc,result,form,click,notice,v,checked} from './workspace-core.js';
 
-const today=()=>new Date().toLocaleDateString('en-CA');
+const today=()=>schoolDay();
 const roleName={school_admin:'School administrator',teacher:'Teacher',parent:'Parent'};
 const actions=(s)=>'<div class="mw-form-actions">'+s+'</div>';
 function classOptions(classes){return '<option value="">Choose a class</option>'+classes.map(c=>option(c.id,c.name)).join('')}
