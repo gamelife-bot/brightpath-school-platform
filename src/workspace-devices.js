@@ -16,7 +16,7 @@ export async function renderDevices({db,reload,timeZone}){
   return box((bag?'🎒 Bag tracker':'⌚ Wristband')+' · '+e(student?.name||'Student'),
    pill(label,device.paused||!hasReport||stale?'amber':'green')+location+
    '<div class="mw-form-actions">'+button(device.paused?'Resume tracking':'Pause tracking','tracker-pause-'+device.id,'outline')+
-   button('Remove device','tracker-remove-'+device.id,'outline')+'</div>');
+   button('Remove device','tracker-remove-'+device.id,'outline')+'</div>','bp-device-card');
  }).join('');
  const pairing=students.length?box('Pair a tracker',
   '<form class="mw-form" id="tracker-pair">'+
@@ -28,7 +28,8 @@ export async function renderDevices({db,reload,timeZone}){
  return {
   html:heading('MY FAMILY','Devices','Pair a bag tracker or wristband for a linked student in any class.',button('Refresh devices','tracker-refresh','outline'))+
    banners('info','Tracker reports show the last location of the device. School staff verify pickup separately.')+
-   pairing+(cards?'<div class="mw-two">'+cards+'</div>':empty('🎒','No trackers paired')),
+   '<div class="bp-devices-content">'+(cards?'<div class="mw-two bp-device-list">'+cards+'</div>':'')+pairing+
+   (cards?'':empty('🎒','No trackers paired'))+'</div>',
   bind(){
    click('tracker-refresh',()=>reload());
    form('tracker-pair',async element=>{
@@ -38,9 +39,10 @@ export async function renderDevices({db,reload,timeZone}){
    });
    for(const device of devices){
     const control=async (event,action)=>{
-     event.currentTarget.disabled=true;
+     const trigger=event.currentTarget;
+     trigger.disabled=true;
      try{await rpc(db,'bp_tracker_control',{p_device:device.id,p_action:action});await reload()}
-     catch(error){notice(error.message,'error');event.target.disabled=false}
+     catch(error){notice(error.message,'error');trigger.disabled=false}
     };
     click('tracker-pause-'+device.id,event=>control(event,device.paused?'resume':'pause'));
     click('tracker-remove-'+device.id,event=>{

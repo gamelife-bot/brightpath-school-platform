@@ -324,3 +324,30 @@
 @media print {
   .mw-app .mw-content { padding: 0; }
 }
+
+
+.bp-devices-content {
+  display: grid;
+  gap: 12px;
+}
+.bp-devices-content .bp-device-list,
+.bp-devices-content > .mw-card {
+  margin-bottom: 0;
+}
+.bp-device-card p {
+  margin: 9px 0;
+  overflow-wrap: anywhere;
+}
+@media (max-width: 600px) {
+  .mw-app .bp-devices-content .bp-device-list { grid-template-columns: minmax(0, 1fr); }
+  .mw-app .bp-devices-content .mw-btn,
+  .mw-app #tracker-refresh { min-height: 44px; }
+  .mw-app #tracker-pair input:not([type="checkbox"]),
+  .mw-app #tracker-pair select { font-size: 16px; min-height: 44px; }
+  .mw-app #tracker-pair-submit { width: 100%; }
+  .mw-app .bp-device-card .mw-form-actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .mw-app .bp-device-card .mw-btn { white-space: normal; }
+}

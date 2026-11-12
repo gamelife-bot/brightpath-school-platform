@@ -92,7 +92,7 @@ const navGroups={
  owner:[['PLATFORM',['overview','schools','people']],['BUSINESS',['analytics','revenue']],['HELP',['support']]],
  school_admin:[['AT A GLANCE',['overview','relay','setup','notifications']],['CHILDREN & FAMILIES',['classes','students','profiles','guardian_changes','families','parents']],['YOUR TEAM',['teachers','people','staffing']],['EVERYDAY CARE',['care','quickcare','milestones','moments','daily_summary','medications','messages','admin_inbox','family_notices','signatures','incidents','pickup','attendance']],['SCHOOL OPERATIONS',['events','feedback','activities','announcements','privacy','billing','settings','support']]],
  teacher:[['MY DAY',['overview','relay','quiet','notifications']],['CLASSROOM',['classes','students','profiles']],['DAILY ROUTINES',['care','quickcare','staffing','milestones','moments','daily_summary','medications','messages','incidents','pickup']],['LEARNING & SCHOOL',['publish','gradebook','attendance','events','announcements']]],
- parent:[['MY FAMILY',['overview','relay','notifications','children','daily_summary','guardian_changes']],['LITTLE MOMENTS',['care','medications','moments','milestones','messages','admin_inbox','family_notices','signatures','feedback']],['SAFETY & SCHOOL',['incidents','pickup','journal','attendance','privacy','events','announcements','membership']]]
+ parent:[['MY FAMILY',['overview','devices','relay','notifications','children','daily_summary','guardian_changes']],['LITTLE MOMENTS',['care','medications','moments','milestones','messages','admin_inbox','family_notices','signatures','feedback']],['SAFETY & SCHOOL',['incidents','pickup','journal','attendance','privacy','events','announcements','membership']]]
 };
 
 const roleTitle={owner:'Platform owner',school_admin:'School administrator',teacher:'Teacher',parent:'Parent'};
@@ -101,7 +101,7 @@ const renderer={owner:renderOwnerPage,school_admin:renderSchoolPage,teacher:rend
 export async function launchWorkspace({db,user,role,context,root,logout,photoData,devicesPreview}){
  const showDevices=role==='parent';
  const nav=showDevices?[...pages.parent,['devices','Devices','🎒']]:pages[role];
- const groups=showDevices?[...navGroups.parent,[devicesPreview?'PROTOTYPE':'TRACKERS',['devices']]]:navGroups[role];
+ const groups=navGroups[role];
  if(!nav)throw new Error('Unsupported account workspace');
  let school=(context?.memberships||[]).find(m=>m.role===role&&m.active)?.school_id||null;
  let current=new URLSearchParams(window.location.search).get('tab')||'overview';
@@ -121,7 +121,7 @@ export async function launchWorkspace({db,user,role,context,root,logout,photoDat
  const playfulIcons={relay:'🌈',overview:'🏡',setup:'🌻',notifications:'🔔',schools:'🏫',classes:'🧩',students:'🧒',children:'🧒',profiles:'🧸',people:'👥',teachers:'🍎',parents:'💛',families:'👨‍👩‍👧',care:'☀️',quickcare:'✨',admin_inbox:'💌',family_notices:'📮',signatures:'✍️',feedback:'💛',events:'🗓️',quiet:'🌿',staffing:'🍎',guardian_changes:'👨‍👩‍👧',medications:'💊',privacy:'🛡️',milestones:'🌱',moments:'📸',daily_summary:'📔',messages:'💌',incidents:'🩹',pickup:'🎒',attendance:'📝',activities:'🎨',announcements:'📣',billing:'💳',settings:'⚙️',support:'💬',publish:'✏️',gradebook:'🌟',journal:'📔',membership:'💛'};
  const navEntry=(id,name,ico)=>'<button type="button" data-mw-page="'+id+'" class="mw-navitem" aria-current="false"><span class="mw-navico" aria-hidden="true">'+(role==='owner'?ico:(playfulIcons[id]||ico))+'</span><span>'+escapeHtml(name)+'</span>'+(id==='notifications'?'<span id="mw-nav-notifications" class="bp-notification-dot" hidden></span>':'')+'</button>';
  const navMap=new Map(nav.map(([id,name,ico])=>[id,[name,ico]]));
- const mobileTabIds={owner:['overview','schools','revenue','support'],school_admin:['overview','relay','admin_inbox','family_notices'],teacher:['overview','relay','quickcare','messages'],parent:['overview','relay','admin_inbox','family_notices']};
+ const mobileTabIds={owner:['overview','schools','revenue','support'],school_admin:['overview','relay','admin_inbox','family_notices'],teacher:['overview','relay','quickcare','messages'],parent:['overview','relay','devices','family_notices']};
  const mobileMain=(mobileTabIds[role]||[]).filter(id=>navMap.has(id));
  const mobileFooter='<nav class="bp-mobile-tabs" aria-label="Mobile quick navigation">'+mobileMain.map(id=>{
   const [name,ico]=navMap.get(id);

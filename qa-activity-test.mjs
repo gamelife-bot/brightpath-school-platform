@@ -219,6 +219,16 @@ try{
  await onRole(devices,'teacher');
  assert.equal(await devices.locator('[data-mw-page="devices"]').count(),0);
  await devices.close();
+ const phone=await browser.newPage({viewport:{width:320,height:640},isMobile:true,hasTouch:true});
+ await phone.goto(base+'qa-activity.html?role=parent');
+ await phone.locator('[data-bp-mobile-tab="devices"]').click();
+ await phone.getByRole('heading',{name:'Devices',exact:true}).waitFor();
+ assert.equal(await phone.locator('[data-bp-mobile-tab="devices"]').getAttribute('aria-current'),'page');
+ await phone.locator('[data-bp-mobile-tab="overview"]').click();
+ await phone.locator('[data-family-quick="devices"]').click();
+ await phone.getByRole('heading',{name:'Devices',exact:true}).waitFor();
+ assert(await phone.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+4));
+ await phone.close();
  passed++;
  console.log('PASS devices prototype reports, household access, pause, transfer and removal');
 
