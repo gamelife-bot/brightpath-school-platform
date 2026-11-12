@@ -1,3 +1,4 @@
+import {messageAttributes, sentReceipt, watchChatReceipts} from './chat-receipts.js';
 import {schoolDay,schoolTime,schoolDateTime,getSchoolTimeZone} from './school-day.js';
 import {schoolDateTimeInput,schoolLocalToUtc} from './school-clock-input.js';
 import {escapeHtml as h,numberLabel as n,dateLabel,initial,stat,box,empty,pill,status,field,input,select,textarea,button,heading,table,tr,option,bar,read,write,update,rpc,result,form,click,notice,v,checked} from './workspace-core.js';
@@ -133,15 +134,15 @@ export async function renderMilestones(ctx){
 export async function renderChildMessages(ctx){
  const {db,schoolId:sid,user,reload,role,go}=ctx;
  const students=await childRoster(ctx),ids=new Set(students.map(s=>s.id));
- const records=await read(db,'bp_child_messages',q=>q.eq('school_id',sid).order('created_at',{ascending:true}).limit(350));
- const messages=records.filter(m=>ids.has(m.student_id));
+ const records=await read(db,'bp_child_messages',q=>q.eq('school_id',sid).order('created_at',{ascending:false}).order('id',{ascending:false}).limit(350));
+ const messages=records.filter(m=>ids.has(m.student_id)).reverse();
  const current=new URLSearchParams(window.location.search).get('child')||students[0]?.id||'';
  const active=students.some(s=>s.id===current)?current:students[0]?.id||'';
  const thread=(id)=>{
   const list=messages.filter(m=>m.student_id===id);
   return list.length?'<div class="bp-chat-messages">'+list.map(m=>
-   '<div class="bp-chat-bubble '+(m.sender_user_id===user.id?'bp-chat-out':'bp-chat-in')+'">'+
-    '<small>'+(m.sender_user_id===user.id?'You':role==='parent'?'School team':'Parent / school team')+' · '+time(m.created_at)+'</small>'+
+   '<div class="bp-chat-bubble '+(m.sender_user_id===user.id?'bp-chat-out':'bp-chat-in')+'" '+messageAttributes(m,user.id)+'>'+
+    '<small class="bp-chat-meta">'+(m.sender_user_id===user.id?'You':role==='parent'?'School team':'Parent / school team')+' · '+time(m.created_at)+(m.sender_user_id===user.id?sentReceipt:'')+'</small>'+
     '<p>'+h(m.body)+'</p></div>').join('')+'</div>':
    empty('💌','Start a conversation','Send a message about your child’s day.');
  };
@@ -149,7 +150,7 @@ export async function renderChildMessages(ctx){
   'Talk with your child’s classroom team. These messages are visible to authorized school staff and linked guardians.')+
  (role==='parent'?'<div class="bp-parent-office-banner"><span>💌</span><div><strong>Need to write directly to School Administration?</strong><p>Use your separate private school-office inbox for fees, formal concerns or confidential questions. Classroom teachers cannot read it.</p></div>'+button('Message School Admin','bp-open-admin-from-messages','outline')+'</div>':'')+
  '<div class="bp-chat-layout"><div class="bp-chat-children"><h2>Children</h2>'+
- (students.length?students.map(s=>'<button type="button" class="bp-chat-child '+(s.id===active?'active':'')+'" data-chat-child="'+h(s.id)+'"><span class="mw-round-icon">'+initial(s.full_name)+'</span><b>'+h(s.full_name)+'</b><small>↗</small></button>').join(''):
+ (students.length?students.map(s=>'<button type="button" class="bp-chat-child '+(s.id===active?'active':'')+'" aria-current="'+(s.id===active?'true':'false')+'" data-chat-child="'+h(s.id)+'"><span class="mw-round-icon">'+initial(s.full_name)+'</span><b>'+h(s.full_name)+'</b><small>↗</small></button>').join(''):
  empty('♡','No child linked','An approved child connection is required to message.'))+'</div>'+
  '<section class="bp-chat-panel">'+
  '<div class="bp-chat-panel-head"><span>💬</span><div><b id="bp-chat-child-name">'+h(prettyName(students,active))+'</b><small>School & family conversation</small></div></div>'+
@@ -159,17 +160,37 @@ export async function renderChildMessages(ctx){
  return{html,bind(){
   if(role==='parent')click('bp-open-admin-from-messages',()=>go('admin_inbox'));
   let selected=active;
+  const drafts=new Map();
+  const composer=document.getElementById('bp-chat-body');
+  let stopReceipts=()=>{};
+  const openFeed=()=>{
+   stopReceipts();
+   const feed=document.getElementById('bp-thread');
+   feed.scrollTop=feed.scrollHeight;
+   stopReceipts=watchChatReceipts(db,'classroom',feed);
+  };
   document.querySelectorAll('[data-chat-child]').forEach(b=>b.onclick=()=>{
+   if(selected===b.dataset.chatChild)return;
+   drafts.set(selected,composer.value);
    selected=b.dataset.chatChild;
-   document.querySelectorAll('[data-chat-child]').forEach(x=>x.classList.toggle('active',x.dataset.chatChild===selected));
+   composer.value=drafts.get(selected)||'';
+   const url=new URL(location.href);
+   url.searchParams.set('child',selected);
+   history.replaceState(history.state,'',url);
+   document.querySelectorAll('[data-chat-child]').forEach(x=>{
+    const isCurrent=x.dataset.chatChild===selected;
+    x.classList.toggle('active',isCurrent);
+    x.setAttribute('aria-current',String(isCurrent));
+   });
    document.getElementById('bp-chat-child-name').textContent=prettyName(students,selected);
    document.getElementById('bp-thread').innerHTML=thread(selected);
+   openFeed();
   });
   form('bp-chat-form',async()=>{
    if(!students.some(s=>s.id===selected))throw Error('Choose a child');
    await write(db,'bp_child_messages',{school_id:sid,student_id:selected,sender_user_id:user.id,body:v('bp-chat-body')});
    await reload();
   });
-  const el=document.getElementById('bp-thread');if(el)el.scrollTop=el.scrollHeight;
+  openFeed();
  }};
 }

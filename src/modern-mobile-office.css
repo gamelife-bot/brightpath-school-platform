@@ -138,3 +138,13 @@
 .bp-unlink-verify[hidden]{display:none!important}
 .bp-unlink-verify h3{color:#965a50;font-size:15px;margin:0}
 .bp-unlink-verify p{color:#9a7772;font-size:12px;line-height:1.7;margin:4px 0}
+
+.bp-chat-meta { display: flex; align-items: center; flex-wrap: wrap; gap: 4px 8px; }
+.bp-chat-receipt { color: #466568; font-size: 13px; letter-spacing: -.15em; padding-inline-end: .15em; }
+.bp-chat-receipt.is-read { color: #0759bd; }
+.bp-chat-bubble { overflow-wrap: anywhere; }
+
+@media (max-width: 850px) {
+  .bp-chat-composer textarea, .bp-office-reply textarea { font-size: 16px; }
+  .bp-chat-composer .mw-btn, .bp-office-reply .mw-btn { min-height: 44px; }
+}

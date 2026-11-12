@@ -1,3 +1,4 @@
+import {messageAttributes, sentReceipt, watchChatReceipts} from './chat-receipts.js';
 import {escapeHtml as e,dateLabel,stat,box,empty,pill,field,input,select,textarea,button,heading,option,read,rpc,form,notice,v} from './workspace-core.js';
 
 const TOPICS={general:['💬','General question'],childcare:['🧸','Childcare and routines'],billing:['💳','Fees and billing'],complaint:['📝','Concern or feedback'],documents:['📄','School paperwork'],other:['🌻','Other request']};
@@ -22,7 +23,7 @@ export async function renderAdminInbox(ctx){
  if(!threads.some(t=>t.id===current))current=threads[0]?.id||'';
  const categories=Object.entries(TOPICS).map(([key,parts])=>option(key,parts[0]+' '+parts[1])).join('');
  const count=threads.filter(t=>t.status==='open').length;
- const listItem=(t)=>'<button type="button" class="bp-office-thread '+(t.id===current?'active':'')+'" data-office-thread="'+e(t.id)+'">'+
+ const listItem=(t)=>'<button type="button" class="bp-office-thread '+(t.id===current?'active':'')+'" aria-current="'+(t.id===current?'true':'false')+'" data-office-thread="'+e(t.id)+'">'+
   '<span class="bp-office-thread-icon">'+(TOPICS[t.category]?.[0]||'💬')+'</span><span class="bp-office-thread-main"><strong>'+e(t.subject)+'</strong>'+
   '<small>'+(isAdmin?e(names.get(t.parent_user_id)||'Parent account')+' · ':'')+e(TOPICS[t.category]?.[1]||'Message')+'</small><small>'+stamp(t.updated_at)+'</small></span>'+
   pill(t.status==='open'?'Open':'Resolved',t.status==='open'?'amber':'green')+'</button>';
@@ -37,9 +38,9 @@ export async function renderAdminInbox(ctx){
    (isAdmin?button(t.status==='resolved'?'Reopen conversation':'Mark resolved','bp-office-status','outline','type="button"'):'')+'</div>'+
    '<div class="bp-office-conversation-note">🔒 Visible only to this parent and authorized school administrators. Teachers cannot access this conversation.</div>'+
    '<div class="bp-office-message-feed" id="bp-office-feed">'+(lines.length?lines.map(m=>
-    '<article class="bp-office-msg '+(m.sender_user_id===user.id?'bp-office-mine':'')+'"><small>'+
+    '<article class="bp-office-msg '+(m.sender_user_id===user.id?'bp-office-mine':'')+'" '+messageAttributes(m,user.id)+'><small class="bp-chat-meta">'+
     (m.sender_user_id===user.id?'You':m.sender_user_id===t.parent_user_id?'Parent':'School Administration')+
-    ' · '+stamp(m.created_at)+'</small><p>'+e(m.body)+'</p></article>').join(''):
+    ' · '+stamp(m.created_at)+(m.sender_user_id===user.id?sentReceipt:'')+'</small><p>'+e(m.body)+'</p></article>').join(''):
     empty('💌','No messages yet','Start this private conversation.'))+'</div>'+
    '<form class="bp-office-reply" id="bp-office-reply-form">'+field('Your reply',textarea('bp-office-reply','Write a respectful message about this request…','required minlength="2" maxlength="2000"'))+
    button('Send private reply','bp-office-reply-submit','primary','type="submit"')+'</form>'+
@@ -63,6 +64,8 @@ export async function renderAdminInbox(ctx){
  (threads.length?'<section class="bp-office-conversation" id="bp-office-conversation">'+threadPanel(current)+'</section>':'')+'</div>';
  return{html,bind(){
   let selected=current;
+  const drafts=new Map();
+  let stopReceipts=()=>{};
   const bindDetail=()=>{
    if(!selected)return;
    const t=threads.find(x=>x.id===selected);
@@ -83,12 +86,22 @@ export async function renderAdminInbox(ctx){
     if(!response.ok)throw Error('School inbox did not confirm the reply');
     await reload();
    });
-   const feed=document.getElementById('bp-office-feed');if(feed)feed.scrollTop=feed.scrollHeight;
+   stopReceipts();
+   const feed=document.getElementById('bp-office-feed');
+   feed.scrollTop=feed.scrollHeight;
+   stopReceipts=watchChatReceipts(db,'office',feed);
   };
   document.querySelectorAll('[data-office-thread]').forEach(b=>b.onclick=()=>{
+   if(selected===b.dataset.officeThread)return;
+   drafts.set(selected,v('bp-office-reply'));
    selected=b.dataset.officeThread;setThreadQuery(selected);
-   document.querySelectorAll('[data-office-thread]').forEach(x=>x.classList.toggle('active',x.dataset.officeThread===selected));
+   document.querySelectorAll('[data-office-thread]').forEach(x=>{
+    const isCurrent=x.dataset.officeThread===selected;
+    x.classList.toggle('active',isCurrent);
+    x.setAttribute('aria-current',String(isCurrent));
+   });
    document.getElementById('bp-office-conversation').innerHTML=threadPanel(selected);
+   document.getElementById('bp-office-reply').value=drafts.get(selected)||'';
    bindDetail();
   });
   if(!isAdmin)form('bp-office-create',async()=>{
