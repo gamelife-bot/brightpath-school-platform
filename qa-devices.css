@@ -1,0 +1,90 @@
+.qa-devices-note {
+  margin: 0 0 16px;
+  color: #45635e;
+  font-size: 13px;
+  line-height: 1.55;
+}
+.qa-device-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 275px), 1fr));
+  gap: 14px;
+}
+.qa-device-card {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  padding: 16px;
+  border: 1px solid #dcebe4;
+  border-radius: 18px;
+  background: #fff;
+  box-shadow: 0 6px 20px #164b4310;
+}
+.qa-device-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+.qa-device-icon {
+  display: grid;
+  flex: 0 0 44px;
+  height: 44px;
+  place-items: center;
+  border-radius: 12px;
+  background: #e6f4ed;
+  font-size: 22px;
+}
+.qa-device-header h2 { margin: 0 0 4px; color: #214d44; font-size: 18px; }
+.qa-device-details {
+  flex: 1;
+  padding: 12px;
+  border-radius: 12px;
+  background: #f3f8f5;
+}
+.qa-device-details > div + div {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid #d9e7e0;
+}
+.qa-device-details h3 { margin: 0 0 4px; color: #45635e; font-size: 12px; }
+.qa-device-details strong { display: block; color: #214d44; font-size: 14px; }
+.qa-device-details time, .qa-device-details small {
+  display: block;
+  margin-top: 4px;
+  color: #45635e;
+  font-size: 12px;
+  line-height: 1.4;
+}
+.qa-device-details meter { display: block; width: 100%; height: 12px; margin-top: 5px; }
+.qa-device-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 14px;
+}
+.qa-device-actions .mw-btn { min-height: 44px; padding-inline: 8px; white-space: normal; }
+.qa-device-actions .mw-btn-primary { grid-column: 1 / -1; }
+.qa-device-dialog {
+  width: min(440px, calc(100% - 24px));
+  padding: 18px;
+  border: 1px solid #dcebe4;
+  border-radius: 18px;
+  color: #214d44;
+}
+.qa-device-dialog::backdrop { background: #133b3b99; }
+.qa-device-dialog h2, .qa-device-dialog p { margin: 0; }
+.qa-device-dialog .mw-form-actions { flex-wrap: wrap; }
+.qa-device-dialog > .mw-form { margin-top: 12px; }
+.qa-device-dialog label { display: grid; gap: 5px; font-weight: 700; }
+.qa-device-settings-section { border-top: 1px solid #dcebe4; margin-top: 12px; padding-top: 10px; }
+.qa-device-settings-section summary { cursor: pointer; font-weight: 800; }
+.qa-device-settings-section .mw-form { margin-top: 10px; }
+.qa-device-dialog [role="alert"]:empty { display: none; }
+.qa-device-dialog [role="alert"] { color: #a53037; }
+.qa-device-close { margin-top: 12px; }
+.qa-device-type {
+  display: block;
+  margin-bottom: 5px;
+  color: #45635e;
+  font-size: 12px;
+}

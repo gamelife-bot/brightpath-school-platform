@@ -13,6 +13,7 @@ import {renderOwnerPage} from './workspace-owner.js';
 import {renderSchoolPage} from './workspace-school.js';
 import {renderTeacherPage} from './workspace-teacher.js';
 import {renderParentPage} from './workspace-parent.js';
+import {renderDevices} from './workspace-devices.js';
 
 export const escapeHtml = (input) => String(input ?? '').replace(/[&<>"']/g,(c)=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'}[c]));
 export const dollar = (v) => 'KSh '+(Number(v||0)/100).toLocaleString('en-KE',{maximumFractionDigits:2});
@@ -97,8 +98,10 @@ const navGroups={
 const roleTitle={owner:'Platform owner',school_admin:'School administrator',teacher:'Teacher',parent:'Parent'};
 const renderer={owner:renderOwnerPage,school_admin:renderSchoolPage,teacher:renderTeacherPage,parent:renderParentPage};
 
-export async function launchWorkspace({db,user,role,context,root,logout,photoData}){
- const nav=pages[role];
+export async function launchWorkspace({db,user,role,context,root,logout,photoData,devicesPreview}){
+ const showDevices=role==='parent';
+ const nav=showDevices?[...pages.parent,['devices','Devices','🎒']]:pages[role];
+ const groups=showDevices?[...navGroups.parent,[devicesPreview?'PROTOTYPE':'TRACKERS',['devices']]]:navGroups[role];
  if(!nav)throw new Error('Unsupported account workspace');
  let school=(context?.memberships||[]).find(m=>m.role===role&&m.active)?.school_id||null;
  let current=new URLSearchParams(window.location.search).get('tab')||'overview';
@@ -132,10 +135,10 @@ export async function launchWorkspace({db,user,role,context,root,logout,photoDat
   '<p id="bp-nav-find-count" role="status" aria-live="polite"></p></div>';
  const mobileMenu='<div class="bp-mobile-overlay" id="bp-mobile-overlay" hidden></div><div class="bp-mobile-sheet" id="bp-mobile-sheet" role="dialog" aria-modal="true" aria-label="All BrightPath sections" hidden>'+ 
   '<div class="bp-mobile-sheet-head"><div><b>✦ BrightPath menu</b><small>Find every daycare feature</small></div><button id="bp-mobile-close" type="button" aria-label="Close menu">✕</button></div>'+mobileFind+'<div class="bp-mobile-sheet-scroll" id="bp-mobile-menu-list">'+
-  (navGroups[role]||[]).map(([group,ids])=>'<section class="bp-mobile-menu-section"><h3>'+escapeHtml(group)+'</h3>'+ids.filter(id=>navMap.has(id)).map(id=>{
+  (groups||[]).map(([group,ids])=>'<section class="bp-mobile-menu-section"><h3>'+escapeHtml(group)+'</h3>'+ids.filter(id=>navMap.has(id)).map(id=>{
    const [name,ico]=navMap.get(id);return '<button type="button" data-bp-mobile-menu="'+id+'"><span>'+(role==='owner'?ico:(playfulIcons[id]||ico))+'</span>'+escapeHtml(name)+'<span class="bp-mobile-menu-arrow">›</span></button>'
   }).join('')+'</section>').join('')+'</div></div>';
- const navHtml=(navGroups[role]||[]).map(([title,ids],idx)=>'<section class="mw-nav-group"><button type="button" class="mw-nav-group-label" data-nav-toggle="'+idx+'" aria-expanded="true"><span>'+escapeHtml(title)+'</span><span class="mw-nav-chevron">⌄</span></button><div class="mw-nav-group-items" id="mw-nav-group-'+idx+'">'+ids.filter(id=>navMap.has(id)).map(id=>navEntry(id,...navMap.get(id))).join('')+'</div></section>').join('');
+ const navHtml=(groups||[]).map(([title,ids],idx)=>'<section class="mw-nav-group"><button type="button" class="mw-nav-group-label" data-nav-toggle="'+idx+'" aria-expanded="true"><span>'+escapeHtml(title)+'</span><span class="mw-nav-chevron">⌄</span></button><div class="mw-nav-group-items" id="mw-nav-group-'+idx+'">'+ids.filter(id=>navMap.has(id)).map(id=>navEntry(id,...navMap.get(id))).join('')+'</div></section>').join('');
  document.getElementById('app').innerHTML='<div class="mw-app mw-role-'+role+'"><aside class="mw-sidebar">'+
   '<div class="mw-brandzone">'+logo+'<p>'+escapeHtml(role==='owner'?'Platform administration':role==='school_admin'?'Little learners. Big care.':role==='teacher'?'Care · Play · Grow':'Every little moment matters')+'</p><div class="bp-side-tiles" aria-hidden="true"><span>A</span><span>B</span><span>C</span><span>★</span></div></div>'+
   '<div class="mw-side-caption">WORKSPACE</div>'+desktopFind+'<nav class="mw-navigation" id="mw-navigation-list" aria-label="Workspace sections">'+navHtml+'</nav>'+
@@ -193,7 +196,7 @@ export async function launchWorkspace({db,user,role,context,root,logout,photoDat
   const dest=document.getElementById('panel-content');dest.innerHTML='<div class="mw-loader"><div class="mw-spinner"></div>Opening workspace…</div>';
   const id=++request;
   try{
-   const view=await renderer[role](contextObj,tab);
+   const view=await (tab==='devices'&&showDevices?(devicesPreview||renderDevices)(contextObj):renderer[role](contextObj,tab));
    if(id!==request)return;
    dest.innerHTML=view?.html||view||'';
    if(view?.bind)await view.bind();

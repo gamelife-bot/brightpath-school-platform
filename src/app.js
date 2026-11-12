@@ -36,13 +36,21 @@ function renderAuth(mode='signin',note='',email=''){
  currentUser=null;
  context=null;
  const signup=mode==='signup',verification=mode==='verify';
- const title=verification?'Verify your email':signup?'Create your account':'Sign in to continue';
+ const recovering=mode==='recover'||mode==='reset';
+ const resetting=mode==='reset';
+ const title=resetting?'Set a new password':recovering?'Recover your password':verification?'Verify your email':signup?'Create your account':'Sign in to continue';
  const emailField='<label class="field">Email<input id="email" name="email" type="email" autocomplete="'+(verification?'email':'username')+'" value="'+h(email)+'" required></label>';
  shell('<div class="login-shell"><div class="card"><h1 style="font-size:25px;margin:0 0 8px">'+title+'</h1><p class="muted" style="font-size:14px">'+h(portalLabel[portal])+'.</p><div class="auth-switch"><button type="button" class="btn '+(mode==='signin'?'':'ghost')+'" id="switch-in">Sign in</button><button type="button" class="btn '+(signup?'':'ghost')+'" id="switch-up">Sign up</button></div>'+
- (verification?'<form id="verify-form">'+emailField+'<label class="field">Verification code from email<input id="otp" name="otp" inputmode="numeric" autocomplete="one-time-code" required></label><button class="btn full" type="submit">Verify email</button><button class="btn ghost full" type="button" id="resend-code">Send a new code</button></form>':
+ (recovering?'<form id="recovery-form">'+emailField+
+ (resetting?'<label class="field">Reset code<input id="otp" name="otp" inputmode="numeric" autocomplete="one-time-code" required></label>'+
+ '<label class="field">New password<input id="new-password" name="password" type="password" minlength="8" autocomplete="new-password" required></label>':'')+
+ '<button class="btn full" type="submit">'+(resetting?'Reset password':'Send reset code')+'</button>'+
+ (resetting?'<button class="btn ghost full" type="button" id="resend-reset">Send a new code</button>':'')+'</form>':
+ verification?'<form id="verify-form">'+emailField+'<label class="field">Verification code from email<input id="otp" name="otp" inputmode="numeric" autocomplete="one-time-code" required></label><button class="btn full" type="submit">Verify email</button><button class="btn ghost full" type="button" id="resend-code">Send a new code</button></form>':
  '<form id="auth-form">'+(signup?'<label class="field">Full name<input id="full-name" name="name" autocomplete="name" minlength="2" required></label>':'')+emailField+'<label class="field">Password<input id="password" name="password" type="password" '+(signup?'minlength="8" ':'')+'autocomplete="'+(signup?'new-password':'current-password')+'" required></label>'+
  (signup?'<p class="smallnote">Portal access requires approval.</p>':'<label class="mw-check-label"><input id="remember-me" name="rememberMe" type="checkbox" checked> Keep me signed in on this device</label>')+
- '<button class="btn full" type="submit">'+(signup?'Create account':'Sign in')+'</button></form>')+
+ '<button class="btn full" type="submit">'+(signup?'Create account':'Sign in')+'</button></form>'+
+ (signup?'':'<button class="btn ghost full" type="button" id="forgot-password">Forgot password?</button>'))+
  '<div id="auth-note" role="status">'+(note?msg(note):'')+'</div></div></div>');
 
  const emailValue=()=>$('email').value.trim();
@@ -54,6 +62,26 @@ function renderAuth(mode='signin',note='',email=''){
   try{await action()}catch(err){$('auth-note').innerHTML=msg(errText(err),'err')}
   finally{busy=false;button.disabled=false}
  };
+ if($('forgot-password'))$('forgot-password').onclick=()=>{if(!busy)renderAuth('recover','',emailValue())};
+ if(recovering){
+  const sendCode=async()=>{
+   const address=emailValue();
+   check(await db.auth.emailOtp.requestPasswordReset({email:address}));
+   renderAuth('reset','If this email has a BrightPath account, a reset code will arrive shortly.',address);
+  };
+  $('recovery-form').onsubmit=event=>{
+   event.preventDefault();
+   return runAuth(event.submitter,resetting?async()=>{
+    const address=emailValue();
+    check(await db.auth.emailOtp.resetPassword({email:address,otp:$('otp').value.trim(),password:$('new-password').value}));
+    renderAuth('signin','Password updated. Sign in with your new password.',address);
+   }:sendCode);
+  };
+  if(resetting)$('resend-reset').onclick=event=>{
+   if($('email').reportValidity())return runAuth(event.currentTarget,sendCode);
+  };
+  return;
+ }
  if(verification){
   $('verify-form').onsubmit=event=>{
    event.preventDefault();

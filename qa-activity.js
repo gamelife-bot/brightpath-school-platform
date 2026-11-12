@@ -1,4 +1,5 @@
 import './src/style.css';
+import {renderDevicesPreview} from './qa-devices.js';
 import {launchWorkspace} from './src/workspace-core.js';
 
 const now=new Date();
@@ -147,6 +148,6 @@ window.qa={I,tables,calls,day,async open(target='school_admin'){
  const displayRole=target==='parent_b'?'parent':target;role=displayRole;
  await launchWorkspace({db,user:{id:uid,name:profiles.find(x=>x.user_id===uid)?.full_name||'BrightPath Owner',email:profiles.find(x=>x.user_id===uid)?.email||'owner@example.invalid'},
   role:displayRole,context:{is_owner:displayRole==='owner',memberships:[{school_id:I.school,school_name:'Rainbow Steps Daycare',role:displayRole,active:true}]},
-  root:'/brightpath-school-platform/',logout(){},photoData:async()=>null});
+  root:'/brightpath-school-platform/',logout(){},photoData:async()=>null,devicesPreview:renderDevicesPreview});
 }};
 await window.qa.open(new URLSearchParams(location.search).get('role')||'school_admin');
