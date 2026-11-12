@@ -269,6 +269,8 @@
 .mw-app .mw-loader { padding: 50px 16px; gap: 9px; }
 
 /* Do not compact away essential mobile touch areas or readable text. */
+.mw-mobile-brand { display: none; }
+
 @media (min-width: 1600px) {
   .mw-app .mw-content { padding: 20px 26px 32px; }
 }
@@ -277,13 +279,25 @@
 }
 @media (max-width: 850px) {
   .mw-app { display: flex; flex-direction: column; min-height: 100dvh; }
-  .mw-app .mw-sidebar { flex: 0 0 auto; height: auto; }
+  .mw-app .mw-sidebar, .mw-app .mw-location { display: none; }
+  .mw-mobile-brand { display: block; }
+  .mw-mobile-brand .mw-brand { font-size: clamp(17px, 4vw, 21px); color: #315368; }
+  .mw-mobile-brand .mw-brand span { color: #118b76; }
   .mw-app .mw-main { flex: 1 1 auto; }
   .mw-app .mw-bottom { margin-top: auto; }
-  .mw-app .mw-brandzone { padding: 9px 13px !important; }
-  .mw-app .mw-navigation { padding: 8px; }
   .mw-app .mw-content { padding: 13px 13px 24px; }
-  .mw-app .mw-topbar { min-height: 49px; padding: 8px 13px; }
+  .mw-app .mw-topbar {
+    min-height: 0;
+    flex-wrap: wrap;
+    gap: 5px 8px;
+    padding: 5px 10px;
+  }
+  .mw-app .mw-top-actions { flex: 1 1 auto; flex-wrap: wrap; justify-content: flex-end; gap: 4px; }
+  .mw-app .mw-logout, .mw-app .bp-top-notice, .mw-app .mw-top-actions select { min-height: 44px; }
+  .mw-app .bp-top-notice { min-width: 44px; }
+  .mw-app .mw-top-actions select { font-size: 16px; }
+  .mw-app .mw-content > div, .mw-app .mw-card, .mw-app .mw-table-scroll { min-width: 0; }
+  .mw-app .mw-table-scroll { max-width: 100%; }
   .mw-app .mw-page-head { padding: 12px 13px; margin-bottom: 9px; }
   .mw-app .mw-welcome { padding: 13px; margin-bottom: 9px; }
   .mw-app .mw-stat { padding: 10px 11px; }
@@ -296,10 +310,10 @@
 @media (max-width: 650px) {
   .mw-app .mw-content { padding: 11px 11px calc(14px + env(safe-area-inset-bottom,0px)); }
   .mw-app .mw-welcome { min-height: 0; grid-template-columns:minmax(0,1fr) 77px; gap: 5px; padding: 12px; }
-  .mw-app .mw-welcome-art { width: 96px; max-width: 96px; margin-left: -9px; }
+  .mw-app .mw-welcome-art { width: 100%; max-width: 100%; margin-left: 0; transform: none; }
   .mw-app .mw-welcome-art svg { max-height: 104px; }
   .mw-app .mw-welcome h2 { font-size: 19px; margin: 4px 0; }
-  .mw-app .mw-welcome p { font-size: 11px; line-height: 1.4; margin-bottom: 8px; }
+  .mw-app .mw-welcome p { font-size: 12px; line-height: 1.4; margin-bottom: 8px; }
   .mw-app .mw-stat { min-height: 0; padding: 10px; }
   .mw-app .mw-stat > strong { font-size: 24px; }
   .mw-app .mw-stat-icon { width: 28px; height: 28px; flex-basis:28px; font-size:16px; }

@@ -99,3 +99,15 @@ h1,h2,h3,.logo,.mark-logo,.big-price{font-family:"Trebuchet MS",ui-rounded,-appl
 
 /* Make repeated logo taps responsive on touch devices */
 .mark-logo,.brand-home{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+
+@media (max-width: 750px) {
+  .portal { min-height: 100dvh; }
+  .portal-header { padding: 10px 4%; }
+  .portal-main:has(.login-shell) { width: min(480px, 92%); margin: 14px auto 22px; }
+  .login-shell { width: 100%; margin: 0 auto; }
+  .login-shell .card { padding: 14px; }
+  .login-shell .field { margin-block: 10px; }
+  .login-shell .field input:not([type=checkbox]) { font-size: 16px; min-height: 44px; }
+  .login-shell .btn { min-height: 44px; }
+  .portal:has(.login-shell) .foot { padding-block: 12px; }
+}

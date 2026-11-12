@@ -200,3 +200,52 @@
   .ql-page .ql-footer-top { gap: 14px; }
   .ql-page .ql-footer-bottom { margin-top: 18px; }
 }
+
+@media (max-width: 970px) {
+  .ql-page .ql-nav { height: 58px; }
+  .ql-page .ql-nav-links {
+    top: calc(100% + 4px);
+    max-height: calc(100dvh - 70px);
+    overflow-y: auto;
+    padding: 8px;
+    gap: 2px;
+  }
+  .ql-page .ql-nav-links a,
+  .ql-page .ql-nav-actions .ql-btn { min-height: 44px; }
+  .ql-page .ql-menu { width: 44px; height: 44px; flex-shrink: 0; }
+  .ql-page .ql-kids-hero-visual { max-width: 560px; }
+}
+
+@media (max-width: 720px) {
+  .ql-page .ql-kinder-hero { padding-block: 16px 18px; }
+  .ql-page .ql-kinder-hero h1 {
+    font-size: clamp(30px, 8.7vw, 48px);
+    letter-spacing: -.045em;
+    margin: 9px auto;
+  }
+  .ql-page .ql-kids-hero-visual { max-width: 420px; }
+  .ql-page .ql-feature-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .ql-page .ql-feature { padding: 12px; }
+  .ql-page .ql-feature h3 { font-size: 16px; overflow-wrap: anywhere; }
+  .ql-page .ql-feature .ql-feature-top > span { width: 38px; height: 38px; font-size: 21px; }
+  .ql-page .ql-last-inner { padding: 20px 14px; }
+  .ql-page .ql-last-inner h2 { font-size: clamp(26px, 7vw, 36px); }
+}
+
+@media (721px <= width <= 1000px) {
+  .ql-page .ql-kinder-hero {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 12px;
+    padding-block: 22px 28px;
+  }
+  .ql-page .ql-kinder-hero .ql-hero-content { text-align: start; }
+  .ql-page .ql-kinder-hero h1 { font-size: clamp(34px, 5vw, 48px); }
+  .ql-page .ql-kinder-hero h1 em { white-space: normal; }
+  .ql-page .ql-kinder-hero .ql-hero-proof { justify-content: flex-start; }
+}
+
+@media (max-width: 480px) {
+  .ql-page .ql-kids-hero-visual { max-width: min(320px, 86%); }
+  .ql-page .ql-kids-scene-badge { padding: 6px 8px; }
+  .ql-page .ql-kids-scene-badge > span { font-size: 18px; }
+}

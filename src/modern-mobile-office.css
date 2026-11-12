@@ -59,8 +59,8 @@
 .bp-parent-office-banner .mw-btn{background:#fff;border-color:#eadcc8}
 .bp-mobile-tabs,.bp-mobile-sheet,.bp-mobile-overlay{display:none}
 .bp-mobile-sheet[hidden],.bp-mobile-overlay[hidden]{display:none!important}
-@media(max-width:760px){
- .mw-app{padding-bottom:calc(74px + env(safe-area-inset-bottom,0px))}
+@media(max-width:850px){
+ .mw-app{padding-bottom:calc(57px + env(safe-area-inset-bottom,0px))}
  .mw-content{padding:21px 14px calc(38px + env(safe-area-inset-bottom,0px))}
  .mw-navigation,.mw-side-caption{display:none!important}
  .mw-brandzone{padding:13px 16px 12px!important}
@@ -71,19 +71,19 @@
  .mw-top-actions{gap:7px}
  .mw-school-name{max-width:67px;font-size:10px}
  .mw-logout{padding:8px 10px;font-size:10px}
- .bp-mobile-tabs{position:fixed;z-index:60;bottom:0;left:0;right:0;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));align-items:stretch;gap:2px;background:#fffdf9;border-top:1px solid #e3ece7;box-shadow:0 -8px 24px #21464416;padding:7px 7px calc(7px + env(safe-area-inset-bottom,0px))}
- .bp-mobile-tab{display:flex;align-items:center;justify-content:center;flex-direction:column;gap:4px;border:0;border-radius:12px;min-width:0;min-height:56px;padding:5px 1px;color:#70868a;background:transparent}
- .bp-mobile-tab>span{font-size:22px;line-height:1.15}
- .bp-mobile-tab small{font-size:9px;font-weight:850;width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:center}
+ .bp-mobile-tabs{position:fixed;z-index:60;bottom:0;left:0;right:0;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));align-items:stretch;gap:2px;background:#fffdf9;border-top:1px solid #e3ece7;box-shadow:0 -8px 24px #21464416;padding:5px 7px calc(5px + env(safe-area-inset-bottom,0px))}
+ .bp-mobile-tab{display:flex;align-items:center;justify-content:center;flex-direction:column;gap:2px;border:0;border-radius:12px;min-width:0;min-height:46px;padding:3px 1px;color:#70868a;background:transparent}
+ .bp-mobile-tab>span{font-size:19px;line-height:1.15}
+ .bp-mobile-tab small{font-size:10px;font-weight:850;width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:center}
  .bp-mobile-tab.active{background:#e4f7eb;color:#118b76}
  .mw-role-parent .bp-mobile-tabs{background:#fffbf3;border-top-color:#eee1d1}
  .mw-role-parent .bp-mobile-tab.active{background:#ffe7d4;color:#a9674e}
  .bp-mobile-tab:focus-visible{outline:2px solid #15967e;outline-offset:2px}
  .bp-mobile-overlay{display:block;position:fixed;inset:0;background:#1d3343a8;z-index:90}
  .bp-mobile-sheet{position:fixed;z-index:91;left:0;right:0;bottom:0;max-height:min(88dvh,875px);display:flex;flex-direction:column;overflow:hidden;border-radius:25px 25px 0 0;background:#fffdf9;box-shadow:0 -20px 65px #173e4636}
- .bp-mobile-sheet-head{padding:21px 19px 17px;display:flex;justify-content:space-between;align-items:center;gap:12px;border-bottom:1px solid #e4eeea}
+ .bp-mobile-sheet-head{padding:8px 12px;display:flex;justify-content:space-between;align-items:center;gap:12px;border-bottom:1px solid #e4eeea}
  .bp-mobile-sheet-head b{font-size:16px;color:#27816d}.bp-mobile-sheet-head small{display:block;font-size:11px;color:#8ba0a1;margin-top:4px}
- .bp-mobile-sheet-head button{display:grid;place-items:center;flex:0 0 39px;width:39px;height:39px;background:#e8f6ee;border:0;border-radius:12px;font-size:18px;color:#44786f}
+ .bp-mobile-sheet-head button{display:grid;place-items:center;flex:0 0 44px;width:44px;height:44px;background:#e8f6ee;border:0;border-radius:12px;font-size:18px;color:#44786f}
  .bp-mobile-sheet-scroll{overflow-y:auto;overscroll-behavior:contain;padding:10px 17px calc(20px + env(safe-area-inset-bottom,0px))}
  .bp-mobile-menu-section{padding:13px 0;border-bottom:1px solid #edf1ed}
  .bp-mobile-menu-section h3{color:#94a8a6;font-size:10px;letter-spacing:1.4px;margin:5px 9px 11px}
@@ -112,7 +112,6 @@
  .bp-calendar-event>.mw-btn{margin-left:auto}
  .bp-office-conversation-head{flex-direction:column}
  .bp-parent-office-banner>span{width:43px;height:43px;flex-basis:43px;font-size:24px}
- .bp-mobile-tab small{font-size:8.5px}
 }
 @media(prefers-reduced-motion:reduce){.bp-mobile-tab,.bp-office-thread{transition:none}}
 

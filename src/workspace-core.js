@@ -123,9 +123,15 @@ export async function launchWorkspace({db,user,role,context,root,logout,photoDat
  const navMap=new Map(nav.map(([id,name,ico])=>[id,[name,ico]]));
  const mobileTabIds={owner:['overview','schools','revenue','support'],school_admin:['overview','relay','admin_inbox','family_notices'],teacher:['overview','relay','quickcare','messages'],parent:['overview','relay','devices','family_notices']};
  const mobileMain=(mobileTabIds[role]||[]).filter(id=>navMap.has(id));
+ const mobileLabels={
+  owner:{revenue:'Revenue',support:'Support'},
+  school_admin:{admin_inbox:'Inbox',family_notices:'Notices'},
+  teacher:{quickcare:'Quick care',messages:'Messages'},
+  parent:{overview:'Today',relay:'Care Relay',family_notices:'Absences'},
+ };
  const mobileFooter='<nav class="bp-mobile-tabs" aria-label="Mobile quick navigation">'+mobileMain.map(id=>{
   const [name,ico]=navMap.get(id);
-  return '<button type="button" class="bp-mobile-tab" data-bp-mobile-tab="'+id+'"><span aria-hidden="true">'+(role==='owner'?ico:(playfulIcons[id]||ico))+'</span><small>'+escapeHtml(role==='parent'&&id==='admin_inbox'?'School office':role==='school_admin'&&id==='admin_inbox'?'Parent inbox':role==='school_admin'&&id==='family_notices'?'Notices':role==='parent'&&id==='family_notices'?'Absences':name)+'</small></button>'
+  return '<button type="button" class="bp-mobile-tab" data-bp-mobile-tab="'+id+'"><span aria-hidden="true">'+(role==='owner'?ico:(playfulIcons[id]||ico))+'</span><small>'+escapeHtml(mobileLabels[role]?.[id]||name)+'</small></button>'
  }).join('')+'<button type="button" id="bp-mobile-more" class="bp-mobile-tab" aria-label="Open full menu" aria-expanded="false"><span>☷</span><small>More</small></button></nav>';
  const mobileFind='<div class="bp-mobile-find"><label for="bp-mobile-section-search">🔎 Find a section</label>'+
   '<input id="bp-mobile-section-search" type="search" placeholder="Search pickup, photos, approvals…" autocomplete="off" aria-controls="bp-mobile-menu-list">'+
@@ -143,7 +149,7 @@ export async function launchWorkspace({db,user,role,context,root,logout,photoDat
   '<div class="mw-brandzone">'+logo+'<p>'+escapeHtml(role==='owner'?'Platform administration':role==='school_admin'?'Little learners. Big care.':role==='teacher'?'Care · Play · Grow':'Every little moment matters')+'</p><div class="bp-side-tiles" aria-hidden="true"><span>A</span><span>B</span><span>C</span><span>★</span></div></div>'+
   '<div class="mw-side-caption">WORKSPACE</div>'+desktopFind+'<nav class="mw-navigation" id="mw-navigation-list" aria-label="Workspace sections">'+navHtml+'</nav>'+
   '<div class="mw-side-footer"><div class="mw-avatar">'+initial(user.name||user.email)+'</div><div><b>'+escapeHtml(user.name||'My account')+'</b><span>'+escapeHtml(roleTitle[role])+'</span></div></div></aside>'+
-  '<div class="mw-main"><header class="mw-topbar"><div class="mw-location"><span class="mw-location-dot"></span> '+escapeHtml(roleTitle[role])+' workspace <span class="bp-top-doodle" aria-hidden="true">✦</span></div>'+
+  '<div class="mw-main"><header class="mw-topbar"><div class="mw-mobile-brand">'+logo+'</div><div class="mw-location"><span class="mw-location-dot"></span> '+escapeHtml(roleTitle[role])+' workspace <span class="bp-top-doodle" aria-hidden="true">✦</span></div>'+
   '<div class="mw-top-actions">'+(role!=='owner'?'<button class="bp-top-notice" id="mw-open-notifications" aria-label="Open notifications" title="Notifications">🔔 <span id="mw-notification-count" hidden></span></button>':'')+schoolPicker+'<span class="mw-region-clock" id="mw-region-clock" aria-label="School timezone"></span><span class="mw-user-email">'+escapeHtml(user.email||'')+'</span><button id="mw-logout" class="mw-btn mw-btn-outline mw-logout">Sign out</button></div></header>'+
   '<main class="mw-content" id="workspace"><div id="panel-content"></div></main><footer class="mw-bottom"><span>© BrightPath</span><a href="'+root+'home/">Back to website</a></footer></div>'+
   mobileFooter+mobileMenu+'<div id="mw-notice" class="mw-toast" hidden role="status" aria-live="polite"></div></div>';
@@ -307,6 +313,10 @@ export async function launchWorkspace({db,user,role,context,root,logout,photoDat
  let previousFocus=null;
  function closeMobileMenu(){if(sheet.hidden)return;sheet.hidden=true;overlay.hidden=true;more.setAttribute('aria-expanded','false');document.body.classList.remove('bp-menu-open');mobileFindInput.value='';applyMobileFind();if(previousFocus?.isConnected)previousFocus.focus();}
  function openMobileMenu(){previousFocus=document.activeElement;sheet.hidden=false;overlay.hidden=false;more.setAttribute('aria-expanded','true');document.body.classList.add('bp-menu-open');mobileFindInput.focus();}
+ const mobileLayout=window.matchMedia('(max-width: 850px)');
+ window.__bpMobileLayoutListener?.abort();
+ window.__bpMobileLayoutListener=new AbortController();
+ mobileLayout.addEventListener('change',event=>{if(!event.matches)closeMobileMenu();},{signal:window.__bpMobileLayoutListener.signal});
  more.onclick=()=>sheet.hidden?openMobileMenu():closeMobileMenu();
  document.getElementById('bp-mobile-close').onclick=closeMobileMenu;
  overlay.onclick=closeMobileMenu;

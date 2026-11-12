@@ -86,3 +86,14 @@ body{background:#fffcf6}
  .bp-day-section:before{display:none}
 }
 @media(prefers-reduced-motion:reduce){.bp-day-card,.fun-card,.path-card,.price-card{transition:none}}
+
+@media (max-width: 750px) {
+  .classroom-nav { height: auto; min-height: 58px; padding: 6px 4%; flex-wrap: wrap; }
+  .classroom-nav .top-links { gap: 2px 10px; }
+  .classroom-nav .top-links a { display: inline-flex; align-items: center; min-height: 44px; }
+  .pricing-hero { padding: 22px 4%; }
+  .pricing-hero h1 { font-size: clamp(29px, 7vw, 44px); margin-block: 10px; }
+  .pricing-hero p { font-size: 14px; line-height: 1.5; }
+  .pricing-hero:before, .pricing-hero:after { display: none; }
+  .pricing-stickers { margin-top: 12px; }
+}
