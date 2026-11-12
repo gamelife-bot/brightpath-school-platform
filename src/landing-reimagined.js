@@ -32,11 +32,11 @@ export function renderLanding(app,root){
   ['teacher','🍎','Teacher Portal'],
   ['school-admin','🏫','School Administration']
  ].map(([route,icon,label])=>
-  '<a class="ql-portal-link" href="'+go(route)+'"><span aria-hidden="true">'+icon+'</span> '+label+'<span class="ql-portal-arrow" aria-hidden="true">↗</span></a>'
+  '<a class="ql-portal-link" data-ql-portal="'+route+'" href="'+go(route)+'"><span aria-hidden="true">'+icon+'</span> '+label+'<span class="ql-portal-arrow" aria-hidden="true">↗</span></a>'
  ).join('');
  const portalAccess='<dialog class="ql-portal-access" id="sign-in" aria-labelledby="ql-sign-in-title">'+
   '<div class="ql-portal-head"><h2 id="ql-sign-in-title">Choose your portal</h2><form method="dialog"><button class="ql-btn ql-btn-outline" type="submit" aria-label="Close portal chooser">×</button></form></div>'+
-  '<div class="ql-portal-links">'+portalLinks+'</div></dialog>';
+  '<div class="ql-portal-links">'+portalLinks+'<a class="ql-portal-link" data-ql-portal="owner" href="'+go('owner')+'" hidden>Platform Owner</a></div></dialog>';
  const hero='<section class="ql-hero ql-kinder-hero"><div class="ql-hero-sprinkles" aria-hidden="true"><span>✳</span><span>✦</span><span>♥</span><span>✿</span></div>'+
   '<div class="ql-hero-content"><span class="ql-eyebrow">🌼 A HAPPY LITTLE WORLD FOR EARLY LEARNERS</span>'+
   '<h1>Little hands.<br><em>Big discoveries.</em><br><span>Happy families.</span></h1>'+
@@ -73,7 +73,7 @@ export function renderLanding(app,root){
   '<button type="button" role="tab" id="ql-relay-tab-evening" aria-selected="false" aria-controls="ql-relay-story" data-ql-relay="evening">🌙 Evening</button></div>'+
   '<div class="ql-relay-story" id="ql-relay-story" role="tabpanel" aria-labelledby="ql-relay-tab-morning"><span id="ql-relay-story-icon">☀️</span><div><b id="ql-relay-story-title">A gentle note from home</b><p id="ql-relay-story-copy">A parent shares a useful morning handover. Important care notes are flagged for an assigned teacher to acknowledge.</p></div></div></div>'+
   '<div class="ql-relay-right"><div class="ql-relay-art-frame">'+careRelayArt()+'<div class="ql-relay-art-caption"><span>🏡</span><div><strong>Where home and school meet.</strong></div></div></div><div class="ql-relay-stars" aria-hidden="true">✦  ✳  🌼</div></div></div></section>';
- const quiet='<section class="ql-quiet" id="quiet"><div class="ql-quiet-inner"><div class="ql-quiet-illustration"><span class="ql-doodle ql-doodle-a">✳</span><span class="ql-doodle ql-doodle-b">🌼</span>'+
+ const quiet='<section class="ql-quiet" id="quiet"><div class="ql-quiet-inner"><div class="ql-quiet-illustration"><span class="ql-doodle ql-doodle-a" aria-hidden="true">✦</span><span class="ql-doodle ql-doodle-b" aria-hidden="true">🌼</span>'+
   '<div class="ql-quiet-board"><span class="ql-quiet-label">✦ QUIET CLASSROOM</span><h3>What needs my attention?</h3>'+
   '<div><span>✓</span><p><b>Attendance</b><small>See which children have a recorded status</small></p></div>'+
   '<div><span>☀</span><p><b>Group activity</b><small>Select today’s recorded attendees in a tap</small></p></div>'+
@@ -116,8 +116,23 @@ export function renderLanding(app,root){
  window.addEventListener('hashchange',openLinkedPortalChooser);
  openLinkedPortalChooser();
  const menu=document.getElementById('ql-menu'),navLinks=document.getElementById('ql-nav-links');
- menu.onclick=()=>{const open=navLinks.classList.toggle('ql-nav-open');menu.setAttribute('aria-expanded',String(open));menu.querySelector('span').textContent=open?'✕':'☰'};
- navLinks.querySelectorAll('a').forEach(a=>a.onclick=()=>{navLinks.classList.remove('ql-nav-open');menu.setAttribute('aria-expanded','false');menu.querySelector('span').textContent='☰'});
+ const setMenuOpen=open=>{
+  navLinks.classList.toggle('ql-nav-open',open);
+  menu.setAttribute('aria-expanded',String(open));
+  menu.setAttribute('aria-label',open?'Close navigation':'Open navigation');
+  menu.querySelector('span').textContent=open?'✕':'☰';
+ };
+ menu.onclick=()=>setMenuOpen(!navLinks.classList.contains('ql-nav-open'));
+ navLinks.querySelectorAll('a').forEach(a=>a.onclick=()=>setMenuOpen(false));
+ document.addEventListener('click',event=>{
+  if(!menu.contains(event.target)&&!navLinks.contains(event.target))setMenuOpen(false);
+ });
+ document.addEventListener('keydown',event=>{
+  if(event.key==='Escape'&&navLinks.classList.contains('ql-nav-open')){
+   setMenuOpen(false);
+   menu.focus();
+  }
+ });
  const relayStories={
   morning:['☀️','A gentle note from home','A parent shares an optional morning handover. Important care notes appear in an assigned teacher’s exception inbox.'],
   school:['🧸','Only the moments that really happened','Teachers use the records they already make; no compulsory extra report or ungrounded AI observations.'],

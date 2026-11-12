@@ -249,3 +249,13 @@
   .ql-page .ql-kids-scene-badge { padding: 6px 8px; }
   .ql-page .ql-kids-scene-badge > span { font-size: 18px; }
 }
+
+.ql-page .ql-portal-link[hidden] { display: none; }
+
+@media (max-width: 970px) {
+  .ql-page section[id] { scroll-margin-top: 70px; }
+  .ql-quiet-illustration::before,
+  .ql-quiet-illustration::after,
+  .ql-quiet-illustration .ql-doodle { display: none; }
+  .ql-page .ql-quiet-board { transform: none; }
+}

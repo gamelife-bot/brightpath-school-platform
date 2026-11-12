@@ -1,6 +1,6 @@
 /* BrightPath home redesign: warm, modern and educator-first. No third-party font or child photography. */
 html{scroll-behavior:smooth}
-.ql-page{--ql-deep:#173f3c;--ql-mid:#27836d;--ql-muted:#648079;--ql-line:#e3e9df;--ql-cream:#fffdf6;--ql-sun:#ffcb79;--ql-mint:#def3e8;background:var(--ql-cream);color:var(--ql-deep);min-height:100vh;overflow:hidden}
+.ql-page{--ql-deep:#173f3c;--ql-mid:#27836d;--ql-muted:#648079;--ql-line:#e3e9df;--ql-cream:#fffdf6;--ql-sun:#ffcb79;--ql-mint:#def3e8;background:var(--ql-cream);color:var(--ql-deep);min-height:100vh;overflow:clip}
 .ql-page *{box-sizing:border-box}
 .ql-page a,.ql-page button{-webkit-tap-highlight-color:transparent}
 .ql-page h1,.ql-page h2,.ql-page h3{font-family:ui-rounded,"Trebuchet MS",system-ui,sans-serif;letter-spacing:-.055em}
@@ -80,7 +80,6 @@ html{scroll-behavior:smooth}
 .ql-outcome-bottom{display:block;font-size:9px;color:#1e8a71;letter-spacing:1.1px;font-weight:950;margin-top:22px}
 .ql-outcome-arrow{font-size:33px;color:#d79b5a;transform:rotate(10deg)}
 .ql-quiet{background:#174740;color:white;padding:95px 5%;position:relative;overflow:hidden}
-.ql-quiet:before{content:"✳";color:#ffffff0d;font-size:400px;position:absolute;top:-150px;right:-40px;pointer-events:none}
 .ql-quiet-inner{max-width:1200px;margin:auto;display:grid;grid-template-columns:1fr 1fr;align-items:center;gap:8%}
 .ql-quiet-illustration{position:relative;min-height:480px;display:grid;align-items:center;justify-items:center}
 .ql-doodle{position:absolute;font-size:52px}.ql-doodle-a{color:#f4c87b;top:35px;left:10px}.ql-doodle-b{bottom:25px;right:10px}

@@ -23,7 +23,45 @@ const msg=(txt,type='notice')=>'<div class="notice '+(type==='err'?'err':type===
 const brand=()=>'<a class="logo brand-home" href="'+url('home/')+'" aria-label="BrightPath — back to homepage">✦ brightpath<b>.</b></a>';
 function errText(err){return err?.message||err?.details||String(err)||'Something went wrong'}
 function check(result){if(result?.error)throw new Error(errText(result.error));return result?.data}
-function renderLanding(){renderMarketing(app,ROOT,'home')}
+async function renderLanding(){
+ renderMarketing(app,ROOT,'home');
+ const accessButton=$('ql-open-portals');
+ const chooser=$('sign-in');
+ const updateAccess=async()=>{
+  try{
+   const user=await sessionUser();
+   let routes=[];
+   if(user){
+    const data=check(await db.rpc('bp_context'));
+    const account=typeof data==='string'?JSON.parse(data):data;
+    routes=[...new Set((account?.memberships||[])
+     .filter(m=>m.active&&['parent','teacher','school_admin'].includes(m.role))
+     .map(m=>m.role.replace('_','-')))];
+    if(account?.is_owner)routes.push('owner');
+   }
+   accessButton.textContent=routes.length?'Open my portal':'Sign in / Sign up';
+   accessButton.onclick=()=>{
+    if(routes.length===1)location.assign(url(routes[0]+'/'));
+    else chooser.showModal();
+   };
+   if(routes.length===1){
+    accessButton.removeAttribute('aria-haspopup');
+    accessButton.removeAttribute('aria-controls');
+   }else{
+    accessButton.setAttribute('aria-haspopup','dialog');
+    accessButton.setAttribute('aria-controls','sign-in');
+   }
+   chooser.querySelectorAll('[data-ql-portal]').forEach(link=>{
+    const route=link.dataset.qlPortal;
+    link.hidden=routes.length?!routes.includes(route):route==='owner';
+   });
+  }catch{
+   // The public portal chooser remains usable if the account service is unavailable.
+  }
+ };
+ window.addEventListener('pageshow',event=>{if(event.persisted)void updateAccess()});
+ await updateAccess();
+}
 function renderPricing(){renderMarketing(app,ROOT,'pricing')}
 function shell(body,title=portalLabel[portal]){
  app.innerHTML='<div class="portal"><header class="portal-header"><div>'+brand()+'<div class="portal-name">'+h(title)+'</div></div><div id="user-actions"></div></header><main class="portal-main" id="workspace"><div id="logout-status" role="alert"></div>'+body+'</main><footer class="foot">© BrightPath</footer></div>';

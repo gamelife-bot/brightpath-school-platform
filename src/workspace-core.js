@@ -132,15 +132,15 @@ export async function launchWorkspace({db,user,role,context,root,logout,photoDat
  const mobileFooter='<nav class="bp-mobile-tabs" aria-label="Mobile quick navigation">'+mobileMain.map(id=>{
   const [name,ico]=navMap.get(id);
   return '<button type="button" class="bp-mobile-tab" data-bp-mobile-tab="'+id+'"><span aria-hidden="true">'+(role==='owner'?ico:(playfulIcons[id]||ico))+'</span><small>'+escapeHtml(mobileLabels[role]?.[id]||name)+'</small></button>'
- }).join('')+'<button type="button" id="bp-mobile-more" class="bp-mobile-tab" aria-label="Open full menu" aria-expanded="false"><span>☷</span><small>More</small></button></nav>';
+ }).join('')+'<button type="button" id="bp-mobile-more" class="bp-mobile-tab" aria-label="Open full menu" aria-controls="bp-mobile-sheet" aria-haspopup="dialog" aria-expanded="false"><span>☷</span><small>More</small></button></nav>';
  const mobileFind='<div class="bp-mobile-find"><label for="bp-mobile-section-search">🔎 Find a section</label>'+
-  '<input id="bp-mobile-section-search" type="search" placeholder="Search pickup, photos, approvals…" autocomplete="off" aria-controls="bp-mobile-menu-list">'+
+  '<input id="bp-mobile-section-search" type="search" placeholder="Search sections" autocomplete="off" aria-controls="bp-mobile-menu-list">'+
   '<p id="bp-mobile-find-count" role="status" aria-live="polite"></p></div>';
  const desktopFind='<div class="bp-nav-find"><label for="bp-section-search">🔎 Find a section</label>'+
   '<input id="bp-section-search" type="search" placeholder="Search pages…" autocomplete="off" aria-controls="mw-navigation-list">'+
   '<p id="bp-nav-find-count" role="status" aria-live="polite"></p></div>';
  const mobileMenu='<div class="bp-mobile-overlay" id="bp-mobile-overlay" hidden></div><div class="bp-mobile-sheet" id="bp-mobile-sheet" role="dialog" aria-modal="true" aria-label="All BrightPath sections" hidden>'+ 
-  '<div class="bp-mobile-sheet-head"><div><b>✦ BrightPath menu</b><small>Find every daycare feature</small></div><button id="bp-mobile-close" type="button" aria-label="Close menu">✕</button></div>'+mobileFind+'<div class="bp-mobile-sheet-scroll" id="bp-mobile-menu-list">'+
+  '<div class="bp-mobile-sheet-head"><b>All sections</b><button id="bp-mobile-close" type="button" aria-label="Close menu">✕</button></div>'+mobileFind+'<div class="bp-mobile-sheet-scroll" id="bp-mobile-menu-list">'+
   (groups||[]).map(([group,ids])=>'<section class="bp-mobile-menu-section"><h3>'+escapeHtml(group)+'</h3>'+ids.filter(id=>navMap.has(id)).map(id=>{
    const [name,ico]=navMap.get(id);return '<button type="button" data-bp-mobile-menu="'+id+'"><span>'+(role==='owner'?ico:(playfulIcons[id]||ico))+'</span>'+escapeHtml(name)+'<span class="bp-mobile-menu-arrow">›</span></button>'
   }).join('')+'</section>').join('')+'</div></div>';
@@ -193,9 +193,11 @@ export async function launchWorkspace({db,user,role,context,root,logout,photoDat
   if(tab==='overview')q.delete('tab');else q.set('tab',tab);
   window.history.replaceState(null,'',window.location.pathname+(q.toString()?'?'+q:''));
   document.querySelectorAll('[data-bp-mobile-tab]').forEach(el=>{const active=el.dataset.bpMobileTab===tab;el.classList.toggle('active',active);el.setAttribute('aria-current',active?'page':'false')});
-  document.querySelectorAll('[data-mw-page]').forEach(el=>{
-   const active=el.dataset.mwPage===tab;
-   el.classList.toggle('mw-nav-active',active);
+  const inQuickNav=mobileMain.includes(tab);
+  document.getElementById('bp-mobile-more').classList.toggle('active',!inQuickNav);
+  document.querySelectorAll('[data-mw-page], [data-bp-mobile-menu]').forEach(el=>{
+   const active=(el.dataset.mwPage||el.dataset.bpMobileMenu)===tab;
+   if(el.hasAttribute('data-mw-page'))el.classList.toggle('mw-nav-active',active);
    el.setAttribute('aria-current',active?'page':'false');
   });
   if(typeof window.__bpRevokeMediaUrls==='function')window.__bpRevokeMediaUrls();
@@ -312,7 +314,7 @@ export async function launchWorkspace({db,user,role,context,root,logout,photoDat
 
  let previousFocus=null;
  function closeMobileMenu(){if(sheet.hidden)return;sheet.hidden=true;overlay.hidden=true;more.setAttribute('aria-expanded','false');document.body.classList.remove('bp-menu-open');mobileFindInput.value='';applyMobileFind();if(previousFocus?.isConnected)previousFocus.focus();}
- function openMobileMenu(){previousFocus=document.activeElement;sheet.hidden=false;overlay.hidden=false;more.setAttribute('aria-expanded','true');document.body.classList.add('bp-menu-open');mobileFindInput.focus();}
+ function openMobileMenu(){previousFocus=document.activeElement;sheet.hidden=false;overlay.hidden=false;more.setAttribute('aria-expanded','true');document.body.classList.add('bp-menu-open');document.getElementById('bp-mobile-close').focus();}
  const mobileLayout=window.matchMedia('(max-width: 850px)');
  window.__bpMobileLayoutListener?.abort();
  window.__bpMobileLayoutListener=new AbortController();
@@ -324,8 +326,13 @@ export async function launchWorkspace({db,user,role,context,root,logout,photoDat
   const els=[...sheet.querySelectorAll('button:not([disabled]),input:not([disabled])')].filter(b=>b.offsetParent!==null);const first=els[0],last=els[els.length-1];
   if(event.shiftKey&&document.activeElement===first){event.preventDefault();last.focus()}else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus()}
  }});
- document.querySelectorAll('[data-bp-mobile-tab]').forEach(el=>el.onclick=()=>show(el.dataset.bpMobileTab));
- document.querySelectorAll('[data-bp-mobile-menu]').forEach(el=>el.onclick=()=>{closeMobileMenu();show(el.dataset.bpMobileMenu)});
+ function showMobile(tab){
+  closeMobileMenu();
+  window.scrollTo({top:0,behavior:'instant'});
+  void show(tab);
+ }
+ document.querySelectorAll('[data-bp-mobile-tab]').forEach(el=>el.onclick=()=>showMobile(el.dataset.bpMobileTab));
+ document.querySelectorAll('[data-bp-mobile-menu]').forEach(el=>el.onclick=()=>showMobile(el.dataset.bpMobileMenu));
  document.querySelectorAll('[data-mw-page]').forEach(el=>el.onclick=()=>show(el.dataset.mwPage));
  document.querySelectorAll('[data-nav-toggle]').forEach(el=>el.onclick=()=>{
   const items=document.getElementById('mw-nav-group-'+el.dataset.navToggle);

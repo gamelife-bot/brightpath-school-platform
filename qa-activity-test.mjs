@@ -244,7 +244,7 @@ try{
    if(width===390){
     await p.locator('#bp-mobile-more').click();
     const input=p.locator('#bp-mobile-section-search');
-    assert(await input.evaluate(el=>document.activeElement===el),'Mobile menu should focus its section search');
+    assert(await p.locator('#bp-mobile-close').evaluate(el=>document.activeElement===el),'Opening the menu should focus a control without triggering the phone keyboard');
     await input.fill('not a real section anywhere');
     assert((await p.locator('#bp-mobile-find-count').innerText()).includes('No matching sections'));
     await input.fill(findTerm);

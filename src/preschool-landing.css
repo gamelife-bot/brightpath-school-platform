@@ -39,7 +39,7 @@
 .ql-brightbar{background:#f7db9d;padding:20px 4%;position:relative;z-index:2}
 .ql-tiny-world{position:relative;padding:84px 5% 96px;background:#fffdf5;overflow:hidden}
 .ql-tiny-world:before{content:"✿";position:absolute;left:-46px;top:8px;font-size:150px;line-height:1;color:#f7eacb;transform:rotate(-18deg)}
-.ql-tiny-world:after{content:"✳";position:absolute;right:-31px;bottom:25px;font-size:165px;line-height:1;color:#dff2e4;transform:rotate(20deg)}
+.ql-tiny-world:after{content:"✦";position:absolute;right:-31px;bottom:25px;font-size:165px;line-height:1;color:#dff2e4;transform:rotate(20deg)}
 .ql-tiny-world-wrap{max-width:1290px;margin:0 auto;position:relative;z-index:2}
 .ql-tiny-world-top{display:grid;grid-template-columns:1.3fr .7fr;align-items:end;gap:5%;margin-bottom:29px}
 .ql-tiny-world-top h2{font-size:clamp(35px,4.15vw,54px);line-height:1.12;letter-spacing:-.055em;color:#2c6555;margin:19px 0 6px}
@@ -77,7 +77,7 @@
 .ql-page .ql-feature h3{font-size:26px;max-width:415px}
 .ql-page .ql-feature p{font-size:13px}
 .ql-page .ql-role-art{background:linear-gradient(135deg,#fcebcf,#d9f1e2);position:relative;min-height:340px;border-radius:22px}
-.ql-page .ql-role-art:before{content:"✳";position:absolute;top:12px;left:20px;font-size:67px;color:#fbcb7b}
+.ql-page .ql-role-art:before{content:"✦";position:absolute;top:12px;left:20px;font-size:67px;color:#fbcb7b}
 .ql-page .ql-role-art:after{content:"🌼";position:absolute;bottom:17px;right:12px;font-size:43px}
 .ql-page .ql-role-scene{display:grid;justify-items:center;align-items:center;width:100%;padding:19px;gap:0}
 .ql-role-kids-art{position:relative;width:100%;max-width:420px;filter:drop-shadow(0 10px 10px #42846b16)}
