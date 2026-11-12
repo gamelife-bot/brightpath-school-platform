@@ -33,7 +33,7 @@ export async function renderDevices({db,reload,timeZone}){
    click('tracker-refresh',()=>reload());
    form('tracker-pair',async element=>{
     const fields=new FormData(element);
-    await rpc(db,'bp_tracker_pair',{p_student:fields.get('tracker-student'),p_code:String(fields.get('tracker-code')).trim(),p_consent:fields.has('consent')});
+    await rpc(db,'bp_tracker_pair',{p_student:element.querySelector('#tracker-student').value,p_code:String(fields.get('tracker-code')).trim(),p_consent:fields.has('consent')});
     await reload();
    });
    for(const device of devices){
