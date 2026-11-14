@@ -365,3 +365,25 @@
   }
   .mw-app .bp-device-card .mw-btn { white-space: normal; }
 }
+
+
+/* Arrivalane-compatible equipment entry point inside BrightPath Parent → Devices. */
+.mw-app .bp-arrivalane-tracker-shop {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:18px;
+  border:1px solid #b9dfca;
+  border-radius:14px;
+  background:#eff9f2;
+  padding:19px;
+  margin:16px 0;
+}
+.mw-app .bp-arrivalane-tracker-shop strong {display:block;font-size:15px;color:#164b36}
+.mw-app .bp-arrivalane-tracker-shop p {font-size:12px;line-height:1.65;color:#385b4c;margin:7px 0 0}
+.mw-app .bp-arrivalane-shop-actions {display:flex;flex-direction:column;align-items:flex-start;gap:9px;flex-shrink:0}
+.mw-app .bp-arrivalane-shop-actions a {color:#075c43;font-weight:650;font-size:12px;text-decoration:underline;text-underline-offset:3px}
+@media(max-width:700px){
+ .mw-app .bp-arrivalane-tracker-shop{flex-direction:column;align-items:stretch}
+ .mw-app .bp-arrivalane-shop-actions a{min-height:40px;display:flex;align-items:center}
+}

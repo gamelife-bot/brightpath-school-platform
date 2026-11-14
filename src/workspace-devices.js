@@ -28,6 +28,13 @@ export async function renderDevices({db,reload,timeZone}){
  return {
   html:heading('MY FAMILY','Devices','Pair a bag tracker or wristband for a linked student in any class.',button('Refresh devices','tracker-refresh','outline'))+
    banners('info','Tracker reports show the last location of the device. School staff verify pickup separately.')+
+   '<div class="bp-arrivalane-tracker-shop">'+
+     '<div><strong>Need a school-bag tracker or daycare wristband?</strong>'+
+     '<p>BrightPath supports compatible Arrivalane GPS devices after provisioning. Choose an Arrivalane tracker, then return here with your private pairing code. Your verified guardian account controls its location.</p></div>'+
+     '<div class="bp-arrivalane-shop-actions"><a href="https://arrivalane.com/trackers?type=SCHOOL_BAG_GPS&amp;usage=BRIGHTPATH#request-trackers" target="_blank" rel="noopener noreferrer">Explore trackable school bags ↗</a>'+
+     '<a href="https://arrivalane.com/trackers?type=DAYCARE_WRISTBAND_GPS&amp;usage=BRIGHTPATH#request-trackers" target="_blank" rel="noopener noreferrer">Explore daycare wristbands ↗</a></div>'+
+   '</div>'+
+
    '<div class="bp-devices-content">'+(cards?'<div class="mw-two bp-device-list">'+cards+'</div>':'')+pairing+
    (cards?'':empty('🎒','No trackers paired'))+'</div>',
   bind(){
